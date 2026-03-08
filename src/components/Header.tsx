@@ -28,15 +28,7 @@ const Header = () => {
   return (
     <>
       {/* Top announcement bar */}
-      <div className="bg-foreground text-primary-foreground overflow-hidden">
-        <div className="animate-marquee flex whitespace-nowrap py-2">
-          {[...Array(4)].map((_, i) => (
-            <span key={i} className="text-[10px] tracking-[0.25em] uppercase mx-12 font-body">
-              ✦ Free Shipping on Orders Over ৳2,000 ✦ New Arrivals Every Week ✦ Premium Quality Fabrics ✦ 100% Authentic Products
-            </span>
-          ))}
-        </div>
-      </div>
+      <AnnouncementBar />
 
       <header
         className={`sticky top-0 z-50 transition-all duration-300 border-b ${
