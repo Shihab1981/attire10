@@ -3,7 +3,8 @@ import { useParams, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { CheckCircle, Package, Truck, MapPin, Phone, User, ArrowRight, Clock } from "lucide-react";
+import { CheckCircle, Package, Truck, MapPin, Phone, User, ArrowRight, Clock, Download } from "lucide-react";
+import { useOrderCardDownload } from "@/hooks/useOrderCardDownload";
 import { motion } from "framer-motion";
 import type { Tables } from "@/integrations/supabase/types";
 
