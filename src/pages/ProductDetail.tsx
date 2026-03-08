@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SizeGuide from "@/components/SizeGuide";
 import ProductCard from "@/components/ProductCard";
+import ProductReviews from "@/components/ProductReviews";
 import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, Minus, Plus, Heart } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";

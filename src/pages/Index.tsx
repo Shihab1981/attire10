@@ -3,6 +3,7 @@ import HeroSlider from "@/components/HeroSlider";
 import CategoryGrid from "@/components/CategoryGrid";
 import TrendingSection from "@/components/TrendingSection";
 import TrustBanner from "@/components/TrustBanner";
+import FlashSale from "@/components/FlashSale";
 import Footer from "@/components/Footer";
 
 const Index = () => {
@@ -12,6 +13,7 @@ const Index = () => {
       <main className="flex-1">
         <HeroSlider />
         <TrustBanner />
+        <FlashSale />
         <CategoryGrid />
         <TrendingSection />
       </main>
