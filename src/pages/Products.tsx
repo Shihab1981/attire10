@@ -37,6 +37,7 @@ const Products = () => {
 
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const { data: flashSalesMap } = useFlashSales();
 
   const { data: allProducts = [], isLoading } = useQuery({
     queryKey: ["products"],
