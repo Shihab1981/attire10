@@ -42,6 +42,7 @@ const AdminProducts = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [uploading, setUploading] = useState(false);
+  const [uploadingColorImage, setUploadingColorImage] = useState<string | null>(null);
   const [customColor, setCustomColor] = useState("#000000");
 
   const { data: products = [], isLoading } = useQuery({
