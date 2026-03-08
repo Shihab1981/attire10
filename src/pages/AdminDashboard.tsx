@@ -168,6 +168,7 @@ const AdminDashboard = () => {
   });
 
 
+  const stats = [
     { label: "Total Revenue", value: `৳${(revenue ?? 0).toLocaleString()}`, icon: DollarSign, accent: true },
     { label: "Total Orders", value: totalOrders ?? 0, icon: ShoppingCart, accent: false },
     { label: "Pending Orders", value: pendingOrders ?? 0, icon: Clock, accent: false },
