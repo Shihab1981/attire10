@@ -44,6 +44,44 @@ export type Database = {
         }
         Relationships: []
       }
+      flash_sales: {
+        Row: {
+          active: boolean
+          created_at: string
+          ends_at: string
+          id: string
+          product_id: string
+          sale_price: number
+          starts_at: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          ends_at: string
+          id?: string
+          product_id: string
+          sale_price: number
+          starts_at?: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          ends_at?: string
+          id?: string
+          product_id?: string
+          sale_price?: number
+          starts_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flash_sales_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       order_items: {
         Row: {
           created_at: string
@@ -193,6 +231,41 @@ export type Database = {
           updated_at?: string
         }
         Relationships: []
+      }
+      reviews: {
+        Row: {
+          comment: string
+          created_at: string
+          id: string
+          product_id: string
+          rating: number
+          reviewer_name: string
+        }
+        Insert: {
+          comment?: string
+          created_at?: string
+          id?: string
+          product_id: string
+          rating?: number
+          reviewer_name: string
+        }
+        Update: {
+          comment?: string
+          created_at?: string
+          id?: string
+          product_id?: string
+          rating?: number
+          reviewer_name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
