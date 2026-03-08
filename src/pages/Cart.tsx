@@ -144,7 +144,7 @@ const Cart = () => {
                           </button>
                           <span className="w-10 text-center text-sm font-display font-bold bg-secondary/30">{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.product.id, item.size, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.product.id, item.size, item.quantity + 1, item.color)}
                             className="w-9 h-9 flex items-center justify-center hover:bg-secondary transition-colors active:scale-95"
                           >
                             <Plus size={14} />

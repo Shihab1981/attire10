@@ -95,7 +95,8 @@ const ProductDetail = () => {
 
   const handleAddToCart = () => {
     if (!selectedSize) { toast.error("Please select a size"); return; }
-    for (let i = 0; i < quantity; i++) addItem(product, selectedSize);
+    if (colors.length > 0 && !selectedColor) { toast.error("Please select a color"); return; }
+    for (let i = 0; i < quantity; i++) addItem(product, selectedSize, selectedColor || undefined);
     setAddedToCart(true);
     toast.success(`${product.name} added to cart`);
     setTimeout(() => setAddedToCart(false), 2000);
