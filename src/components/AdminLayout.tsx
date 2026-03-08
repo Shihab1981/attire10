@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Package, ShoppingCart, Tag, LayoutDashboard, ArrowLeft, Zap } from "lucide-react";
+import { Package, ShoppingCart, Tag, LayoutDashboard, ArrowLeft, Zap, Image } from "lucide-react";
 
 const links = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -7,6 +7,7 @@ const links = [
   { to: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { to: "/admin/coupons", label: "Coupons", icon: Tag },
   { to: "/admin/flash-sales", label: "Flash Sales", icon: Zap },
+  { to: "/admin/hero-slides", label: "Hero Slides", icon: Image },
 ];
 
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
