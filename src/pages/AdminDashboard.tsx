@@ -1,14 +1,15 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminAuthGate from "@/components/AdminAuthGate";
 import AdminLayout from "@/components/AdminLayout";
-import { Package, ShoppingCart, Tag, DollarSign, TrendingUp, Clock, AlertTriangle, ArrowUpRight, Eye, Megaphone, Save } from "lucide-react";
+import { Package, ShoppingCart, Tag, DollarSign, TrendingUp, Clock, AlertTriangle, ArrowUpRight, Eye, Megaphone, Save, ImageIcon, Upload } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format, subDays, startOfDay } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { categories } from "@/data/products";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "hsl(45, 93%, 47%)",
@@ -167,6 +168,55 @@ const AdminDashboard = () => {
     onError: () => toast.error("Failed to update"),
   });
 
+  // Category images
+  const [categoryImages, setCategoryImages] = useState<Record<string, string>>({});
+  const [categoryImagesLoaded, setCategoryImagesLoaded] = useState(false);
+  const categoryFileRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  useQuery({
+    queryKey: ["admin-category-images"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "category_images")
+        .single();
+      const parsed = data?.value ? JSON.parse(data.value) : {};
+      if (!categoryImagesLoaded) {
+        setCategoryImages(parsed);
+        setCategoryImagesLoaded(true);
+      }
+      return parsed;
+    },
+  });
+
+  const handleCategoryImageUpload = async (slug: string, file: File) => {
+    const ext = file.name.split(".").pop();
+    const path = `categories/${slug}-${Date.now()}.${ext}`;
+    const { error: uploadError } = await supabase.storage
+      .from("product-images")
+      .upload(path, file);
+    if (uploadError) {
+      toast.error("Upload failed");
+      return;
+    }
+    const { data: urlData } = supabase.storage
+      .from("product-images")
+      .getPublicUrl(path);
+    const newImages = { ...categoryImages, [slug]: urlData.publicUrl };
+    setCategoryImages(newImages);
+    const { error } = await supabase
+      .from("site_settings")
+      .update({ value: JSON.stringify(newImages), updated_at: new Date().toISOString() })
+      .eq("key", "category_images");
+    if (error) {
+      toast.error("Failed to save");
+    } else {
+      queryClient.invalidateQueries({ queryKey: ["category-images"] });
+      toast.success(`${slug} image updated!`);
+    }
+  };
+
 
   const stats = [
     { label: "Total Revenue", value: `৳${(revenue ?? 0).toLocaleString()}`, icon: DollarSign, accent: true },
@@ -255,6 +305,52 @@ const AdminDashboard = () => {
               <Save size={14} />
               {saveAnnouncement.isPending ? "Saving..." : "Save"}
             </button>
+          </div>
+        </motion.div>
+
+        {/* Category Images Editor */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.38 }}
+          className="bg-card border border-border p-5 md:p-6 mb-8"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <ImageIcon size={16} className="text-accent" />
+            <h2 className="font-display font-bold text-base">Category Images</h2>
+            <span className="text-[10px] text-muted-foreground font-body ml-1">Shop by Category সেকশনের ছবি পরিবর্তন করুন</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {categories.map((cat) => (
+              <div key={cat.slug} className="group relative">
+                <div className="aspect-[3/4] overflow-hidden border border-border bg-secondary/30">
+                  <img
+                    src={categoryImages[cat.slug] || cat.image}
+                    alt={cat.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={(el) => { categoryFileRefs.current[cat.slug] = el; }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleCategoryImageUpload(cat.slug, file);
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  onClick={() => categoryFileRefs.current[cat.slug]?.click()}
+                  className="absolute inset-0 flex flex-col items-center justify-center bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  <Upload size={18} className="text-primary-foreground mb-1" />
+                  <span className="text-[10px] text-primary-foreground font-body font-medium">Change</span>
+                </button>
+                <p className="text-xs font-display font-semibold mt-1.5 text-center">{cat.name}</p>
+              </div>
+            ))}
           </div>
         </motion.div>
 
