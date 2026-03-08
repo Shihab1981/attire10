@@ -18,6 +18,17 @@ const CategoryGrid = () => {
     },
   });
 
+  const { data: customizations = {} } = useQuery({
+    queryKey: ["category-customizations"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "category_customizations")
+        .single();
+      return data?.value ? JSON.parse(data.value) : {};
+    },
+  });
   return (
     <section className="py-10 md:py-16">
       <div className="container">
