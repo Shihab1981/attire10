@@ -175,21 +175,32 @@ const Cart = () => {
                       <span className="text-muted-foreground">Subtotal ({itemCount} items)</span>
                       <span className="font-medium">৳{totalPrice().toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between items-center">
+                    <div className="flex justify-between">
                       <span className="text-muted-foreground flex items-center gap-1.5">
                         <Package size={14} />
-                        Shipping
+                        Shipping (Inside Dhaka)
                       </span>
-                      <span className="text-muted-foreground text-xs">Calculated at checkout</span>
+                      <span>৳60</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground flex items-center gap-1.5">
+                        <Package size={14} />
+                        Shipping (Outside Dhaka)
+                      </span>
+                      <span>৳120</span>
                     </div>
                   </div>
 
-                  <div className="border-t border-border mt-6 pt-6">
+                  <div className="border-t border-border mt-6 pt-6 space-y-3">
                     <div className="flex justify-between items-baseline">
-                      <span className="font-display font-bold text-base">Estimated Total</span>
-                      <span className="font-display font-bold text-xl">৳{totalPrice().toLocaleString()}</span>
+                      <span className="text-sm text-muted-foreground font-body">Due (Inside Dhaka)</span>
+                      <span className="font-display font-bold text-base">৳{(totalPrice() + 60).toLocaleString()}</span>
                     </div>
-                    <p className="text-[10px] text-muted-foreground font-body mt-1">Shipping & taxes calculated at checkout</p>
+                    <div className="flex justify-between items-baseline">
+                      <span className="text-sm text-muted-foreground font-body">Due (Outside Dhaka)</span>
+                      <span className="font-display font-bold text-base">৳{(totalPrice() + 120).toLocaleString()}</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground font-body mt-1">Exact amount will be calculated at checkout based on your location</p>
                   </div>
 
                   <Link
