@@ -10,7 +10,8 @@ import { toast } from "sonner";
 import { ChevronDown, Shield, Truck, CreditCard, MapPin, User, Phone, Home, Tag, X, ArrowRight, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 
-const getShippingCharge = (division: string) => division === "ঢাকা" ? 60 : 120;
+const FREE_SHIPPING_THRESHOLD = 2000;
+const getShippingCharge = (division: string, subtotal: number) => subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : (division === "ঢাকা" ? 60 : 120);
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
