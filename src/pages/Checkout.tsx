@@ -9,7 +9,7 @@ import { divisionNames, getDistricts, getUpazilas } from "@/data/bangladesh-loca
 import { toast } from "sonner";
 import { CheckCircle, ChevronDown } from "lucide-react";
 
-const SHIPPING_CHARGE = 90;
+const getShippingCharge = (division: string) => division === "ঢাকা" ? 60 : 120;
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
@@ -50,7 +50,8 @@ const Checkout = () => {
   };
 
   const removeCoupon = () => { setAppliedCoupon(null); setDiscount(0); setCouponCode(""); };
-  const finalTotal = Math.max(0, subtotal + SHIPPING_CHARGE - discount);
+  const shippingCharge = getShippingCharge(form.division);
+  const finalTotal = Math.max(0, subtotal + shippingCharge - discount);
 
   const fullAddress = [form.upazila, form.district, form.division, form.address].filter(Boolean).join(", ");
 
@@ -245,7 +246,7 @@ const Checkout = () => {
                 <div className="space-y-2 text-sm border-t border-border pt-4">
                   <div className="flex justify-between"><span className="text-muted-foreground">সাবটোটাল</span><span>৳{subtotal.toLocaleString()}</span></div>
                   {discount > 0 && <div className="flex justify-between text-accent"><span>ডিসকাউন্ট</span><span>-৳{discount.toLocaleString()}</span></div>}
-                  <div className="flex justify-between"><span className="text-muted-foreground">ডেলিভারি চার্জ</span><span>৳{SHIPPING_CHARGE}</span></div>
+                  <div className="flex justify-between"><span className="text-muted-foreground">ডেলিভারি চার্জ {form.division ? `(${form.division})` : ""}</span><span>৳{shippingCharge}</span></div>
                   <div className="border-t border-border pt-3 flex justify-between">
                     <span className="font-display font-semibold">মোট</span>
                     <span className="font-display font-bold text-lg">৳{finalTotal.toLocaleString()}</span>
