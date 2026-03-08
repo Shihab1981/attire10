@@ -121,4 +121,36 @@ const Header = () => {
   );
 };
 
+const defaultAnnouncement = "✦ Free Shipping on Orders Over ৳2,000 ✦ New Arrivals Every Week ✦ Premium Quality Fabrics ✦ 100% Authentic Products";
+
+const AnnouncementBar = () => {
+  const { data: text } = useQuery({
+    queryKey: ["announcement-text"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "announcement_text")
+        .single();
+      if (error || !data) return defaultAnnouncement;
+      return data.value || defaultAnnouncement;
+    },
+    staleTime: 60000,
+  });
+
+  const announcement = text || defaultAnnouncement;
+
+  return (
+    <div className="bg-foreground text-primary-foreground overflow-hidden">
+      <div className="animate-marquee flex whitespace-nowrap py-2">
+        {[...Array(4)].map((_, i) => (
+          <span key={i} className="text-[10px] tracking-[0.25em] uppercase mx-12 font-body">
+            {announcement}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 export default Header;
