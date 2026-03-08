@@ -405,7 +405,7 @@ const AdminDashboard = () => {
                 if (allCategories.some(c => c.slug === slug)) { toast.error("Category already exists"); return; }
                 const newCat: CategoryItem = { slug, name: newCatName.trim(), image: "/placeholder.svg", description: newCatDesc.trim() };
                 const updated = [...extraCategories, newCat];
-                const { data: existing } = await supabase.from("site_settings").select("key").eq("key", "extra_categories").single();
+                const { data: existing } = await supabase.from("site_settings").select("key").eq("key", "extra_categories").maybeSingle();
                 if (existing) {
                   await supabase.from("site_settings").update({ value: JSON.stringify(updated), updated_at: new Date().toISOString() }).eq("key", "extra_categories");
                 } else {
