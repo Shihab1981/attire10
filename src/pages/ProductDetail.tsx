@@ -142,9 +142,9 @@ const ProductDetail = () => {
               className="flex gap-3"
             >
               {/* Thumbnails */}
-              {allImages.length > 1 && (
+              {displayImages.length > 1 && (
                 <div className="hidden md:flex flex-col gap-2.5 w-[72px] shrink-0">
-                  {allImages.map((img, i) => (
+                  {displayImages.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => { setActiveImageIndex(i); setImageLoaded(false); }}
