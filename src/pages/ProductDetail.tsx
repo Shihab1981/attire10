@@ -61,7 +61,7 @@ const ProductDetail = () => {
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <h1 className="font-display text-3xl font-medium italic mb-3">Product Not Found</h1>
+            <h1 className="font-display text-3xl font-bold mb-3">Product Not Found</h1>
             <Link
               to="/products"
               className="text-accent text-[11px] font-body font-medium tracking-[0.1em] uppercase hover:underline underline-offset-4"
@@ -151,7 +151,7 @@ const ProductDetail = () => {
                 {product.category.replace("-", " ")} — {product.sub_category}
               </p>
 
-              <h1 className="font-display text-3xl md:text-4xl font-medium italic leading-tight mb-6">
+              <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight mb-6">
                 {product.name}
               </h1>
 
@@ -240,7 +240,7 @@ const ProductDetail = () => {
                 <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-muted-foreground font-body mb-3">
                   Complete the Look
                 </p>
-                <h2 className="font-display text-2xl md:text-4xl font-medium italic">
+                <h2 className="font-display text-2xl md:text-4xl font-bold">
                   You May Also Like
                 </h2>
               </div>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,6 +18,11 @@ const Products = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(categoryParam);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
+
+  // Sync category state with URL params when navigating via header links
+  React.useEffect(() => {
+    setSelectedCategory(categoryParam);
+  }, [categoryParam]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
@@ -72,7 +77,7 @@ const Products = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="font-display text-3xl md:text-5xl font-medium italic"
+              className="font-display text-3xl md:text-5xl font-bold"
             >
               {selectedCategory
                 ? categories.find((c) => c.slug === selectedCategory)?.name
@@ -119,7 +124,7 @@ const Products = () => {
                 } md:block md:static md:w-56 shrink-0`}
               >
                 <div className="flex items-center justify-between md:hidden mb-8">
-                  <h2 className="font-display text-xl font-medium italic">Filters</h2>
+                  <h2 className="font-display text-xl font-bold">Filters</h2>
                   <button onClick={() => setFiltersOpen(false)}>
                     <X size={18} strokeWidth={1.5} />
                   </button>
@@ -232,7 +237,7 @@ const Products = () => {
                 </div>
               ) : filtered.length === 0 ? (
                 <div className="text-center py-24">
-                  <p className="font-display text-xl italic text-muted-foreground mb-3">No products found</p>
+                  <p className="font-display text-xl text-muted-foreground mb-3">No products found</p>
                   <button
                     onClick={clearFilters}
                     className="text-accent text-[11px] font-body font-medium tracking-[0.1em] uppercase hover:underline underline-offset-4"

@@ -33,7 +33,7 @@ const TrendingSection = () => {
             <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-muted-foreground font-body mb-3">
               Most Wanted
             </p>
-            <h2 className="font-display text-3xl md:text-5xl font-medium italic">
+            <h2 className="font-display text-3xl md:text-5xl font-bold">
               Trending Now
             </h2>
           </div>

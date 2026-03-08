@@ -39,8 +39,8 @@ const Header = () => {
             {mobileOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
           </button>
 
-          <Link to="/" className="font-display text-2xl md:text-3xl font-semibold tracking-wide italic">
-            Attire
+          <Link to="/" className="font-display text-xl md:text-2xl font-bold tracking-[0.1em] uppercase">
+            ATTIRE
           </Link>
 
           <nav className="hidden md:flex items-center gap-10">

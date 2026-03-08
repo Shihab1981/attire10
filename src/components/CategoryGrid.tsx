@@ -11,7 +11,7 @@ const CategoryGrid = () => {
           <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-muted-foreground font-body mb-3">
             Curated Selection
           </p>
-          <h2 className="font-display text-3xl md:text-5xl font-medium italic">
+          <h2 className="font-display text-3xl md:text-5xl font-bold">
             Shop by Category
           </h2>
         </div>
@@ -37,7 +37,7 @@ const CategoryGrid = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/10 to-transparent transition-opacity duration-500" />
                 <div className="absolute bottom-0 left-0 right-0 p-4 md:p-5 flex items-end justify-between">
                   <div>
-                    <h3 className="font-display text-base md:text-lg font-medium text-primary-foreground italic">
+                    <h3 className="font-display text-base md:text-lg font-semibold text-primary-foreground">
                       {cat.name}
                     </h3>
                     <p className="text-[10px] text-primary-foreground/50 mt-1 tracking-wider uppercase font-body">
