@@ -173,6 +173,10 @@ const AdminDashboard = () => {
   const [categoryImagesLoaded, setCategoryImagesLoaded] = useState(false);
   const categoryFileRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
+  // Category customizations (name & description)
+  const [categoryCustomizations, setCategoryCustomizations] = useState<Record<string, { name?: string; description?: string }>>({});
+  const [categoryCustomizationsLoaded, setCategoryCustomizationsLoaded] = useState(false);
+
   useQuery({
     queryKey: ["admin-category-images"],
     queryFn: async () => {
@@ -185,6 +189,23 @@ const AdminDashboard = () => {
       if (!categoryImagesLoaded) {
         setCategoryImages(parsed);
         setCategoryImagesLoaded(true);
+      }
+      return parsed;
+    },
+  });
+
+  useQuery({
+    queryKey: ["admin-category-customizations"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "category_customizations")
+        .single();
+      const parsed = data?.value ? JSON.parse(data.value) : {};
+      if (!categoryCustomizationsLoaded) {
+        setCategoryCustomizations(parsed);
+        setCategoryCustomizationsLoaded(true);
       }
       return parsed;
     },
@@ -217,6 +238,34 @@ const AdminDashboard = () => {
     }
   };
 
+  const saveCategoryCustomizations = useMutation({
+    mutationFn: async (customizations: Record<string, { name?: string; description?: string }>) => {
+      const value = JSON.stringify(customizations);
+      // Try update first, then upsert
+      const { data: existing } = await supabase
+        .from("site_settings")
+        .select("key")
+        .eq("key", "category_customizations")
+        .single();
+      if (existing) {
+        const { error } = await supabase
+          .from("site_settings")
+          .update({ value, updated_at: new Date().toISOString() })
+          .eq("key", "category_customizations");
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("site_settings")
+          .insert({ key: "category_customizations", value });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["category-customizations"] });
+      toast.success("Category details updated!");
+    },
+    onError: () => toast.error("Failed to save"),
+  });
 
   const stats = [
     { label: "Total Revenue", value: `৳${(revenue ?? 0).toLocaleString()}`, icon: DollarSign, accent: true },
@@ -308,52 +357,84 @@ const AdminDashboard = () => {
           </div>
         </motion.div>
 
-        {/* Category Images Editor */}
+        {/* Category Editor */}
         <motion.div
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.38 }}
           className="bg-card border border-border p-5 md:p-6 mb-8"
         >
-          <div className="flex items-center gap-2 mb-4">
-            <ImageIcon size={16} className="text-accent" />
-            <h2 className="font-display font-bold text-base">Category Images</h2>
-            <span className="text-[10px] text-muted-foreground font-body ml-1">Shop by Category সেকশনের ছবি পরিবর্তন করুন</span>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <ImageIcon size={16} className="text-accent" />
+              <h2 className="font-display font-bold text-base">Category Management</h2>
+              <span className="text-[10px] text-muted-foreground font-body ml-1">ছবি, নাম ও বিবরণ পরিবর্তন করুন</span>
+            </div>
+            <button
+              onClick={() => saveCategoryCustomizations.mutate(categoryCustomizations)}
+              disabled={saveCategoryCustomizations.isPending}
+              className="flex items-center gap-2 bg-foreground text-background px-4 py-2 text-xs font-display font-semibold hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
+            >
+              <Save size={12} />
+              {saveCategoryCustomizations.isPending ? "Saving..." : "Save Names"}
+            </button>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
             {categories.map((cat) => (
-              <div key={cat.slug} className="group relative">
-                <div className="aspect-[3/4] overflow-hidden border border-border bg-secondary/30">
-                  <img
-                    src={categoryImages[cat.slug] || cat.image}
-                    alt={cat.name}
-                    className="w-full h-full object-cover"
+              <div key={cat.slug} className="space-y-2">
+                <div className="group relative">
+                  <div className="aspect-[3/4] overflow-hidden border border-border bg-secondary/30">
+                    <img
+                      src={categoryImages[cat.slug] || cat.image}
+                      alt={cat.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    ref={(el) => { categoryFileRefs.current[cat.slug] = el; }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleCategoryImageUpload(cat.slug, file);
+                      e.target.value = "";
+                    }}
                   />
+                  <button
+                    onClick={() => categoryFileRefs.current[cat.slug]?.click()}
+                    className="absolute inset-0 flex flex-col items-center justify-center bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  >
+                    <Upload size={18} className="text-primary-foreground mb-1" />
+                    <span className="text-[10px] text-primary-foreground font-body font-medium">Change</span>
+                  </button>
                 </div>
                 <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  ref={(el) => { categoryFileRefs.current[cat.slug] = el; }}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) handleCategoryImageUpload(cat.slug, file);
-                    e.target.value = "";
-                  }}
+                  value={categoryCustomizations[cat.slug]?.name ?? cat.name}
+                  onChange={(e) =>
+                    setCategoryCustomizations((prev) => ({
+                      ...prev,
+                      [cat.slug]: { ...prev[cat.slug], name: e.target.value },
+                    }))
+                  }
+                  className="w-full border border-border px-2.5 py-1.5 bg-background text-xs font-display font-semibold focus:outline-none focus:border-accent transition-colors"
+                  placeholder="Category Name"
                 />
-                <button
-                  onClick={() => categoryFileRefs.current[cat.slug]?.click()}
-                  className="absolute inset-0 flex flex-col items-center justify-center bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                >
-                  <Upload size={18} className="text-primary-foreground mb-1" />
-                  <span className="text-[10px] text-primary-foreground font-body font-medium">Change</span>
-                </button>
-                <p className="text-xs font-display font-semibold mt-1.5 text-center">{cat.name}</p>
+                <input
+                  value={categoryCustomizations[cat.slug]?.description ?? cat.description}
+                  onChange={(e) =>
+                    setCategoryCustomizations((prev) => ({
+                      ...prev,
+                      [cat.slug]: { ...prev[cat.slug], description: e.target.value },
+                    }))
+                  }
+                  className="w-full border border-border px-2.5 py-1.5 bg-background text-[11px] font-body text-muted-foreground focus:outline-none focus:border-accent transition-colors"
+                  placeholder="Description"
+                />
               </div>
             ))}
           </div>
         </motion.div>
-
         <div className="grid lg:grid-cols-12 gap-6 mb-8">
           {/* Revenue Chart */}
           <motion.div
