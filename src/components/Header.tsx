@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ShoppingBag, Search, Menu, X } from "lucide-react";
+import { ShoppingBag, Search, Menu, X, MapPin } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
