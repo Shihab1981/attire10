@@ -15,6 +15,7 @@ const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -89,6 +90,7 @@ const Checkout = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
       if (itemsError) throw itemsError;
 
+      setOrderPlaced(true);
       clearCart();
       navigate(`/order-confirmation/${order.id}`);
     } catch {
@@ -98,7 +100,7 @@ const Checkout = () => {
     }
   };
 
-  if (items.length === 0) { navigate("/cart"); return null; }
+  if (items.length === 0 && !orderPlaced) { navigate("/cart"); return null; }
 
   const getImage = (item: typeof items[0]) => {
     const url = item.product.image_url;
