@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { categoryImages, type Category } from "@/data/products";
 import { divisionNames, getDistricts, getUpazilas } from "@/data/bangladesh-locations";
 import { toast } from "sonner";
-import { CheckCircle, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 const getShippingCharge = (division: string) => division === "ঢাকা" ? 60 : 120;
 
