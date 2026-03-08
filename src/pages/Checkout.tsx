@@ -90,6 +90,7 @@ const Checkout = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
       if (itemsError) throw itemsError;
 
+      setOrderPlaced(true);
       clearCart();
       navigate(`/order-confirmation/${order.id}`);
     } catch {
