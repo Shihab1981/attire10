@@ -3,13 +3,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminAuthGate from "@/components/AdminAuthGate";
 import AdminLayout from "@/components/AdminLayout";
-import { Package, ShoppingCart, Tag, DollarSign, TrendingUp, Clock, AlertTriangle, ArrowUpRight, Eye, Megaphone, Save, ImageIcon, Upload } from "lucide-react";
+import { Package, ShoppingCart, Tag, DollarSign, TrendingUp, Clock, AlertTriangle, ArrowUpRight, Eye, Megaphone, Save, ImageIcon, Upload, Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format, subDays, startOfDay } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { categories } from "@/data/products";
+import { categories as defaultCategories } from "@/data/products";
+import { useCategories, type CategoryItem } from "@/hooks/useCategories";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "hsl(45, 93%, 47%)",
@@ -22,6 +23,9 @@ const AdminDashboard = () => {
   const queryClient = useQueryClient();
   const [announcementText, setAnnouncementText] = useState("");
   const [announcementLoaded, setAnnouncementLoaded] = useState(false);
+  const { categories: allCategories, extraCategories } = useCategories();
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatDesc, setNewCatDesc] = useState("");
 
   const { data: products } = useQuery({
     queryKey: ["admin-products-count"],
@@ -376,11 +380,52 @@ const AdminDashboard = () => {
               className="flex items-center gap-2 bg-foreground text-background px-4 py-2 text-xs font-display font-semibold hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
             >
               <Save size={12} />
-              {saveCategoryCustomizations.isPending ? "Saving..." : "Save Names"}
+              {saveCategoryCustomizations.isPending ? "Saving..." : "Save Changes"}
             </button>
           </div>
+
+          {/* Add New Category */}
+          <div className="flex flex-col sm:flex-row gap-2 mb-5 p-3 border border-dashed border-border bg-secondary/20">
+            <input
+              value={newCatName}
+              onChange={(e) => setNewCatName(e.target.value)}
+              className="flex-1 border border-border px-3 py-2 bg-background text-xs font-display font-semibold focus:outline-none focus:border-accent transition-colors"
+              placeholder="New category name (e.g. Jackets)"
+            />
+            <input
+              value={newCatDesc}
+              onChange={(e) => setNewCatDesc(e.target.value)}
+              className="flex-1 border border-border px-3 py-2 bg-background text-[11px] font-body focus:outline-none focus:border-accent transition-colors"
+              placeholder="Description (e.g. Winter & Casual)"
+            />
+            <button
+              onClick={async () => {
+                if (!newCatName.trim()) { toast.error("Category name required"); return; }
+                const slug = newCatName.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                if (allCategories.some(c => c.slug === slug)) { toast.error("Category already exists"); return; }
+                const newCat: CategoryItem = { slug, name: newCatName.trim(), image: "/placeholder.svg", description: newCatDesc.trim() };
+                const updated = [...extraCategories, newCat];
+                const { data: existing } = await supabase.from("site_settings").select("key").eq("key", "extra_categories").single();
+                if (existing) {
+                  await supabase.from("site_settings").update({ value: JSON.stringify(updated), updated_at: new Date().toISOString() }).eq("key", "extra_categories");
+                } else {
+                  await supabase.from("site_settings").insert({ key: "extra_categories", value: JSON.stringify(updated) });
+                }
+                queryClient.invalidateQueries({ queryKey: ["extra-categories"] });
+                setNewCatName(""); setNewCatDesc("");
+                toast.success(`"${newCat.name}" category added!`);
+              }}
+              className="flex items-center gap-1.5 bg-accent text-accent-foreground px-4 py-2 text-xs font-display font-semibold hover:bg-accent/90 transition-colors shrink-0"
+            >
+              <Plus size={14} />
+              Add
+            </button>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
-            {categories.map((cat) => (
+            {allCategories.map((cat) => {
+              const isExtra = extraCategories.some((e: CategoryItem) => e.slug === cat.slug);
+              return (
               <div key={cat.slug} className="space-y-2">
                 <div className="group relative">
                   <div className="aspect-[3/4] overflow-hidden border border-border bg-secondary/30">
@@ -408,6 +453,19 @@ const AdminDashboard = () => {
                     <Upload size={18} className="text-primary-foreground mb-1" />
                     <span className="text-[10px] text-primary-foreground font-body font-medium">Change</span>
                   </button>
+                  {isExtra && (
+                    <button
+                      onClick={async () => {
+                        const updated = extraCategories.filter((e: CategoryItem) => e.slug !== cat.slug);
+                        await supabase.from("site_settings").update({ value: JSON.stringify(updated), updated_at: new Date().toISOString() }).eq("key", "extra_categories");
+                        queryClient.invalidateQueries({ queryKey: ["extra-categories"] });
+                        toast.success(`"${cat.name}" removed`);
+                      }}
+                      className="absolute top-1 right-1 bg-destructive text-destructive-foreground p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <Trash2 size={12} />
+                    </button>
+                  )}
                 </div>
                 <input
                   value={categoryCustomizations[cat.slug]?.name ?? cat.name}
@@ -431,8 +489,10 @@ const AdminDashboard = () => {
                   className="w-full border border-border px-2.5 py-1.5 bg-background text-[11px] font-body text-muted-foreground focus:outline-none focus:border-accent transition-colors"
                   placeholder="Description"
                 />
+                {isExtra && <span className="text-[9px] text-accent font-body">Custom category</span>}
               </div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
         <div className="grid lg:grid-cols-12 gap-6 mb-8">

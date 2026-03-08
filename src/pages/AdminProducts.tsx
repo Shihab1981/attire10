@@ -7,10 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Upload, X, ImagePlus } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { useCategories } from "@/hooks/useCategories";
 
 type Product = Tables<"products">;
 
-const categoryOptions = ["t-shirts", "panjabi", "polo-shirts", "pants", "trousers"];
 const sizeOptions = ["S", "M", "L", "XL", "XXL"];
 
 const presetColors = [
@@ -38,6 +38,7 @@ const emptyForm = {
 
 const AdminProducts = () => {
   const queryClient = useQueryClient();
+  const { categorySlugs } = useCategories();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
@@ -282,7 +283,7 @@ const AdminProducts = () => {
                 <div>
                   <label className="block text-sm font-medium mb-1">Category</label>
                   <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm">
-                    {categoryOptions.map((c) => <option key={c} value={c}>{c.replace("-", " ")}</option>)}
+                    {categorySlugs.map((c) => <option key={c} value={c}>{c.replace(/-/g, " ")}</option>)}
                   </select>
                 </div>
                 <div>

@@ -1,34 +1,11 @@
 import { Link } from "react-router-dom";
-import { categories } from "@/data/products";
 import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useCategories } from "@/hooks/useCategories";
 
 const CategoryGrid = () => {
-  const { data: customImages = {} } = useQuery({
-    queryKey: ["category-images"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "category_images")
-        .single();
-      return data?.value ? JSON.parse(data.value) : {};
-    },
-  });
+  const { categories } = useCategories();
 
-  const { data: customizations = {} } = useQuery({
-    queryKey: ["category-customizations"],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from("site_settings")
-        .select("value")
-        .eq("key", "category_customizations")
-        .single();
-      return data?.value ? JSON.parse(data.value) : {};
-    },
-  });
   return (
     <section className="py-10 md:py-16">
       <div className="container">
@@ -60,7 +37,7 @@ const CategoryGrid = () => {
                 className="group block relative aspect-[3/4] overflow-hidden"
               >
                 <img
-                  src={customImages[cat.slug] || cat.image}
+                  src={cat.image}
                   alt={cat.name}
                   className="w-full h-full object-cover transition-all duration-500 group-hover:scale-105 brightness-[0.85] group-hover:brightness-100"
                   loading="lazy"
@@ -70,11 +47,11 @@ const CategoryGrid = () => {
                 <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
                   <div>
                     <h3 className="font-display text-sm md:text-base font-bold text-primary-foreground">
-                      {customizations[cat.slug]?.name || cat.name}
+                      {cat.name}
                     </h3>
-                    {(customizations[cat.slug]?.description || cat.description) && (
+                    {cat.description && (
                       <p className="text-[9px] md:text-[10px] text-primary-foreground/70 font-body">
-                        {customizations[cat.slug]?.description || cat.description}
+                        {cat.description}
                       </p>
                     )}
                   </div>

@@ -5,7 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ProductCard from "@/components/ProductCard";
-import { categories, type Category, type Size } from "@/data/products";
+import { type Size } from "@/data/products";
+import { useCategories } from "@/hooks/useCategories";
 import { SlidersHorizontal, X, ArrowUpDown, Grid3X3, LayoutGrid, ChevronDown, Tag, Ruler, Banknote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFlashSales } from "@/hooks/useFlashSales";
@@ -22,10 +23,11 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const categoryParam = searchParams.get("category") as Category | null;
+  const categoryParam = searchParams.get("category");
   const filterParam = searchParams.get("filter");
+  const { categories } = useCategories();
 
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(categoryParam);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [gridCols, setGridCols] = useState<2 | 3>(3);
@@ -81,7 +83,7 @@ const Products = () => {
     setSearchParams({});
   };
 
-  const handleCategoryClick = (slug: Category | null) => {
+  const handleCategoryClick = (slug: string | null) => {
     setSelectedCategory(slug);
     if (slug) setSearchParams({ category: slug });
     else setSearchParams({});
