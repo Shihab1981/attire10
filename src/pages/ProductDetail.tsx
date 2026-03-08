@@ -164,7 +164,7 @@ const ProductDetail = () => {
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImageIndex}
-                    src={allImages[activeImageIndex]}
+                    src={displayImages[activeImageIndex] || mainImage}
                     alt={product.name}
                     initial={{ opacity: 0, scale: 1.05 }}
                     animate={{ opacity: 1, scale: 1 }}
