@@ -8,6 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import { categories, type Category, type Size } from "@/data/products";
 import { SlidersHorizontal, X, ArrowUpDown, Grid3X3, LayoutGrid, ChevronDown, Tag, Ruler, Banknote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useFlashSales } from "@/hooks/useFlashSales";
 
 const allSizes: Size[] = ["S", "M", "L", "XL", "XXL"];
 
@@ -36,6 +37,7 @@ const Products = () => {
 
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const { data: flashSalesMap } = useFlashSales();
 
   const { data: allProducts = [], isLoading } = useQuery({
     queryKey: ["products"],
@@ -424,7 +426,7 @@ const Products = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.03, duration: 0.3 }}
                     >
-                      <ProductCard product={p} />
+                      <ProductCard product={p} flashSale={flashSalesMap?.get(p.id)} />
                     </motion.div>
                   ))}
                 </motion.div>

@@ -4,6 +4,7 @@ import ProductCard from "./ProductCard";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import { useFlashSales } from "@/hooks/useFlashSales";
 
 const TrendingSection = () => {
   const { data: trending = [] } = useQuery({
@@ -19,6 +20,8 @@ const TrendingSection = () => {
       return data;
     },
   });
+
+  const { data: flashSalesMap } = useFlashSales();
 
   if (trending.length === 0) return null;
 
@@ -43,7 +46,9 @@ const TrendingSection = () => {
           </Link>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
-          {trending.map((p) => <ProductCard key={p.id} product={p} />)}
+          {trending.map((p) => (
+            <ProductCard key={p.id} product={p} flashSale={flashSalesMap?.get(p.id)} />
+          ))}
         </div>
       </div>
     </section>
