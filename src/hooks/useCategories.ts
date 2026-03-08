@@ -17,7 +17,7 @@ export const useCategories = () => {
         .from("site_settings")
         .select("value")
         .eq("key", "category_images")
-        .single();
+        .maybeSingle();
       return data?.value ? JSON.parse(data.value) : {};
     },
   });
