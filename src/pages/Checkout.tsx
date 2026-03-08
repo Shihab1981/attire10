@@ -398,8 +398,17 @@ const Checkout = () => {
                         <Truck size={13} className="text-accent" />
                         ডেলিভারি {form.division ? `(${form.division})` : ""}
                       </span>
-                      <span>৳{shippingCharge}</span>
+                      {shippingCharge === 0 ? (
+                        <span className="text-accent font-semibold">ফ্রি ✓</span>
+                      ) : (
+                        <span>৳{shippingCharge}</span>
+                      )}
                     </div>
+                    {subtotal < FREE_SHIPPING_THRESHOLD && (
+                      <p className="text-[11px] text-accent font-body">
+                        আরো ৳{(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()} অর্ডার করলে ফ্রি ডেলিভারি!
+                      </p>
+                    )}
 
                     <div className="section-divider my-2" />
 
