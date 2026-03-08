@@ -107,17 +107,37 @@ const AdminProducts = () => {
   };
 
   const toggleColor = (color: string) => {
-    setForm((f) => ({
-      ...f,
-      colors: f.colors.includes(color)
-        ? f.colors.filter((c) => c !== color)
-        : [...f.colors, color],
-    }));
+    setForm((f) => {
+      const has = f.colors.includes(color);
+      const newColorImages = { ...f.color_images };
+      if (has) delete newColorImages[color];
+      return {
+        ...f,
+        colors: has ? f.colors.filter((c) => c !== color) : [...f.colors, color],
+        color_images: newColorImages,
+      };
+    });
   };
 
   const addCustomColor = () => {
     if (!form.colors.includes(customColor)) {
       setForm((f) => ({ ...f, colors: [...f.colors, customColor] }));
+    }
+  };
+
+  const handleColorImageUpload = async (color: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingColorImage(color);
+    try {
+      const url = await uploadImage(file);
+      setForm((f) => ({ ...f, color_images: { ...f.color_images, [color]: url } }));
+      toast.success("Color image uploaded");
+    } catch {
+      toast.error("Failed to upload color image");
+    } finally {
+      setUploadingColorImage(null);
+      e.target.value = "";
     }
   };
 
