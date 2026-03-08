@@ -100,7 +100,7 @@ const Checkout = () => {
     }
   };
 
-  if (items.length === 0) { navigate("/cart"); return null; }
+  if (items.length === 0 && !orderPlaced) { navigate("/cart"); return null; }
 
   const getImage = (item: typeof items[0]) => {
     const url = item.product.image_url;
