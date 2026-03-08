@@ -227,6 +227,37 @@ const AdminDashboard = () => {
           ))}
         </div>
 
+        {/* Announcement Bar Editor */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.35 }}
+          className="bg-card border border-border p-5 md:p-6 mb-8"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Megaphone size={16} className="text-accent" />
+            <h2 className="font-display font-bold text-base">Announcement Bar</h2>
+            <span className="text-[10px] text-muted-foreground font-body ml-1">হেডারের উপরে যে টেক্সট মুভ করে</span>
+          </div>
+          <div className="flex gap-3">
+            <input
+              value={announcementText}
+              onChange={(e) => setAnnouncementText(e.target.value)}
+              className="flex-1 border border-border px-4 py-2.5 bg-background text-sm font-body focus:outline-none focus:border-accent transition-colors"
+              placeholder="✦ Free Shipping on Orders Over ৳2,000 ✦ ..."
+              maxLength={500}
+            />
+            <button
+              onClick={() => saveAnnouncement.mutate(announcementText)}
+              disabled={saveAnnouncement.isPending}
+              className="flex items-center gap-2 bg-foreground text-background px-5 py-2.5 text-sm font-display font-semibold hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50 shrink-0"
+            >
+              <Save size={14} />
+              {saveAnnouncement.isPending ? "Saving..." : "Save"}
+            </button>
+          </div>
+        </motion.div>
+
         <div className="grid lg:grid-cols-12 gap-6 mb-8">
           {/* Revenue Chart */}
           <motion.div
