@@ -37,6 +37,7 @@ const App = () => (
           <Route path="/admin/products" element={<AdminProducts />} />
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/admin/coupons" element={<AdminCoupons />} />
+          <Route path="/admin/flash-sales" element={<AdminFlashSales />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
