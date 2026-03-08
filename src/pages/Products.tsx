@@ -124,7 +124,7 @@ const Products = () => {
                 } md:block md:static md:w-56 shrink-0`}
               >
                 <div className="flex items-center justify-between md:hidden mb-8">
-                  <h2 className="font-display text-xl font-medium italic">Filters</h2>
+                  <h2 className="font-display text-xl font-bold">Filters</h2>
                   <button onClick={() => setFiltersOpen(false)}>
                     <X size={18} strokeWidth={1.5} />
                   </button>
