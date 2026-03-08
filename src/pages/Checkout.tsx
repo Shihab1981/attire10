@@ -9,7 +9,7 @@ import { divisionNames, getDistricts, getUpazilas } from "@/data/bangladesh-loca
 import { toast } from "sonner";
 import { CheckCircle, ChevronDown } from "lucide-react";
 
-const SHIPPING_CHARGE = 90;
+const getShippingCharge = (division: string) => division === "ঢাকা" ? 60 : 120;
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
