@@ -11,7 +11,8 @@ import type { Tables } from "@/integrations/supabase/types";
 type Order = Tables<"orders">;
 type OrderItem = Tables<"order_items">;
 
-const { downloadCard } = useOrderCardDownload();
+const OrderConfirmation = () => {
+  const { downloadCard } = useOrderCardDownload();
   const { orderId } = useParams<{ orderId: string }>();
   const [order, setOrder] = useState<Order | null>(null);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
