@@ -10,7 +10,8 @@ import { toast } from "sonner";
 import { ChevronDown, Shield, Truck, CreditCard, MapPin, User, Phone, Home, Tag, X, ArrowRight, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 
-const getShippingCharge = (division: string) => division === "ঢাকা" ? 60 : 120;
+const FREE_SHIPPING_THRESHOLD = 2000;
+const getShippingCharge = (division: string, subtotal: number) => subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : (division === "ঢাকা" ? 60 : 120);
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
@@ -51,7 +52,7 @@ const Checkout = () => {
   };
 
   const removeCoupon = () => { setAppliedCoupon(null); setDiscount(0); setCouponCode(""); };
-  const shippingCharge = getShippingCharge(form.division);
+  const shippingCharge = getShippingCharge(form.division, subtotal);
   const finalTotal = Math.max(0, subtotal + shippingCharge - discount);
 
   const fullAddress = [form.upazila, form.district, form.division, form.address].filter(Boolean).join(", ");
@@ -397,8 +398,17 @@ const Checkout = () => {
                         <Truck size={13} className="text-accent" />
                         ডেলিভারি {form.division ? `(${form.division})` : ""}
                       </span>
-                      <span>৳{shippingCharge}</span>
+                      {shippingCharge === 0 ? (
+                        <span className="text-accent font-semibold">ফ্রি ✓</span>
+                      ) : (
+                        <span>৳{shippingCharge}</span>
+                      )}
                     </div>
+                    {subtotal < FREE_SHIPPING_THRESHOLD && (
+                      <p className="text-[11px] text-accent font-body">
+                        আরো ৳{(FREE_SHIPPING_THRESHOLD - subtotal).toLocaleString()} অর্ডার করলে ফ্রি ডেলিভারি!
+                      </p>
+                    )}
 
                     <div className="section-divider my-2" />
 
