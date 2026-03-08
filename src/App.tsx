@@ -13,6 +13,7 @@ import AdminProducts from "./pages/AdminProducts";
 import AdminOrders from "./pages/AdminOrders";
 import AdminCoupons from "./pages/AdminCoupons";
 import AdminFlashSales from "./pages/AdminFlashSales";
+import AdminHeroSlides from "./pages/AdminHeroSlides";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import TrackOrder from "./pages/TrackOrder";
 import NotFound from "./pages/NotFound";
@@ -38,6 +39,7 @@ const App = () => (
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/admin/coupons" element={<AdminCoupons />} />
           <Route path="/admin/flash-sales" element={<AdminFlashSales />} />
+          <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
