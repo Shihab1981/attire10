@@ -83,7 +83,7 @@ const Products = () => {
     setSearchParams({});
   };
 
-  const handleCategoryClick = (slug: Category | null) => {
+  const handleCategoryClick = (slug: string | null) => {
     setSelectedCategory(slug);
     if (slug) setSearchParams({ category: slug });
     else setSearchParams({});
