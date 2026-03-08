@@ -8,6 +8,7 @@ import ProductCard from "@/components/ProductCard";
 import { categories, type Category, type Size } from "@/data/products";
 import { SlidersHorizontal, X, ArrowUpDown, Grid3X3, LayoutGrid, ChevronDown, Tag, Ruler, Banknote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useFlashSales } from "@/hooks/useFlashSales";
 
 const allSizes: Size[] = ["S", "M", "L", "XL", "XXL"];
 
