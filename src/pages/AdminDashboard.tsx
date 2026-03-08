@@ -148,7 +148,7 @@ const AdminDashboard = () => {
         .from("site_settings")
         .select("value")
         .eq("key", "announcement_text")
-        .single();
+        .maybeSingle();
       if (data?.value && !announcementLoaded) {
         setAnnouncementText(data.value);
         setAnnouncementLoaded(true);
