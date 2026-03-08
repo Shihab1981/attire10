@@ -283,7 +283,7 @@ const AdminProducts = () => {
                 <div>
                   <label className="block text-sm font-medium mb-1">Category</label>
                   <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm">
-                    {categoryOptions.map((c) => <option key={c} value={c}>{c.replace("-", " ")}</option>)}
+                    {categorySlugs.map((c) => <option key={c} value={c}>{c.replace(/-/g, " ")}</option>)}
                   </select>
                 </div>
                 <div>
