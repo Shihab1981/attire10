@@ -3,6 +3,8 @@ import { ShoppingBag, Search, Menu, X, MapPin } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 const Header = () => {
   const totalItems = useCartStore((s) => s.totalItems());
@@ -26,15 +28,7 @@ const Header = () => {
   return (
     <>
       {/* Top announcement bar */}
-      <div className="bg-foreground text-primary-foreground overflow-hidden">
-        <div className="animate-marquee flex whitespace-nowrap py-2">
-          {[...Array(4)].map((_, i) => (
-            <span key={i} className="text-[10px] tracking-[0.25em] uppercase mx-12 font-body">
-              ✦ Free Shipping on Orders Over ৳2,000 ✦ New Arrivals Every Week ✦ Premium Quality Fabrics ✦ 100% Authentic Products
-            </span>
-          ))}
-        </div>
-      </div>
+      <AnnouncementBar />
 
       <header
         className={`sticky top-0 z-50 transition-all duration-300 border-b ${
@@ -124,6 +118,38 @@ const Header = () => {
         </AnimatePresence>
       </header>
     </>
+  );
+};
+
+const defaultAnnouncement = "✦ Free Shipping on Orders Over ৳2,000 ✦ New Arrivals Every Week ✦ Premium Quality Fabrics ✦ 100% Authentic Products";
+
+const AnnouncementBar = () => {
+  const { data: text } = useQuery({
+    queryKey: ["announcement-text"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "announcement_text")
+        .single();
+      if (error || !data) return defaultAnnouncement;
+      return data.value || defaultAnnouncement;
+    },
+    staleTime: 60000,
+  });
+
+  const announcement = text || defaultAnnouncement;
+
+  return (
+    <div className="bg-foreground text-primary-foreground overflow-hidden">
+      <div className="animate-marquee flex whitespace-nowrap py-2">
+        {[...Array(4)].map((_, i) => (
+          <span key={i} className="text-[10px] tracking-[0.25em] uppercase mx-12 font-body">
+            {announcement}
+          </span>
+        ))}
+      </div>
+    </div>
   );
 };
 
