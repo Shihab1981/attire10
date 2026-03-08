@@ -3,13 +3,14 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminAuthGate from "@/components/AdminAuthGate";
 import AdminLayout from "@/components/AdminLayout";
-import { Package, ShoppingCart, Tag, DollarSign, TrendingUp, Clock, AlertTriangle, ArrowUpRight, Eye, Megaphone, Save, ImageIcon, Upload } from "lucide-react";
+import { Package, ShoppingCart, Tag, DollarSign, TrendingUp, Clock, AlertTriangle, ArrowUpRight, Eye, Megaphone, Save, ImageIcon, Upload, Plus, Trash2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format, subDays, startOfDay } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { categories } from "@/data/products";
+import { categories as defaultCategories } from "@/data/products";
+import { useCategories, type CategoryItem } from "@/hooks/useCategories";
 
 const STATUS_COLORS: Record<string, string> = {
   pending: "hsl(45, 93%, 47%)",
