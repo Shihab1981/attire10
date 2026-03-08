@@ -124,7 +124,7 @@ const Cart = () => {
                             ৳{item.product.price.toLocaleString()}
                           </p>
                           <button
-                            onClick={() => removeItem(item.product.id, item.size)}
+                            onClick={() => removeItem(item.product.id, item.size, item.color)}
                             className="mt-2.5 text-[10px] tracking-[0.15em] uppercase text-muted-foreground hover:text-destructive transition-colors font-body flex items-center gap-1 w-fit opacity-0 group-hover/item:opacity-100 md:opacity-100"
                           >
                             <X size={12} />
