@@ -137,7 +137,7 @@ const Cart = () => {
                       <div className="md:col-span-2 flex md:justify-center mt-4 md:mt-0">
                         <div className="flex items-center border border-border overflow-hidden">
                           <button
-                            onClick={() => updateQuantity(item.product.id, item.size, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.product.id, item.size, item.quantity - 1, item.color)}
                             className="w-9 h-9 flex items-center justify-center hover:bg-secondary transition-colors active:scale-95"
                           >
                             <Minus size={14} />
