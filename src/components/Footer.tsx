@@ -6,7 +6,7 @@ const Footer = () => (
     <div className="border-b border-primary-foreground/10">
       <div className="container py-14 md:py-20 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
         <div>
-          <h3 className="font-display text-2xl md:text-3xl font-medium italic">Stay in the loop</h3>
+          <h3 className="font-display text-2xl md:text-3xl font-bold">Stay in the loop</h3>
           <p className="text-primary-foreground/50 text-sm font-body mt-2">
             Be the first to know about new collections and exclusive offers.
           </p>
