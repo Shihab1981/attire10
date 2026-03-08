@@ -221,17 +221,17 @@ const OrderConfirmation = () => {
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
-              to="/products"
+              to={`/track-order?id=${orderId}`}
               className="inline-flex items-center justify-center gap-2 bg-foreground text-background px-8 py-3.5 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors w-full sm:w-auto"
             >
-              শপিং চালিয়ে যান
+              অর্ডার ট্র্যাক করুন
               <ArrowRight size={16} />
             </Link>
             <Link
-              to="/"
+              to="/products"
               className="inline-flex items-center justify-center text-sm text-muted-foreground hover:text-foreground transition-colors font-body w-full sm:w-auto"
             >
-              হোমে ফিরে যান
+              শপিং চালিয়ে যান
             </Link>
           </div>
         </div>
