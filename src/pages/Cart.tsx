@@ -109,10 +109,16 @@ const Cart = () => {
                           >
                             {item.product.name}
                           </Link>
-                          <div className="flex items-center gap-2 mt-1.5">
+                          <div className="flex items-center gap-2 mt-1.5 flex-wrap">
                             <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground font-body bg-secondary/60 px-2 py-0.5">
                               Size: {item.size}
                             </span>
+                            {item.color && (
+                              <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground font-body bg-secondary/60 px-2 py-0.5 flex items-center gap-1">
+                                <span className="w-2.5 h-2.5 rounded-full border border-border inline-block" style={{ backgroundColor: item.color }} />
+                                Color
+                              </span>
+                            )}
                           </div>
                           <p className="md:hidden font-body font-bold text-sm mt-2">
                             ৳{item.product.price.toLocaleString()}
