@@ -188,7 +188,7 @@ const AdminDashboard = () => {
         .from("site_settings")
         .select("value")
         .eq("key", "category_images")
-        .single();
+        .maybeSingle();
       const parsed = data?.value ? JSON.parse(data.value) : {};
       if (!categoryImagesLoaded) {
         setCategoryImages(parsed);
