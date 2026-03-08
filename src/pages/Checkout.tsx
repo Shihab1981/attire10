@@ -15,6 +15,7 @@ const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const navigate = useNavigate();
   const [submitting, setSubmitting] = useState(false);
+  const [orderPlaced, setOrderPlaced] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
