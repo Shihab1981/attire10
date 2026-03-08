@@ -14,7 +14,6 @@ const getShippingCharge = (division: string) => division === "ঢাকা" ? 60
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const navigate = useNavigate();
-  const [orderPlaced, setOrderPlaced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
