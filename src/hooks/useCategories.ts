@@ -37,11 +37,12 @@ export const useCategories = () => {
   const { data: extraCategories = [] } = useQuery({
     queryKey: ["extra-categories"],
     queryFn: async () => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("site_settings")
         .select("value")
         .eq("key", "extra_categories")
-        .single();
+        .maybeSingle();
+      if (error) return [];
       return data?.value ? JSON.parse(data.value) : [];
     },
   });
