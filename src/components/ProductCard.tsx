@@ -55,6 +55,21 @@ const ProductCard = ({ product }: { product: Product }) => {
               </span>
             )}
           </div>
+          {product.colors && product.colors.length > 0 && (
+            <div className="flex items-center gap-1.5 pt-1">
+              {product.colors.slice(0, 5).map((color) => (
+                <span
+                  key={color}
+                  className="w-3.5 h-3.5 rounded-full border border-border shrink-0"
+                  style={{ backgroundColor: color }}
+                  title={color}
+                />
+              ))}
+              {product.colors.length > 5 && (
+                <span className="text-[10px] text-muted-foreground font-body">+{product.colors.length - 5}</span>
+              )}
+            </div>
+          )}
         </div>
       </Link>
     </motion.div>
