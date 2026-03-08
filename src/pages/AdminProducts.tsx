@@ -33,6 +33,7 @@ const emptyForm = {
   image_url: "/placeholder.svg", sizes: ["S", "M", "L", "XL", "XXL"] as string[],
   fabric: "", description: "", trending: false, new_arrival: false, in_stock: true,
   colors: [] as string[], images: [] as string[],
+  color_images: {} as Record<string, string>,
 };
 
 const AdminProducts = () => {
