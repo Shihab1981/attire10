@@ -221,9 +221,16 @@ const { downloadCard } = useOrderCardDownload();
 
           {/* Actions */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <button
+              onClick={() => downloadCard(order, orderItems, estimatedDelivery())}
+              className="inline-flex items-center justify-center gap-2 bg-accent text-accent-foreground px-8 py-3.5 font-display font-semibold text-sm tracking-wide hover:bg-accent/90 transition-colors w-full sm:w-auto"
+            >
+              <Download size={16} />
+              রিসিট ডাউনলোড করুন
+            </button>
             <Link
               to={`/track-order?id=${orderId}`}
-              className="inline-flex items-center justify-center gap-2 bg-foreground text-background px-8 py-3.5 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors w-full sm:w-auto"
+              className="inline-flex items-center justify-center gap-2 bg-foreground text-background px-8 py-3.5 font-display font-semibold text-sm tracking-wide hover:bg-foreground/90 transition-colors w-full sm:w-auto"
             >
               অর্ডার ট্র্যাক করুন
               <ArrowRight size={16} />
