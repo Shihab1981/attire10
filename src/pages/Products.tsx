@@ -77,7 +77,7 @@ const Products = () => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="font-display text-3xl md:text-5xl font-medium italic"
+              className="font-display text-3xl md:text-5xl font-bold"
             >
               {selectedCategory
                 ? categories.find((c) => c.slug === selectedCategory)?.name
