@@ -68,9 +68,16 @@ const CategoryGrid = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-accent transition-all duration-500 group-hover:w-full" />
                 <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
-                  <h3 className="font-display text-sm md:text-base font-bold text-primary-foreground">
-                    {cat.name}
-                  </h3>
+                  <div>
+                    <h3 className="font-display text-sm md:text-base font-bold text-primary-foreground">
+                      {customizations[cat.slug]?.name || cat.name}
+                    </h3>
+                    {(customizations[cat.slug]?.description || cat.description) && (
+                      <p className="text-[9px] md:text-[10px] text-primary-foreground/70 font-body">
+                        {customizations[cat.slug]?.description || cat.description}
+                      </p>
+                    )}
+                  </div>
                   <ArrowUpRight size={12} className="text-primary-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
               </Link>
