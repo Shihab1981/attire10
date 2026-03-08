@@ -3,7 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Package, Truck, CheckCircle, XCircle, Clock, MapPin, Phone, User } from "lucide-react";
+import { Search, Package, Truck, CheckCircle, XCircle, Clock, MapPin, Phone, User, Download } from "lucide-react";
+import { useOrderCardDownload } from "@/hooks/useOrderCardDownload";
 import { motion } from "framer-motion";
 import type { Tables } from "@/integrations/supabase/types";
 
@@ -17,6 +18,7 @@ const statusSteps = [
 ];
 
 const TrackOrder = () => {
+  const { downloadCard } = useOrderCardDownload();
   const [searchParams] = useSearchParams();
   const initialId = searchParams.get("id") || "";
   const [query, setQuery] = useState(initialId);
@@ -215,6 +217,22 @@ const TrackOrder = () => {
                   </div>
                 </div>
               </div>
+
+              {/* Download Button */}
+              <button
+                onClick={() => {
+                  const isInsideDhaka = order.customer_address.includes("ঢাকা");
+                  const created = new Date(order.created_at);
+                  const minD = new Date(created); minD.setDate(minD.getDate() + (isInsideDhaka ? 1 : 3));
+                  const maxD = new Date(created); maxD.setDate(maxD.getDate() + (isInsideDhaka ? 3 : 7));
+                  const fmt = (d: Date) => d.toLocaleDateString("bn-BD", { day: "numeric", month: "long" });
+                  downloadCard(order, orderItems, `${fmt(minD)} — ${fmt(maxD)}`);
+                }}
+                className="w-full flex items-center justify-center gap-2 bg-accent text-accent-foreground py-3.5 font-display font-semibold text-sm tracking-wide hover:bg-accent/90 transition-colors"
+              >
+                <Download size={16} />
+                রিসিট ডাউনলোড করুন
+              </button>
             </motion.div>
           )}
         </div>
