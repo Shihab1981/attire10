@@ -237,7 +237,7 @@ const Products = () => {
                 </div>
               ) : filtered.length === 0 ? (
                 <div className="text-center py-24">
-                  <p className="font-display text-xl italic text-muted-foreground mb-3">No products found</p>
+                  <p className="font-display text-xl text-muted-foreground mb-3">No products found</p>
                   <button
                     onClick={clearFilters}
                     className="text-accent text-[11px] font-body font-medium tracking-[0.1em] uppercase hover:underline underline-offset-4"

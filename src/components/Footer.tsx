@@ -28,7 +28,7 @@ const Footer = () => (
     <div className="container py-14 md:py-16">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
         <div className="col-span-2 md:col-span-1">
-          <h3 className="font-display text-2xl font-medium italic mb-4">Attire</h3>
+          <h3 className="font-display text-xl font-bold tracking-[0.1em] uppercase mb-4">ATTIRE</h3>
           <p className="text-primary-foreground/40 text-sm leading-relaxed font-body font-light">
             Premium men's apparel for the modern gentleman. Quality fabrics, timeless style.
           </p>

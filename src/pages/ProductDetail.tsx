@@ -240,7 +240,7 @@ const ProductDetail = () => {
                 <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-muted-foreground font-body mb-3">
                   Complete the Look
                 </p>
-                <h2 className="font-display text-2xl md:text-4xl font-medium italic">
+                <h2 className="font-display text-2xl md:text-4xl font-bold">
                   You May Also Like
                 </h2>
               </div>

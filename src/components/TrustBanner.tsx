@@ -22,7 +22,7 @@ const TrustBanner = () => (
             className="text-center"
           >
             <f.icon size={20} strokeWidth={1.5} className="mx-auto mb-3 text-muted-foreground" />
-            <h4 className="font-display text-sm font-medium italic mb-1">{f.title}</h4>
+            <h4 className="font-display text-sm font-semibold mb-1">{f.title}</h4>
             <p className="text-[11px] text-muted-foreground font-body">{f.desc}</p>
           </motion.div>
         ))}

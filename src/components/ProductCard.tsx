@@ -42,7 +42,7 @@ const ProductCard = ({ product }: { product: Product }) => {
           <p className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase font-body">
             {product.sub_category}
           </p>
-          <h3 className="font-display text-sm md:text-base font-medium leading-snug italic">
+          <h3 className="font-display text-sm md:text-base font-semibold leading-snug">
             {product.name}
           </h3>
           <div className="flex items-center gap-2.5 pt-0.5">
