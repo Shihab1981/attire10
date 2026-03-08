@@ -271,7 +271,7 @@ const ProductDetail = () => {
                     {colors.map((c) => (
                       <button
                         key={c}
-                        onClick={() => setSelectedColor(selectedColor === c ? null : c)}
+                        onClick={() => { setSelectedColor(selectedColor === c ? null : c); setActiveImageIndex(0); }}
                         className={`relative w-11 h-11 rounded-full transition-all duration-200 ${
                           selectedColor === c
                             ? "ring-2 ring-accent ring-offset-2 ring-offset-background scale-110"
