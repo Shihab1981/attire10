@@ -7,14 +7,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { categoryImages, type Category } from "@/data/products";
 import { divisionNames, getDistricts, getUpazilas } from "@/data/bangladesh-locations";
 import { toast } from "sonner";
-import { CheckCircle, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 const getShippingCharge = (division: string) => division === "ঢাকা" ? 60 : 120;
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const navigate = useNavigate();
-  const [orderPlaced, setOrderPlaced] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   const [form, setForm] = useState({
@@ -90,8 +89,8 @@ const Checkout = () => {
       const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
       if (itemsError) throw itemsError;
 
-      setOrderPlaced(true);
       clearCart();
+      navigate(`/order-confirmation/${order.id}`);
     } catch {
       toast.error("অর্ডার প্লেস করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
     } finally {
@@ -99,24 +98,7 @@ const Checkout = () => {
     }
   };
 
-  if (items.length === 0 && !orderPlaced) { navigate("/cart"); return null; }
-
-  if (orderPlaced) {
-    return (
-      <div className="min-h-screen flex flex-col">
-        <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="text-center max-w-md px-4">
-            <CheckCircle size={64} className="mx-auto text-accent mb-6" />
-            <h1 className="font-display text-2xl md:text-3xl font-bold mb-3">অর্ডার সফলভাবে প্লেস হয়েছে!</h1>
-            <p className="text-muted-foreground mb-6">আপনার অর্ডার নিশ্চিত করতে আমরা {form.phone} নম্বরে যোগাযোগ করবো।</p>
-            <Link to="/" className="inline-block bg-foreground text-background px-8 py-3 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors">শপিং চালিয়ে যান</Link>
-          </div>
-        </main>
-        <Footer />
-      </div>
-    );
-  }
+  if (items.length === 0) { navigate("/cart"); return null; }
 
   const getImage = (item: typeof items[0]) => {
     const url = item.product.image_url;
