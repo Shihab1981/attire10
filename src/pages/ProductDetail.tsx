@@ -92,6 +92,12 @@ const ProductDetail = () => {
 
   const allImages = [mainImage, ...((product as any).images ?? [])];
   const colors: string[] = (product as any).colors ?? [];
+  const colorImages: Record<string, string> = (product as any).color_images ?? {};
+
+  // When a color with a specific image is selected, show it as first image
+  const displayImages = selectedColor && colorImages[selectedColor]
+    ? [colorImages[selectedColor], ...allImages]
+    : allImages;
 
   const handleAddToCart = () => {
     if (!selectedSize) { toast.error("Please select a size"); return; }
@@ -136,9 +142,9 @@ const ProductDetail = () => {
               className="flex gap-3"
             >
               {/* Thumbnails */}
-              {allImages.length > 1 && (
+              {displayImages.length > 1 && (
                 <div className="hidden md:flex flex-col gap-2.5 w-[72px] shrink-0">
-                  {allImages.map((img, i) => (
+                  {displayImages.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => { setActiveImageIndex(i); setImageLoaded(false); }}
@@ -158,7 +164,7 @@ const ProductDetail = () => {
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImageIndex}
-                    src={allImages[activeImageIndex]}
+                    src={displayImages[activeImageIndex] || mainImage}
                     alt={product.name}
                     initial={{ opacity: 0, scale: 1.05 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -192,9 +198,9 @@ const ProductDetail = () => {
                 <div className="absolute bottom-0 left-0 w-full h-[3px] bg-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
 
                 {/* Mobile dots */}
-                {allImages.length > 1 && (
+                {displayImages.length > 1 && (
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 md:hidden">
-                    {allImages.map((_, i) => (
+                    {displayImages.map((_, i) => (
                       <button
                         key={i}
                         onClick={() => { setActiveImageIndex(i); setImageLoaded(false); }}
@@ -265,7 +271,7 @@ const ProductDetail = () => {
                     {colors.map((c) => (
                       <button
                         key={c}
-                        onClick={() => setSelectedColor(selectedColor === c ? null : c)}
+                        onClick={() => { setSelectedColor(selectedColor === c ? null : c); setActiveImageIndex(0); }}
                         className={`relative w-11 h-11 rounded-full transition-all duration-200 ${
                           selectedColor === c
                             ? "ring-2 ring-accent ring-offset-2 ring-offset-background scale-110"

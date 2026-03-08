@@ -33,6 +33,7 @@ const emptyForm = {
   image_url: "/placeholder.svg", sizes: ["S", "M", "L", "XL", "XXL"] as string[],
   fabric: "", description: "", trending: false, new_arrival: false, in_stock: true,
   colors: [] as string[], images: [] as string[],
+  color_images: {} as Record<string, string>,
 };
 
 const AdminProducts = () => {
@@ -41,6 +42,7 @@ const AdminProducts = () => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [uploading, setUploading] = useState(false);
+  const [uploadingColorImage, setUploadingColorImage] = useState<string | null>(null);
   const [customColor, setCustomColor] = useState("#000000");
 
   const { data: products = [], isLoading } = useQuery({
@@ -105,17 +107,37 @@ const AdminProducts = () => {
   };
 
   const toggleColor = (color: string) => {
-    setForm((f) => ({
-      ...f,
-      colors: f.colors.includes(color)
-        ? f.colors.filter((c) => c !== color)
-        : [...f.colors, color],
-    }));
+    setForm((f) => {
+      const has = f.colors.includes(color);
+      const newColorImages = { ...f.color_images };
+      if (has) delete newColorImages[color];
+      return {
+        ...f,
+        colors: has ? f.colors.filter((c) => c !== color) : [...f.colors, color],
+        color_images: newColorImages,
+      };
+    });
   };
 
   const addCustomColor = () => {
     if (!form.colors.includes(customColor)) {
       setForm((f) => ({ ...f, colors: [...f.colors, customColor] }));
+    }
+  };
+
+  const handleColorImageUpload = async (color: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingColorImage(color);
+    try {
+      const url = await uploadImage(file);
+      setForm((f) => ({ ...f, color_images: { ...f.color_images, [color]: url } }));
+      toast.success("Color image uploaded");
+    } catch {
+      toast.error("Failed to upload color image");
+    } finally {
+      setUploadingColorImage(null);
+      e.target.value = "";
     }
   };
 
@@ -158,6 +180,7 @@ const AdminProducts = () => {
       sizes: p.sizes, fabric: p.fabric, description: p.description,
       trending: p.trending, new_arrival: p.new_arrival, in_stock: p.in_stock,
       colors: (p as any).colors ?? [], images: (p as any).images ?? [],
+      color_images: (p as any).color_images ?? {},
     });
     setDialogOpen(true);
   };
@@ -385,22 +408,52 @@ const AdminProducts = () => {
                     + Add custom color
                   </button>
                 </div>
-                {/* Selected colors display */}
+                {/* Selected colors with image upload */}
                 {form.colors.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mt-3">
+                  <div className="space-y-2 mt-3">
                     {form.colors.map((c) => {
                       const preset = presetColors.find((p) => p.value === c);
+                      const colorImg = form.color_images[c];
                       return (
-                        <span
-                          key={c}
-                          className="inline-flex items-center gap-1.5 bg-secondary px-2 py-1 text-[11px] font-body"
-                        >
-                          <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: c }} />
-                          {preset?.name || c}
-                          <button type="button" onClick={() => toggleColor(c)} className="hover:text-destructive">
-                            <X size={10} />
+                        <div key={c} className="flex items-center gap-3 bg-secondary/50 border border-border p-2.5">
+                          <span className="w-6 h-6 rounded-full border border-border shrink-0" style={{ backgroundColor: c }} />
+                          <span className="text-xs font-body font-medium min-w-[60px]">{preset?.name || c}</span>
+                          
+                          {/* Color image */}
+                          {colorImg ? (
+                            <div className="relative w-10 h-10 bg-secondary overflow-hidden shrink-0">
+                              <img src={colorImg} alt="" className="w-full h-full object-cover" />
+                              <button
+                                type="button"
+                                onClick={() => setForm((f) => {
+                                  const ci = { ...f.color_images };
+                                  delete ci[c];
+                                  return { ...f, color_images: ci };
+                                })}
+                                className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5"
+                              >
+                                <X size={8} />
+                              </button>
+                            </div>
+                          ) : (
+                            <label className="shrink-0 cursor-pointer">
+                              <span className="text-[10px] text-accent hover:underline font-body">
+                                {uploadingColorImage === c ? "Uploading..." : "+ Image"}
+                              </span>
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleColorImageUpload(c, e)}
+                                className="hidden"
+                                disabled={uploadingColorImage === c}
+                              />
+                            </label>
+                          )}
+
+                          <button type="button" onClick={() => toggleColor(c)} className="ml-auto hover:text-destructive">
+                            <X size={12} />
                           </button>
-                        </span>
+                        </div>
                       );
                     })}
                   </div>
