@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Product, Size } from "@/data/products";
+import type { Size } from "@/data/products";
+import type { Tables } from "@/integrations/supabase/types";
+
+type Product = Tables<"products">;
 
 export interface CartItem {
   product: Product;
