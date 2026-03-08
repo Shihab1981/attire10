@@ -180,6 +180,7 @@ const AdminProducts = () => {
       sizes: p.sizes, fabric: p.fabric, description: p.description,
       trending: p.trending, new_arrival: p.new_arrival, in_stock: p.in_stock,
       colors: (p as any).colors ?? [], images: (p as any).images ?? [],
+      color_images: (p as any).color_images ?? {},
     });
     setDialogOpen(true);
   };
