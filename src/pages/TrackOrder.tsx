@@ -18,6 +18,7 @@ const statusSteps = [
 ];
 
 const TrackOrder = () => {
+  const { downloadCard } = useOrderCardDownload();
   const [searchParams] = useSearchParams();
   const initialId = searchParams.get("id") || "";
   const [query, setQuery] = useState(initialId);
