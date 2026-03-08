@@ -131,7 +131,7 @@ const AnnouncementBar = () => {
         .from("site_settings")
         .select("value")
         .eq("key", "announcement_text")
-        .single();
+        .maybeSingle();
       if (error || !data) return defaultAnnouncement;
       return data.value || defaultAnnouncement;
     },

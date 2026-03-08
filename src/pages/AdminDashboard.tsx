@@ -148,7 +148,7 @@ const AdminDashboard = () => {
         .from("site_settings")
         .select("value")
         .eq("key", "announcement_text")
-        .single();
+        .maybeSingle();
       if (data?.value && !announcementLoaded) {
         setAnnouncementText(data.value);
         setAnnouncementLoaded(true);
@@ -188,7 +188,7 @@ const AdminDashboard = () => {
         .from("site_settings")
         .select("value")
         .eq("key", "category_images")
-        .single();
+        .maybeSingle();
       const parsed = data?.value ? JSON.parse(data.value) : {};
       if (!categoryImagesLoaded) {
         setCategoryImages(parsed);
@@ -205,7 +205,7 @@ const AdminDashboard = () => {
         .from("site_settings")
         .select("value")
         .eq("key", "category_customizations")
-        .single();
+        .maybeSingle();
       const parsed = data?.value ? JSON.parse(data.value) : {};
       if (!categoryCustomizationsLoaded) {
         setCategoryCustomizations(parsed);
@@ -250,7 +250,7 @@ const AdminDashboard = () => {
         .from("site_settings")
         .select("key")
         .eq("key", "category_customizations")
-        .single();
+        .maybeSingle();
       if (existing) {
         const { error } = await supabase
           .from("site_settings")
@@ -405,7 +405,7 @@ const AdminDashboard = () => {
                 if (allCategories.some(c => c.slug === slug)) { toast.error("Category already exists"); return; }
                 const newCat: CategoryItem = { slug, name: newCatName.trim(), image: "/placeholder.svg", description: newCatDesc.trim() };
                 const updated = [...extraCategories, newCat];
-                const { data: existing } = await supabase.from("site_settings").select("key").eq("key", "extra_categories").single();
+                const { data: existing } = await supabase.from("site_settings").select("key").eq("key", "extra_categories").maybeSingle();
                 if (existing) {
                   await supabase.from("site_settings").update({ value: JSON.stringify(updated), updated_at: new Date().toISOString() }).eq("key", "extra_categories");
                 } else {
