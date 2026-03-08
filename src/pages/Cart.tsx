@@ -81,7 +81,7 @@ const Cart = () => {
                 <AnimatePresence mode="popLayout">
                   {items.map((item, index) => (
                     <motion.div
-                      key={`${item.product.id}-${item.size}`}
+                      key={`${item.product.id}-${item.size}-${item.color || ""}`}
                       layout
                       initial={{ opacity: 0, y: 15 }}
                       animate={{ opacity: 1, y: 0 }}
