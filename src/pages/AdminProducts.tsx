@@ -7,11 +7,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Upload, X, ImagePlus } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
+import { useCategories } from "@/hooks/useCategories";
 
 type Product = Tables<"products">;
 
-// Default category options - will be extended dynamically
-const categoryOptions = ["t-shirts", "panjabi", "polo-shirts", "pants", "trousers"];
 const sizeOptions = ["S", "M", "L", "XL", "XXL"];
 
 const presetColors = [
