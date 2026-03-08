@@ -137,11 +137,13 @@ export type Database = {
       products: {
         Row: {
           category: string
+          colors: string[]
           created_at: string
           description: string
           fabric: string
           id: string
           image_url: string
+          images: string[]
           in_stock: boolean
           name: string
           new_arrival: boolean
@@ -154,11 +156,13 @@ export type Database = {
         }
         Insert: {
           category: string
+          colors?: string[]
           created_at?: string
           description?: string
           fabric?: string
           id?: string
           image_url?: string
+          images?: string[]
           in_stock?: boolean
           name: string
           new_arrival?: boolean
@@ -171,11 +175,13 @@ export type Database = {
         }
         Update: {
           category?: string
+          colors?: string[]
           created_at?: string
           description?: string
           fabric?: string
           id?: string
           image_url?: string
+          images?: string[]
           in_stock?: boolean
           name?: string
           new_arrival?: boolean
