@@ -173,6 +173,10 @@ const AdminDashboard = () => {
   const [categoryImagesLoaded, setCategoryImagesLoaded] = useState(false);
   const categoryFileRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
+  // Category customizations (name & description)
+  const [categoryCustomizations, setCategoryCustomizations] = useState<Record<string, { name?: string; description?: string }>>({});
+  const [categoryCustomizationsLoaded, setCategoryCustomizationsLoaded] = useState(false);
+
   useQuery({
     queryKey: ["admin-category-images"],
     queryFn: async () => {
@@ -185,6 +189,23 @@ const AdminDashboard = () => {
       if (!categoryImagesLoaded) {
         setCategoryImages(parsed);
         setCategoryImagesLoaded(true);
+      }
+      return parsed;
+    },
+  });
+
+  useQuery({
+    queryKey: ["admin-category-customizations"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "category_customizations")
+        .single();
+      const parsed = data?.value ? JSON.parse(data.value) : {};
+      if (!categoryCustomizationsLoaded) {
+        setCategoryCustomizations(parsed);
+        setCategoryCustomizationsLoaded(true);
       }
       return parsed;
     },
@@ -217,6 +238,34 @@ const AdminDashboard = () => {
     }
   };
 
+  const saveCategoryCustomizations = useMutation({
+    mutationFn: async (customizations: Record<string, { name?: string; description?: string }>) => {
+      const value = JSON.stringify(customizations);
+      // Try update first, then upsert
+      const { data: existing } = await supabase
+        .from("site_settings")
+        .select("key")
+        .eq("key", "category_customizations")
+        .single();
+      if (existing) {
+        const { error } = await supabase
+          .from("site_settings")
+          .update({ value, updated_at: new Date().toISOString() })
+          .eq("key", "category_customizations");
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("site_settings")
+          .insert({ key: "category_customizations", value });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["category-customizations"] });
+      toast.success("Category details updated!");
+    },
+    onError: () => toast.error("Failed to save"),
+  });
 
   const stats = [
     { label: "Total Revenue", value: `৳${(revenue ?? 0).toLocaleString()}`, icon: DollarSign, accent: true },
