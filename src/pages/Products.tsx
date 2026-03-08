@@ -18,6 +18,11 @@ const Products = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<Category | null>(categoryParam);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
+
+  // Sync category state with URL params when navigating via header links
+  React.useEffect(() => {
+    setSelectedCategory(categoryParam);
+  }, [categoryParam]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [filtersOpen, setFiltersOpen] = useState(false);
 
