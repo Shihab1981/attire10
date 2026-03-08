@@ -18,6 +18,10 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const AdminDashboard = () => {
+  const queryClient = useQueryClient();
+  const [announcementText, setAnnouncementText] = useState("");
+  const [announcementLoaded, setAnnouncementLoaded] = useState(false);
+
   const { data: products } = useQuery({
     queryKey: ["admin-products-count"],
     queryFn: async () => {
