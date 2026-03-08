@@ -50,7 +50,8 @@ const Checkout = () => {
   };
 
   const removeCoupon = () => { setAppliedCoupon(null); setDiscount(0); setCouponCode(""); };
-  const finalTotal = Math.max(0, subtotal + SHIPPING_CHARGE - discount);
+  const shippingCharge = getShippingCharge(form.division);
+  const finalTotal = Math.max(0, subtotal + shippingCharge - discount);
 
   const fullAddress = [form.upazila, form.district, form.division, form.address].filter(Boolean).join(", ");
 
