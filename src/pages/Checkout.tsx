@@ -52,7 +52,7 @@ const Checkout = () => {
   };
 
   const removeCoupon = () => { setAppliedCoupon(null); setDiscount(0); setCouponCode(""); };
-  const shippingCharge = getShippingCharge(form.division);
+  const shippingCharge = getShippingCharge(form.division, subtotal);
   const finalTotal = Math.max(0, subtotal + shippingCharge - discount);
 
   const fullAddress = [form.upazila, form.district, form.division, form.address].filter(Boolean).join(", ");
