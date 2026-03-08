@@ -61,7 +61,7 @@ const ProductDetail = () => {
         <Header />
         <main className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <h1 className="font-display text-3xl font-medium italic mb-3">Product Not Found</h1>
+            <h1 className="font-display text-3xl font-bold mb-3">Product Not Found</h1>
             <Link
               to="/products"
               className="text-accent text-[11px] font-body font-medium tracking-[0.1em] uppercase hover:underline underline-offset-4"
