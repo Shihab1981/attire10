@@ -135,8 +135,39 @@ const AdminDashboard = () => {
       return count ?? 0;
     },
   });
+  // Announcement text
+  useQuery({
+    queryKey: ["admin-announcement"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "announcement_text")
+        .single();
+      if (data?.value && !announcementLoaded) {
+        setAnnouncementText(data.value);
+        setAnnouncementLoaded(true);
+      }
+      return data?.value || "";
+    },
+  });
 
-  const stats = [
+  const saveAnnouncement = useMutation({
+    mutationFn: async (text: string) => {
+      const { error } = await supabase
+        .from("site_settings")
+        .update({ value: text, updated_at: new Date().toISOString() })
+        .eq("key", "announcement_text");
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["announcement-text"] });
+      toast.success("Announcement updated!");
+    },
+    onError: () => toast.error("Failed to update"),
+  });
+
+
     { label: "Total Revenue", value: `৳${(revenue ?? 0).toLocaleString()}`, icon: DollarSign, accent: true },
     { label: "Total Orders", value: totalOrders ?? 0, icon: ShoppingCart, accent: false },
     { label: "Pending Orders", value: pendingOrders ?? 0, icon: Clock, accent: false },
