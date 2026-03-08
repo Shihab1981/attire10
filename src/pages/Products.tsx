@@ -426,7 +426,7 @@ const Products = () => {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: index * 0.03, duration: 0.3 }}
                     >
-                      <ProductCard product={p} />
+                      <ProductCard product={p} flashSale={flashSalesMap?.get(p.id)} />
                     </motion.div>
                   ))}
                 </motion.div>
