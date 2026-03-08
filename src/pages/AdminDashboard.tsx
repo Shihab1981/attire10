@@ -250,7 +250,7 @@ const AdminDashboard = () => {
         .from("site_settings")
         .select("key")
         .eq("key", "category_customizations")
-        .single();
+        .maybeSingle();
       if (existing) {
         const { error } = await supabase
           .from("site_settings")
