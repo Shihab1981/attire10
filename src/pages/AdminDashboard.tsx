@@ -308,6 +308,52 @@ const AdminDashboard = () => {
           </div>
         </motion.div>
 
+        {/* Category Images Editor */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.38 }}
+          className="bg-card border border-border p-5 md:p-6 mb-8"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <ImageIcon size={16} className="text-accent" />
+            <h2 className="font-display font-bold text-base">Category Images</h2>
+            <span className="text-[10px] text-muted-foreground font-body ml-1">Shop by Category সেকশনের ছবি পরিবর্তন করুন</span>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+            {categories.map((cat) => (
+              <div key={cat.slug} className="group relative">
+                <div className="aspect-[3/4] overflow-hidden border border-border bg-secondary/30">
+                  <img
+                    src={categoryImages[cat.slug] || cat.image}
+                    alt={cat.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  ref={(el) => { categoryFileRefs.current[cat.slug] = el; }}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleCategoryImageUpload(cat.slug, file);
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  onClick={() => categoryFileRefs.current[cat.slug]?.click()}
+                  className="absolute inset-0 flex flex-col items-center justify-center bg-foreground/60 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                >
+                  <Upload size={18} className="text-primary-foreground mb-1" />
+                  <span className="text-[10px] text-primary-foreground font-body font-medium">Change</span>
+                </button>
+                <p className="text-xs font-display font-semibold mt-1.5 text-center">{cat.name}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
         <div className="grid lg:grid-cols-12 gap-6 mb-8">
           {/* Revenue Chart */}
           <motion.div
