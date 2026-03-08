@@ -198,9 +198,9 @@ const ProductDetail = () => {
                 <div className="absolute bottom-0 left-0 w-full h-[3px] bg-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
 
                 {/* Mobile dots */}
-                {allImages.length > 1 && (
+                {displayImages.length > 1 && (
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 md:hidden">
-                    {allImages.map((_, i) => (
+                    {displayImages.map((_, i) => (
                       <button
                         key={i}
                         onClick={() => { setActiveImageIndex(i); setImageLoaded(false); }}
