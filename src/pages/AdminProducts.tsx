@@ -5,7 +5,7 @@ import AdminAuthGate from "@/components/AdminAuthGate";
 import AdminLayout from "@/components/AdminLayout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { toast } from "sonner";
-import { Plus, Pencil, Trash2 } from "lucide-react";
+import { Plus, Pencil, Trash2, Upload, X, ImagePlus } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
@@ -13,10 +13,26 @@ type Product = Tables<"products">;
 const categoryOptions = ["t-shirts", "panjabi", "polo-shirts", "pants", "trousers"];
 const sizeOptions = ["S", "M", "L", "XL", "XXL"];
 
+const presetColors = [
+  { name: "Black", value: "#000000" },
+  { name: "White", value: "#FFFFFF" },
+  { name: "Navy", value: "#1B2A4A" },
+  { name: "Grey", value: "#6B7280" },
+  { name: "Olive", value: "#556B2F" },
+  { name: "Maroon", value: "#800000" },
+  { name: "Beige", value: "#D4C5A9" },
+  { name: "Brown", value: "#8B4513" },
+  { name: "Sky Blue", value: "#87CEEB" },
+  { name: "Red", value: "#DC2626" },
+  { name: "Teal", value: "#0D9488" },
+  { name: "Cream", value: "#FFFDD0" },
+];
+
 const emptyForm = {
   name: "", category: "t-shirts", sub_category: "", price: 0, original_price: null as number | null,
   image_url: "/placeholder.svg", sizes: ["S", "M", "L", "XL", "XXL"] as string[],
   fabric: "", description: "", trending: false, new_arrival: false, in_stock: true,
+  colors: [] as string[], images: [] as string[],
 };
 
 const AdminProducts = () => {
@@ -24,6 +40,8 @@ const AdminProducts = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
+  const [uploading, setUploading] = useState(false);
+  const [customColor, setCustomColor] = useState("#000000");
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["admin-products"],
@@ -33,6 +51,73 @@ const AdminProducts = () => {
       return data;
     },
   });
+
+  const uploadImage = async (file: File): Promise<string> => {
+    const ext = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+    const { error } = await supabase.storage.from("product-images").upload(fileName, file);
+    if (error) throw error;
+    const { data } = supabase.storage.from("product-images").getPublicUrl(fileName);
+    return data.publicUrl;
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files?.length) return;
+    setUploading(true);
+    try {
+      const urls: string[] = [];
+      for (const file of Array.from(files)) {
+        const url = await uploadImage(file);
+        urls.push(url);
+      }
+      // First image becomes main, rest go to additional
+      if (!form.image_url || form.image_url === "/placeholder.svg") {
+        setForm((f) => ({
+          ...f,
+          image_url: urls[0],
+          images: [...f.images, ...urls.slice(1)],
+        }));
+      } else {
+        setForm((f) => ({ ...f, images: [...f.images, ...urls] }));
+      }
+      toast.success(`${urls.length} image${urls.length > 1 ? "s" : ""} uploaded`);
+    } catch {
+      toast.error("Failed to upload image");
+    } finally {
+      setUploading(false);
+      e.target.value = "";
+    }
+  };
+
+  const removeImage = (url: string, isMain: boolean) => {
+    if (isMain) {
+      // Promote first additional image to main, or reset
+      const nextMain = form.images[0] || "/placeholder.svg";
+      setForm((f) => ({
+        ...f,
+        image_url: nextMain,
+        images: f.images.slice(1),
+      }));
+    } else {
+      setForm((f) => ({ ...f, images: f.images.filter((u) => u !== url) }));
+    }
+  };
+
+  const toggleColor = (color: string) => {
+    setForm((f) => ({
+      ...f,
+      colors: f.colors.includes(color)
+        ? f.colors.filter((c) => c !== color)
+        : [...f.colors, color],
+    }));
+  };
+
+  const addCustomColor = () => {
+    if (!form.colors.includes(customColor)) {
+      setForm((f) => ({ ...f, colors: [...f.colors, customColor] }));
+    }
+  };
 
   const saveMutation = useMutation({
     mutationFn: async (data: typeof form) => {
@@ -72,6 +157,7 @@ const AdminProducts = () => {
       price: p.price, original_price: p.original_price, image_url: p.image_url,
       sizes: p.sizes, fabric: p.fabric, description: p.description,
       trending: p.trending, new_arrival: p.new_arrival, in_stock: p.in_stock,
+      colors: (p as any).colors ?? [], images: (p as any).images ?? [],
     });
     setDialogOpen(true);
   };
@@ -88,6 +174,11 @@ const AdminProducts = () => {
       sizes: f.sizes.includes(s) ? f.sizes.filter((x) => x !== s) : [...f.sizes, s],
     }));
   };
+
+  const allImages = [
+    ...(form.image_url && form.image_url !== "/placeholder.svg" ? [form.image_url] : []),
+    ...form.images,
+  ];
 
   return (
     <AdminAuthGate>
@@ -106,9 +197,11 @@ const AdminProducts = () => {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-left">
+                  <th className="p-3 font-display font-semibold">Image</th>
                   <th className="p-3 font-display font-semibold">Name</th>
                   <th className="p-3 font-display font-semibold">Category</th>
                   <th className="p-3 font-display font-semibold">Price</th>
+                  <th className="p-3 font-display font-semibold">Colors</th>
                   <th className="p-3 font-display font-semibold">Stock</th>
                   <th className="p-3 font-display font-semibold">Actions</th>
                 </tr>
@@ -116,12 +209,27 @@ const AdminProducts = () => {
               <tbody>
                 {products.map((p) => (
                   <tr key={p.id} className="border-b border-border/50 hover:bg-secondary/30">
+                    <td className="p-3">
+                      <div className="w-10 h-10 bg-secondary overflow-hidden">
+                        <img src={p.image_url || "/placeholder.svg"} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    </td>
                     <td className="p-3 font-medium">{p.name}</td>
                     <td className="p-3 text-muted-foreground capitalize">{p.category.replace("-", " ")}</td>
                     <td className="p-3">৳{p.price.toLocaleString()}</td>
                     <td className="p-3">
+                      <div className="flex gap-1">
+                        {((p as any).colors ?? []).slice(0, 4).map((c: string) => (
+                          <div key={c} className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: c }} />
+                        ))}
+                        {((p as any).colors ?? []).length > 4 && (
+                          <span className="text-[10px] text-muted-foreground">+{(p as any).colors.length - 4}</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="p-3">
                       <span className={`text-xs font-medium px-2 py-0.5 ${p.in_stock ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                        {p.in_stock ? "In Stock" : "Out of Stock"}
+                        {p.in_stock ? "In Stock" : "Out"}
                       </span>
                     </td>
                     <td className="p-3">
@@ -138,11 +246,11 @@ const AdminProducts = () => {
         )}
 
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-          <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle className="font-display">{editingId ? "Edit Product" : "Add Product"}</DialogTitle>
             </DialogHeader>
-            <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-4">
+            <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium mb-1">Name *</label>
                 <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm" required maxLength={200} />
@@ -169,10 +277,136 @@ const AdminProducts = () => {
                   <input type="number" value={form.original_price ?? ""} onChange={(e) => setForm({ ...form, original_price: e.target.value ? +e.target.value : null })} className="w-full border border-border px-3 py-2 bg-background text-sm" min={0} />
                 </div>
               </div>
+
+              {/* Image Upload Section */}
               <div>
-                <label className="block text-sm font-medium mb-1">Image URL</label>
-                <input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm" maxLength={500} />
+                <label className="block text-sm font-medium mb-2">Product Images</label>
+                <div className="grid grid-cols-4 gap-3">
+                  {/* Main image */}
+                  {form.image_url && form.image_url !== "/placeholder.svg" && (
+                    <div className="relative aspect-square bg-secondary overflow-hidden group">
+                      <img src={form.image_url} alt="Main" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => removeImage(form.image_url, true)}
+                          className="opacity-0 group-hover:opacity-100 bg-destructive text-destructive-foreground p-1 rounded-full transition-opacity"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                      <span className="absolute bottom-1 left-1 text-[8px] bg-foreground/80 text-background px-1.5 py-0.5 font-body">
+                        MAIN
+                      </span>
+                    </div>
+                  )}
+                  {/* Additional images */}
+                  {form.images.map((url) => (
+                    <div key={url} className="relative aspect-square bg-secondary overflow-hidden group">
+                      <img src={url} alt="" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/30 transition-colors flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={() => removeImage(url, false)}
+                          className="opacity-0 group-hover:opacity-100 bg-destructive text-destructive-foreground p-1 rounded-full transition-opacity"
+                        >
+                          <X size={12} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {/* Upload button */}
+                  <label className="aspect-square border-2 border-dashed border-border hover:border-foreground/40 transition-colors flex flex-col items-center justify-center cursor-pointer">
+                    {uploading ? (
+                      <span className="text-xs text-muted-foreground">Uploading...</span>
+                    ) : (
+                      <>
+                        <ImagePlus size={20} className="text-muted-foreground mb-1" />
+                        <span className="text-[10px] text-muted-foreground">Add Images</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={uploading}
+                    />
+                  </label>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-2">
+                  First image is the main product photo. Upload multiple images for gallery view.
+                </p>
               </div>
+
+              {/* Manual URL fallback */}
+              <div>
+                <label className="block text-sm font-medium mb-1">Or paste Image URL</label>
+                <input value={form.image_url} onChange={(e) => setForm({ ...form, image_url: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm" maxLength={500} placeholder="https://..." />
+              </div>
+
+              {/* Colors */}
+              <div>
+                <label className="block text-sm font-medium mb-2">Colors</label>
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {presetColors.map((c) => (
+                    <button
+                      key={c.value}
+                      type="button"
+                      onClick={() => toggleColor(c.value)}
+                      className={`relative w-8 h-8 rounded-full border-2 transition-all ${
+                        form.colors.includes(c.value) ? "border-foreground scale-110" : "border-border hover:border-muted-foreground"
+                      }`}
+                      style={{ backgroundColor: c.value }}
+                      title={c.name}
+                    >
+                      {form.colors.includes(c.value) && (
+                        <span className="absolute inset-0 flex items-center justify-center">
+                          <span className={`text-[10px] font-bold ${c.value === "#FFFFFF" || c.value === "#FFFDD0" || c.value === "#D4C5A9" || c.value === "#87CEEB" ? "text-foreground" : "text-background"}`}>✓</span>
+                        </span>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                {/* Custom color */}
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={customColor}
+                    onChange={(e) => setCustomColor(e.target.value)}
+                    className="w-8 h-8 border border-border cursor-pointer"
+                  />
+                  <button
+                    type="button"
+                    onClick={addCustomColor}
+                    className="text-xs text-muted-foreground hover:text-foreground transition-colors font-body"
+                  >
+                    + Add custom color
+                  </button>
+                </div>
+                {/* Selected colors display */}
+                {form.colors.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-3">
+                    {form.colors.map((c) => {
+                      const preset = presetColors.find((p) => p.value === c);
+                      return (
+                        <span
+                          key={c}
+                          className="inline-flex items-center gap-1.5 bg-secondary px-2 py-1 text-[11px] font-body"
+                        >
+                          <span className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: c }} />
+                          {preset?.name || c}
+                          <button type="button" onClick={() => toggleColor(c)} className="hover:text-destructive">
+                            <X size={10} />
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
               <div>
                 <label className="block text-sm font-medium mb-1">Sizes</label>
                 <div className="flex gap-2">
