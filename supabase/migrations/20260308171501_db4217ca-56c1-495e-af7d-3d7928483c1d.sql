@@ -1,0 +1,1 @@
+ALTER TABLE public.products ADD COLUMN color_images jsonb NOT NULL DEFAULT '{}'::jsonb;
