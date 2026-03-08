@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import ProductCard from "./ProductCard";
+import { motion } from "framer-motion";
 
 const TrendingSection = () => {
   const { data: trending = [] } = useQuery({
@@ -20,10 +21,26 @@ const TrendingSection = () => {
   if (trending.length === 0) return null;
 
   return (
-    <section className="py-16 md:py-24 bg-secondary/50">
+    <section className="py-20 md:py-32 bg-secondary/40">
       <div className="container">
-        <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-4">Trending Now</h2>
-        <p className="text-muted-foreground text-center mb-12 max-w-md mx-auto">The most sought-after pieces this season</p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="flex flex-col md:flex-row md:items-end md:justify-between mb-14 md:mb-20"
+        >
+          <div>
+            <p className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-muted-foreground font-body mb-3">
+              Most Wanted
+            </p>
+            <h2 className="font-display text-3xl md:text-5xl font-medium italic">
+              Trending Now
+            </h2>
+          </div>
+          <p className="text-muted-foreground text-sm font-body font-light mt-4 md:mt-0 max-w-sm">
+            The most sought-after pieces this season, handpicked for the discerning gentleman.
+          </p>
+        </motion.div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
           {trending.map((p) => <ProductCard key={p.id} product={p} />)}
         </div>

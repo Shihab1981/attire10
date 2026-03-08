@@ -17,71 +17,90 @@ const Header = () => {
   ];
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
-      <div className="container flex items-center justify-between h-16 md:h-20">
-        <button
-          className="md:hidden p-2 -ml-2"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Toggle menu"
-        >
-          {mobileOpen ? <X size={22} /> : <Menu size={22} />}
-        </button>
-
-        <Link to="/" className="font-display text-xl md:text-2xl font-bold tracking-tight">
-          ATTIRE
-        </Link>
-
-        <nav className="hidden md:flex items-center gap-8">
-          {navLinks.map((l) => (
-            <Link
-              key={l.to}
-              to={l.to}
-              className="text-sm font-medium tracking-wide text-muted-foreground hover:text-foreground transition-colors"
-            >
-              {l.label}
-            </Link>
+    <>
+      {/* Top announcement bar */}
+      <div className="bg-foreground text-primary-foreground overflow-hidden">
+        <div className="animate-marquee flex whitespace-nowrap py-2">
+          {[...Array(4)].map((_, i) => (
+            <span key={i} className="text-[10px] tracking-[0.25em] uppercase mx-12 font-body">
+              ✦ Free Shipping on Orders Over ৳2,000 ✦ New Arrivals Every Week ✦ Premium Quality Fabrics ✦ 100% Authentic Products
+            </span>
           ))}
-        </nav>
-
-        <div className="flex items-center gap-3">
-          <Link to="/products" className="p-2 hover:text-accent transition-colors" aria-label="Search">
-            <Search size={20} />
-          </Link>
-          <Link to="/cart" className="p-2 relative hover:text-accent transition-colors" aria-label="Cart">
-            <ShoppingBag size={20} />
-            {totalItems > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 bg-accent text-accent-foreground text-[10px] font-bold w-4.5 h-4.5 flex items-center justify-center rounded-full min-w-[18px] min-h-[18px]">
-                {totalItems}
-              </span>
-            )}
-          </Link>
         </div>
       </div>
 
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.nav
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="md:hidden overflow-hidden border-t border-border"
+      <header className="sticky top-0 z-50 bg-background/98 backdrop-blur-xl border-b border-border/60">
+        <div className="container flex items-center justify-between h-16 md:h-20">
+          <button
+            className="md:hidden p-2 -ml-2"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Toggle menu"
           >
-            <div className="container py-4 flex flex-col gap-3">
-              {navLinks.map((l) => (
-                <Link
-                  key={l.to}
-                  to={l.to}
-                  onClick={() => setMobileOpen(false)}
-                  className="text-sm font-medium tracking-wide py-2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {l.label}
-                </Link>
-              ))}
-            </div>
-          </motion.nav>
-        )}
-      </AnimatePresence>
-    </header>
+            {mobileOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
+          </button>
+
+          <Link to="/" className="font-display text-2xl md:text-3xl font-semibold tracking-wide italic">
+            Attire
+          </Link>
+
+          <nav className="hidden md:flex items-center gap-10">
+            {navLinks.map((l) => (
+              <Link
+                key={l.to}
+                to={l.to}
+                className="link-underline text-[11px] font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {l.label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="flex items-center gap-4">
+            <Link to="/products" className="p-2 hover:text-accent transition-colors" aria-label="Search">
+              <Search size={18} strokeWidth={1.5} />
+            </Link>
+            <Link to="/cart" className="p-2 relative hover:text-accent transition-colors" aria-label="Cart">
+              <ShoppingBag size={18} strokeWidth={1.5} />
+              {totalItems > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 bg-accent text-accent-foreground text-[9px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full">
+                  {totalItems}
+                </span>
+              )}
+            </Link>
+          </div>
+        </div>
+
+        <AnimatePresence>
+          {mobileOpen && (
+            <motion.nav
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="md:hidden overflow-hidden border-t border-border/50"
+            >
+              <div className="container py-6 flex flex-col gap-1">
+                {navLinks.map((l, i) => (
+                  <motion.div
+                    key={l.to}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <Link
+                      to={l.to}
+                      onClick={() => setMobileOpen(false)}
+                      className="block text-[11px] font-medium tracking-[0.2em] uppercase py-3 text-muted-foreground hover:text-foreground transition-colors border-b border-border/30"
+                    >
+                      {l.label}
+                    </Link>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.nav>
+          )}
+        </AnimatePresence>
+      </header>
+    </>
   );
 };
 
