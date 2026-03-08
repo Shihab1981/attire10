@@ -38,6 +38,7 @@ const emptyForm = {
 
 const AdminProducts = () => {
   const queryClient = useQueryClient();
+  const { categorySlugs } = useCategories();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
