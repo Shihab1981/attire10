@@ -23,6 +23,9 @@ const AdminDashboard = () => {
   const queryClient = useQueryClient();
   const [announcementText, setAnnouncementText] = useState("");
   const [announcementLoaded, setAnnouncementLoaded] = useState(false);
+  const { categories: allCategories, extraCategories } = useCategories();
+  const [newCatName, setNewCatName] = useState("");
+  const [newCatDesc, setNewCatDesc] = useState("");
 
   const { data: products } = useQuery({
     queryKey: ["admin-products-count"],
