@@ -338,7 +338,14 @@ const Checkout = () => {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-display font-semibold line-clamp-1">{item.product.name}</p>
-                          <p className="text-[10px] text-muted-foreground font-body mt-0.5 tracking-wider uppercase">Size: {item.size}</p>
+                          <p className="text-[10px] text-muted-foreground font-body mt-0.5 tracking-wider uppercase">
+                            Size: {item.size}
+                            {item.color && (
+                              <span className="inline-flex items-center gap-1 ml-2">
+                                <span className="w-2 h-2 rounded-full border border-border inline-block" style={{ backgroundColor: item.color }} />
+                              </span>
+                            )}
+                          </p>
                           <p className="text-sm font-body font-bold mt-1">৳{(item.product.price * item.quantity).toLocaleString()}</p>
                         </div>
                       </div>
