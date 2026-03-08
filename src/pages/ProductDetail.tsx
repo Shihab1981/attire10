@@ -151,7 +151,7 @@ const ProductDetail = () => {
                 {product.category.replace("-", " ")} — {product.sub_category}
               </p>
 
-              <h1 className="font-display text-3xl md:text-4xl font-medium italic leading-tight mb-6">
+              <h1 className="font-display text-3xl md:text-4xl font-bold leading-tight mb-6">
                 {product.name}
               </h1>
 
