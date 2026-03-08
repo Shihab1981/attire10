@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ShoppingBag, Search, Menu, X } from "lucide-react";
+import { ShoppingBag, Search, Menu, X, MapPin } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -55,7 +55,10 @@ const Header = () => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 md:gap-4">
+            <Link to="/track-order" className="p-2 hover:text-accent transition-colors" aria-label="Track Order">
+              <MapPin size={18} strokeWidth={1.5} />
+            </Link>
             <Link to="/products" className="p-2 hover:text-accent transition-colors" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
             </Link>
