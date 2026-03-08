@@ -147,13 +147,20 @@ const Cart = () => {
                   ))}
                 </AnimatePresence>
 
-                <div className="mt-6">
+                <div className="mt-6 flex items-center gap-6">
                   <Link
                     to="/products"
                     className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors font-body group"
                   >
                     <ArrowRight size={14} className="rotate-180 transition-transform group-hover:-translate-x-1" />
                     Continue Shopping
+                  </Link>
+                  <Link
+                    to="/track-order"
+                    className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors font-body group"
+                  >
+                    <Package size={14} />
+                    Track Order
                   </Link>
                 </div>
               </div>
