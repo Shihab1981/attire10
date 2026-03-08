@@ -92,6 +92,12 @@ const ProductDetail = () => {
 
   const allImages = [mainImage, ...((product as any).images ?? [])];
   const colors: string[] = (product as any).colors ?? [];
+  const colorImages: Record<string, string> = (product as any).color_images ?? {};
+
+  // When a color with a specific image is selected, show it as first image
+  const displayImages = selectedColor && colorImages[selectedColor]
+    ? [colorImages[selectedColor], ...allImages]
+    : allImages;
 
   const handleAddToCart = () => {
     if (!selectedSize) { toast.error("Please select a size"); return; }
