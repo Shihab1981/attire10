@@ -23,10 +23,11 @@ const sortOptions: { value: SortOption; label: string }[] = [
 
 const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const categoryParam = searchParams.get("category") as Category | null;
+  const categoryParam = searchParams.get("category");
   const filterParam = searchParams.get("filter");
+  const { categories } = useCategories();
 
-  const [selectedCategory, setSelectedCategory] = useState<Category | null>(categoryParam);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [gridCols, setGridCols] = useState<2 | 3>(3);

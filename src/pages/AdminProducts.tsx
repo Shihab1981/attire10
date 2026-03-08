@@ -10,6 +10,7 @@ import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
 
+// Default category options - will be extended dynamically
 const categoryOptions = ["t-shirts", "panjabi", "polo-shirts", "pants", "trousers"];
 const sizeOptions = ["S", "M", "L", "XL", "XXL"];
 
