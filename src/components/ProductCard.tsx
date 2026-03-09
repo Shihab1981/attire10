@@ -30,6 +30,8 @@ const MiniCountdown = ({ endsAt }: { endsAt: string }) => {
 };
 
 const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: FlashSaleData }) => {
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
+  const isFav = useFavoritesStore((s) => s.isFavorite)(product.id);
   const effectivePrice = flashSale ? flashSale.sale_price : product.price;
   const originalPrice = flashSale ? product.price : product.original_price;
   const hasDiscount = originalPrice && originalPrice > effectivePrice;
