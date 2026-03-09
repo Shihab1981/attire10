@@ -251,8 +251,19 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Wishlist */}
-                <button className="absolute top-4 right-4 w-10 h-10 bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors group/heart">
-                  <Heart size={18} strokeWidth={1.5} className="text-muted-foreground group-hover/heart:text-accent transition-colors" />
+                <button
+                  onClick={() => product && toggleFavorite(product)}
+                  className="absolute top-4 right-4 w-10 h-10 bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors group/heart"
+                >
+                  <Heart
+                    size={18}
+                    strokeWidth={1.5}
+                    className={`transition-colors ${
+                      isFavorite(product.id)
+                        ? "fill-accent text-accent"
+                        : "text-muted-foreground group-hover/heart:text-accent"
+                    }`}
+                  />
                 </button>
 
                 {/* Bottom accent */}

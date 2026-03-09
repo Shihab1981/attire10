@@ -93,7 +93,7 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
             )}
           </div>
           {hasDiscount && (
-            <span className="absolute top-2.5 right-2.5 bg-accent text-accent-foreground text-[9px] font-body font-semibold tracking-[0.2em] uppercase px-2.5 py-1">
+            <span className="absolute top-11 right-2.5 bg-accent text-accent-foreground text-[9px] font-body font-semibold tracking-[0.2em] uppercase px-2.5 py-1">
               -{discountPercent}%
             </span>
           )}
