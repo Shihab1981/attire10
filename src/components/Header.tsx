@@ -72,6 +72,18 @@ const Header = () => {
             <Link to="/products" className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
             </Link>
+            <Link to="/favorites" className="p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Favorites">
+              <Heart size={18} strokeWidth={1.5} />
+              {favCount > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute top-0.5 right-0.5 bg-accent text-accent-foreground text-[9px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-sm"
+                >
+                  {favCount}
+                </motion.span>
+              )}
+            </Link>
             <Link to="/cart" className="p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Cart">
               <ShoppingBag size={18} strokeWidth={1.5} />
               {totalItems > 0 && (
