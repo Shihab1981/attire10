@@ -173,6 +173,9 @@ const ProductDetail = () => {
   const discountPercent = hasDiscount
     ? Math.round(((product.original_price! - product.price) / product.original_price!) * 100)
     : 0;
+  const stockQty = (product as any).stock_quantity ?? 10;
+  const isOutOfStock = !product.in_stock || stockQty <= 0;
+  const isLowStock = stockQty > 0 && stockQty <= 3;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">

@@ -106,6 +106,11 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
                 New
               </span>
             )}
+            {isLowStock && !isOutOfStock && (
+              <span className="bg-destructive text-destructive-foreground text-[9px] font-body font-semibold tracking-[0.1em] uppercase px-2.5 py-1">
+                Only {stockQty} left
+              </span>
+            )}
           </div>
           {hasDiscount && (
             <span className="absolute top-11 right-2.5 bg-accent text-accent-foreground text-[9px] font-body font-semibold tracking-[0.2em] uppercase px-2.5 py-1">
