@@ -317,7 +317,7 @@ const ProductDetail = () => {
               </h1>
 
               {/* Price */}
-              <div className="flex items-baseline gap-3 mb-6">
+              <div className="flex items-baseline gap-3 mb-4">
                 <span className="font-display text-3xl font-extrabold tracking-tight">
                   ৳{product.price.toLocaleString()}
                 </span>
@@ -332,6 +332,19 @@ const ProductDetail = () => {
                   </>
                 )}
               </div>
+
+              {/* Stock Status */}
+              {isOutOfStock && (
+                <div className="flex items-center gap-3 mb-4 bg-destructive/10 border border-destructive/20 px-4 py-3">
+                  <span className="text-destructive text-sm font-body font-bold">Out of Stock</span>
+                  <span className="text-muted-foreground text-xs font-body">— Stock in Soon</span>
+                </div>
+              )}
+              {isLowStock && !isOutOfStock && (
+                <div className="flex items-center gap-2 mb-4 bg-accent/10 border border-accent/20 px-4 py-3">
+                  <span className="text-accent text-sm font-body font-bold">Hurry! Only {stockQty} left</span>
+                </div>
+              )}
 
               {/* Description */}
               <div className="section-divider mb-6" />
