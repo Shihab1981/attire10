@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { categoryImages, type Category } from "@/data/products";
 import type { Tables } from "@/integrations/supabase/types";
 import { motion } from "framer-motion";
-import { Eye, Zap } from "lucide-react";
+import { Eye, Heart, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { FlashSaleData } from "@/hooks/useFlashSales";
-
+import { useFavoritesStore } from "@/store/favoritesStore";
 type Product = Tables<"products">;
 
 const MiniCountdown = ({ endsAt }: { endsAt: string }) => {
@@ -30,6 +30,8 @@ const MiniCountdown = ({ endsAt }: { endsAt: string }) => {
 };
 
 const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: FlashSaleData }) => {
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
+  const isFav = useFavoritesStore((s) => s.isFavorite)(product.id);
   const effectivePrice = flashSale ? flashSale.sale_price : product.price;
   const originalPrice = flashSale ? product.price : product.original_price;
   const hasDiscount = originalPrice && originalPrice > effectivePrice;
@@ -66,6 +68,19 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
 
           <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-accent transition-all duration-500 group-hover:w-full" />
 
+          {/* Favorite button */}
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(product); }}
+            className="absolute top-2.5 right-2.5 z-10 w-8 h-8 bg-background/70 backdrop-blur-sm flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-background"
+            aria-label="Toggle favorite"
+          >
+            <Heart
+              size={14}
+              strokeWidth={1.5}
+              className={`transition-colors ${isFav ? "fill-accent text-accent" : "text-muted-foreground hover:text-accent"}`}
+            />
+          </button>
+
           {/* Badges */}
           <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5">
             {flashSale && (
@@ -80,7 +95,7 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
             )}
           </div>
           {hasDiscount && (
-            <span className="absolute top-2.5 right-2.5 bg-accent text-accent-foreground text-[9px] font-body font-semibold tracking-[0.2em] uppercase px-2.5 py-1">
+            <span className="absolute top-11 right-2.5 bg-accent text-accent-foreground text-[9px] font-body font-semibold tracking-[0.2em] uppercase px-2.5 py-1">
               -{discountPercent}%
             </span>
           )}

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
-import { ShoppingBag, Search, Menu, X, MapPin } from "lucide-react";
+import { ShoppingBag, Search, Menu, X, MapPin, Heart } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
+import { useFavoritesStore } from "@/store/favoritesStore";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
@@ -8,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Header = () => {
   const totalItems = useCartStore((s) => s.totalItems());
+  const favCount = useFavoritesStore((s) => s.items.length);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -69,6 +71,18 @@ const Header = () => {
             </Link>
             <Link to="/products" className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
+            </Link>
+            <Link to="/favorites" className="p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Favorites">
+              <Heart size={18} strokeWidth={1.5} />
+              {favCount > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute top-0.5 right-0.5 bg-accent text-accent-foreground text-[9px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-sm"
+                >
+                  {favCount}
+                </motion.span>
+              )}
             </Link>
             <Link to="/cart" className="p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Cart">
               <ShoppingBag size={18} strokeWidth={1.5} />

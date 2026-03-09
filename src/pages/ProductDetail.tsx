@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { categoryImages, type Category, type Size } from "@/data/products";
 import { useCartStore } from "@/store/cartStore";
+import { useFavoritesStore } from "@/store/favoritesStore";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SizeGuide from "@/components/SizeGuide";
@@ -22,6 +23,8 @@ const presetColorNames: Record<string, string> = {
 const ProductDetail = () => {
   const { id } = useParams();
   const addItem = useCartStore((s) => s.addItem);
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
+  const isFavorite = useFavoritesStore((s) => s.isFavorite);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
@@ -248,8 +251,19 @@ const ProductDetail = () => {
                 </div>
 
                 {/* Wishlist */}
-                <button className="absolute top-4 right-4 w-10 h-10 bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors group/heart">
-                  <Heart size={18} strokeWidth={1.5} className="text-muted-foreground group-hover/heart:text-accent transition-colors" />
+                <button
+                  onClick={() => product && toggleFavorite(product)}
+                  className="absolute top-4 right-4 w-10 h-10 bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors group/heart"
+                >
+                  <Heart
+                    size={18}
+                    strokeWidth={1.5}
+                    className={`transition-colors ${
+                      isFavorite(product.id)
+                        ? "fill-accent text-accent"
+                        : "text-muted-foreground group-hover/heart:text-accent"
+                    }`}
+                  />
                 </button>
 
                 {/* Bottom accent */}
