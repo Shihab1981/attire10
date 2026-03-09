@@ -481,7 +481,7 @@ const AdminProducts = () => {
                 <label className="block text-sm font-medium mb-1">Description</label>
                 <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm min-h-[80px] resize-none" maxLength={1000} />
               </div>
-              <div className="flex gap-6">
+              <div className="flex gap-6 flex-wrap">
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={form.trending} onChange={(e) => setForm({ ...form, trending: e.target.checked })} /> Trending
                 </label>
@@ -491,6 +491,22 @@ const AdminProducts = () => {
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={form.in_stock} onChange={(e) => setForm({ ...form, in_stock: e.target.checked })} /> In Stock
                 </label>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Stock Quantity</label>
+                <input
+                  type="number"
+                  value={form.stock_quantity}
+                  onChange={(e) => {
+                    const qty = +e.target.value;
+                    setForm({ ...form, stock_quantity: qty, in_stock: qty > 0 });
+                  }}
+                  className="w-full border border-border px-3 py-2 bg-background text-sm"
+                  min={0}
+                />
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  0 = Out of Stock badge দেখাবে। 1-3 = "Only X left" badge।
+                </p>
               </div>
               <button type="submit" disabled={saveMutation.isPending} className="w-full bg-foreground text-background py-3 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50">
                 {saveMutation.isPending ? "Saving..." : editingId ? "Update Product" : "Create Product"}
