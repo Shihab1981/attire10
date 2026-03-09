@@ -173,6 +173,9 @@ const ProductDetail = () => {
   const discountPercent = hasDiscount
     ? Math.round(((product.original_price! - product.price) / product.original_price!) * 100)
     : 0;
+  const stockQty = (product as any).stock_quantity ?? 10;
+  const isOutOfStock = !product.in_stock || stockQty <= 0;
+  const isLowStock = stockQty > 0 && stockQty <= 3;
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -238,7 +241,12 @@ const ProductDetail = () => {
 
                 {/* Badges */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2">
-                  {product.new_arrival && (
+                  {isOutOfStock && (
+                    <span className="bg-foreground text-background text-[9px] font-body font-bold tracking-[0.2em] uppercase px-3 py-1.5">
+                      Out of Stock
+                    </span>
+                  )}
+                  {product.new_arrival && !isOutOfStock && (
                     <span className="bg-foreground text-background text-[9px] font-body font-bold tracking-[0.2em] uppercase px-3 py-1.5">
                       New
                     </span>
@@ -246,6 +254,11 @@ const ProductDetail = () => {
                   {hasDiscount && (
                     <span className="bg-accent text-accent-foreground text-[9px] font-body font-bold tracking-[0.2em] uppercase px-3 py-1.5">
                       -{discountPercent}% Off
+                    </span>
+                  )}
+                  {isLowStock && !isOutOfStock && (
+                    <span className="bg-destructive text-destructive-foreground text-[9px] font-body font-bold tracking-[0.1em] uppercase px-3 py-1.5">
+                      Only {stockQty} left
                     </span>
                   )}
                 </div>
@@ -304,7 +317,7 @@ const ProductDetail = () => {
               </h1>
 
               {/* Price */}
-              <div className="flex items-baseline gap-3 mb-6">
+              <div className="flex items-baseline gap-3 mb-4">
                 <span className="font-display text-3xl font-extrabold tracking-tight">
                   ৳{product.price.toLocaleString()}
                 </span>
@@ -319,6 +332,19 @@ const ProductDetail = () => {
                   </>
                 )}
               </div>
+
+              {/* Stock Status */}
+              {isOutOfStock && (
+                <div className="flex items-center gap-3 mb-4 bg-destructive/10 border border-destructive/20 px-4 py-3">
+                  <span className="text-destructive text-sm font-body font-bold">Out of Stock</span>
+                  <span className="text-muted-foreground text-xs font-body">— Stock in Soon</span>
+                </div>
+              )}
+              {isLowStock && !isOutOfStock && (
+                <div className="flex items-center gap-2 mb-4 bg-accent/10 border border-accent/20 px-4 py-3">
+                  <span className="text-accent text-sm font-body font-bold">Hurry! Only {stockQty} left</span>
+                </div>
+              )}
 
               {/* Description */}
               <div className="section-divider mb-6" />
@@ -414,14 +440,18 @@ const ProductDetail = () => {
                 {/* Add to Cart */}
                 <button
                   onClick={handleAddToCart}
-                  disabled={addedToCart}
+                  disabled={addedToCart || isOutOfStock}
                   className={`flex-1 flex items-center justify-center gap-3 py-4 text-[11px] font-body font-bold tracking-[0.2em] uppercase transition-all duration-300 active:scale-[0.98] ${
-                    addedToCart
-                      ? "bg-accent text-accent-foreground"
-                      : "shimmer-btn text-accent-foreground hover:shadow-lg hover:shadow-accent/20"
+                    isOutOfStock
+                      ? "bg-muted text-muted-foreground cursor-not-allowed"
+                      : addedToCart
+                        ? "bg-accent text-accent-foreground"
+                        : "shimmer-btn text-accent-foreground hover:shadow-lg hover:shadow-accent/20"
                   }`}
                 >
-                  {addedToCart ? (
+                  {isOutOfStock ? (
+                    "Out of Stock"
+                  ) : addedToCart ? (
                     <>
                       <Check size={16} />
                       Added to Cart!

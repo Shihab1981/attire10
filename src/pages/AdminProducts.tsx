@@ -34,6 +34,7 @@ const emptyForm = {
   fabric: "", description: "", trending: false, new_arrival: false, in_stock: true,
   colors: [] as string[], images: [] as string[],
   color_images: {} as Record<string, string>,
+  stock_quantity: 10,
 };
 
 const AdminProducts = () => {
@@ -182,6 +183,7 @@ const AdminProducts = () => {
       trending: p.trending, new_arrival: p.new_arrival, in_stock: p.in_stock,
       colors: (p as any).colors ?? [], images: (p as any).images ?? [],
       color_images: (p as any).color_images ?? {},
+      stock_quantity: (p as any).stock_quantity ?? 10,
     });
     setDialogOpen(true);
   };
@@ -252,9 +254,11 @@ const AdminProducts = () => {
                       </div>
                     </td>
                     <td className="p-3">
-                      <span className={`text-xs font-medium px-2 py-0.5 ${p.in_stock ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                        {p.in_stock ? "In Stock" : "Out"}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-medium px-2 py-0.5 ${p.in_stock && (p as any).stock_quantity > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                          {p.in_stock && (p as any).stock_quantity > 0 ? `${(p as any).stock_quantity ?? '∞'}` : "Out"}
+                        </span>
+                      </div>
                     </td>
                     <td className="p-3">
                       <div className="flex gap-2">
@@ -477,7 +481,7 @@ const AdminProducts = () => {
                 <label className="block text-sm font-medium mb-1">Description</label>
                 <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm min-h-[80px] resize-none" maxLength={1000} />
               </div>
-              <div className="flex gap-6">
+              <div className="flex gap-6 flex-wrap">
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={form.trending} onChange={(e) => setForm({ ...form, trending: e.target.checked })} /> Trending
                 </label>
@@ -487,6 +491,22 @@ const AdminProducts = () => {
                 <label className="flex items-center gap-2 text-sm">
                   <input type="checkbox" checked={form.in_stock} onChange={(e) => setForm({ ...form, in_stock: e.target.checked })} /> In Stock
                 </label>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Stock Quantity</label>
+                <input
+                  type="number"
+                  value={form.stock_quantity}
+                  onChange={(e) => {
+                    const qty = +e.target.value;
+                    setForm({ ...form, stock_quantity: qty, in_stock: qty > 0 });
+                  }}
+                  className="w-full border border-border px-3 py-2 bg-background text-sm"
+                  min={0}
+                />
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  0 = Out of Stock badge দেখাবে। 1-3 = "Only X left" badge।
+                </p>
               </div>
               <button type="submit" disabled={saveMutation.isPending} className="w-full bg-foreground text-background py-3 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50">
                 {saveMutation.isPending ? "Saving..." : editingId ? "Update Product" : "Create Product"}

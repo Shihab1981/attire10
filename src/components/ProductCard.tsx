@@ -32,6 +32,9 @@ const MiniCountdown = ({ endsAt }: { endsAt: string }) => {
 const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: FlashSaleData }) => {
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const isFav = useFavoritesStore((s) => s.isFavorite)(product.id);
+  const stockQty = (product as any).stock_quantity ?? 10;
+  const isOutOfStock = !product.in_stock || stockQty <= 0;
+  const isLowStock = stockQty > 0 && stockQty <= 3;
   const effectivePrice = flashSale ? flashSale.sale_price : product.price;
   const originalPrice = flashSale ? product.price : product.original_price;
   const hasDiscount = originalPrice && originalPrice > effectivePrice;
@@ -57,6 +60,16 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
             className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
             loading="lazy"
           />
+          {isOutOfStock && (
+            <div className="absolute inset-0 bg-background/60 z-[5] flex items-center justify-center">
+              <div className="text-center">
+                <span className="bg-foreground text-background text-[10px] font-body font-bold tracking-[0.2em] uppercase px-3 py-1.5 block">
+                  Out of Stock
+                </span>
+                <span className="text-[9px] text-muted-foreground font-body mt-1.5 block">Stock in Soon</span>
+              </div>
+            </div>
+          )}
           <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/5 transition-colors duration-500" />
           
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
@@ -91,6 +104,11 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
             {!flashSale && product.new_arrival && (
               <span className="bg-foreground text-background text-[9px] font-body font-semibold tracking-[0.2em] uppercase px-2.5 py-1">
                 New
+              </span>
+            )}
+            {isLowStock && !isOutOfStock && (
+              <span className="bg-destructive text-destructive-foreground text-[9px] font-body font-semibold tracking-[0.1em] uppercase px-2.5 py-1">
+                Only {stockQty} left
               </span>
             )}
           </div>
