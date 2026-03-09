@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 const Header = () => {
   const totalItems = useCartStore((s) => s.totalItems());
+  const favCount = useFavoritesStore((s) => s.items.length);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
