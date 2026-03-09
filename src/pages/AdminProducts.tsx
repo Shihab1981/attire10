@@ -254,9 +254,11 @@ const AdminProducts = () => {
                       </div>
                     </td>
                     <td className="p-3">
-                      <span className={`text-xs font-medium px-2 py-0.5 ${p.in_stock ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                        {p.in_stock ? "In Stock" : "Out"}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-xs font-medium px-2 py-0.5 ${p.in_stock && (p as any).stock_quantity > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                          {p.in_stock && (p as any).stock_quantity > 0 ? `${(p as any).stock_quantity ?? '∞'}` : "Out"}
+                        </span>
+                      </div>
                     </td>
                     <td className="p-3">
                       <div className="flex gap-2">
