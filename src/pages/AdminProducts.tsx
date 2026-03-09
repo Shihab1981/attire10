@@ -34,6 +34,7 @@ const emptyForm = {
   fabric: "", description: "", trending: false, new_arrival: false, in_stock: true,
   colors: [] as string[], images: [] as string[],
   color_images: {} as Record<string, string>,
+  stock_quantity: 10,
 };
 
 const AdminProducts = () => {
