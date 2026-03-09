@@ -228,6 +228,7 @@ export type Database = {
           original_price: number | null
           price: number
           sizes: string[]
+          stock_quantity: number
           sub_category: string
           trending: boolean
           updated_at: string
@@ -248,6 +249,7 @@ export type Database = {
           original_price?: number | null
           price: number
           sizes?: string[]
+          stock_quantity?: number
           sub_category?: string
           trending?: boolean
           updated_at?: string
@@ -268,6 +270,7 @@ export type Database = {
           original_price?: number | null
           price?: number
           sizes?: string[]
+          stock_quantity?: number
           sub_category?: string
           trending?: boolean
           updated_at?: string
