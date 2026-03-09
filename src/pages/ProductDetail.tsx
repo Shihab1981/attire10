@@ -56,12 +56,70 @@ const ProductDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col">
+      <div className="min-h-screen flex flex-col bg-background">
         <Header />
-        <main className="flex-1 flex items-center justify-center">
-          <div className="flex flex-col items-center gap-4">
-            <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-            <p className="text-muted-foreground font-body text-sm">Loading product...</p>
+        <main className="flex-1">
+          {/* Breadcrumb skeleton */}
+          <div className="border-b border-border/40">
+            <div className="container py-4 flex items-center gap-2">
+              <div className="h-2.5 w-10 bg-muted-foreground/15 rounded animate-pulse" />
+              <div className="h-2.5 w-2 bg-muted-foreground/10 rounded animate-pulse" />
+              <div className="h-2.5 w-16 bg-muted-foreground/15 rounded animate-pulse" />
+              <div className="h-2.5 w-2 bg-muted-foreground/10 rounded animate-pulse" />
+              <div className="h-2.5 w-24 bg-muted-foreground/15 rounded animate-pulse" />
+            </div>
+          </div>
+          <div className="container py-10 md:py-16">
+            <div className="grid md:grid-cols-2 gap-8 md:gap-16 lg:gap-20">
+              {/* Image skeleton */}
+              <div className="flex gap-3">
+                <div className="hidden md:flex flex-col gap-2.5 w-[72px] shrink-0">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="aspect-square bg-secondary animate-pulse rounded-sm" />
+                  ))}
+                </div>
+                <div className="flex-1 aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
+              </div>
+              {/* Details skeleton */}
+              <div className="flex flex-col gap-5">
+                <div className="h-2.5 w-24 bg-muted-foreground/15 rounded animate-pulse" />
+                <div className="space-y-2">
+                  <div className="h-9 w-3/4 bg-muted-foreground/15 rounded animate-pulse" />
+                  <div className="h-9 w-1/2 bg-muted-foreground/15 rounded animate-pulse" />
+                </div>
+                <div className="h-8 w-28 bg-muted-foreground/15 rounded animate-pulse" />
+                <div className="h-px w-full bg-border/40" />
+                <div className="space-y-2">
+                  <div className="h-3 w-full bg-muted-foreground/10 rounded animate-pulse" />
+                  <div className="h-3 w-5/6 bg-muted-foreground/10 rounded animate-pulse" />
+                  <div className="h-3 w-4/6 bg-muted-foreground/10 rounded animate-pulse" />
+                </div>
+                <div className="h-12 w-full bg-secondary animate-pulse rounded-sm" />
+                {/* Color swatches skeleton */}
+                <div className="flex gap-3">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="w-11 h-11 rounded-full bg-muted-foreground/15 animate-pulse" />
+                  ))}
+                </div>
+                {/* Size buttons skeleton */}
+                <div className="flex gap-2.5">
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="w-14 h-14 bg-secondary animate-pulse rounded-sm" />
+                  ))}
+                </div>
+                {/* Add to cart skeleton */}
+                <div className="flex gap-3">
+                  <div className="w-36 h-14 bg-secondary animate-pulse rounded-sm" />
+                  <div className="flex-1 h-14 bg-muted-foreground/15 animate-pulse rounded-sm" />
+                </div>
+                {/* Trust badges skeleton */}
+                <div className="grid grid-cols-3 gap-3 mt-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-20 bg-secondary animate-pulse rounded-sm" />
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </main>
         <Footer />
