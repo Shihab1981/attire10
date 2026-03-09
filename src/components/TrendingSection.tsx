@@ -6,8 +6,19 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { useFlashSales } from "@/hooks/useFlashSales";
 
+const ProductCardSkeleton = () => (
+  <div className="space-y-3">
+    <div className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
+    <div className="space-y-2">
+      <div className="h-2 w-16 bg-muted-foreground/15 rounded animate-pulse" />
+      <div className="h-4 w-32 bg-muted-foreground/15 rounded animate-pulse" />
+      <div className="h-4 w-20 bg-muted-foreground/15 rounded animate-pulse" />
+    </div>
+  </div>
+);
+
 const TrendingSection = () => {
-  const { data: trending = [] } = useQuery({
+  const { data: trending = [], isLoading } = useQuery({
     queryKey: ["trending-products"],
     queryFn: async () => {
       const { data, error } = await supabase
