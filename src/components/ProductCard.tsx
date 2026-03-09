@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import { categoryImages, type Category } from "@/data/products";
 import type { Tables } from "@/integrations/supabase/types";
 import { motion } from "framer-motion";
-import { Eye, Zap } from "lucide-react";
+import { Eye, Heart, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { FlashSaleData } from "@/hooks/useFlashSales";
-
+import { useFavoritesStore } from "@/store/favoritesStore";
 type Product = Tables<"products">;
 
 const MiniCountdown = ({ endsAt }: { endsAt: string }) => {
