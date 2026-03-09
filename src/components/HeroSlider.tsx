@@ -26,11 +26,29 @@ const fallbackSlides = [
   },
 ];
 
+const HeroSkeleton = () => (
+  <section className="relative w-full h-[50vh] md:h-[60vh] overflow-hidden bg-secondary">
+    <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-secondary via-muted to-secondary" />
+    <div className="relative z-10 container h-full flex items-center">
+      <div className="max-w-xl space-y-4">
+        <div className="h-[2px] w-8 bg-muted-foreground/20 rounded" />
+        <div className="h-3 w-32 bg-muted-foreground/15 rounded" />
+        <div className="space-y-2">
+          <div className="h-10 w-64 bg-muted-foreground/15 rounded" />
+          <div className="h-10 w-48 bg-muted-foreground/15 rounded" />
+        </div>
+        <div className="h-4 w-56 bg-muted-foreground/10 rounded" />
+        <div className="h-12 w-44 bg-muted-foreground/15 rounded mt-6" />
+      </div>
+    </div>
+  </section>
+);
+
 const HeroSlider = () => {
   const [current, setCurrent] = useState(0);
   const [progress, setProgress] = useState(0);
 
-  const { data: dbSlides } = useQuery({
+  const { data: dbSlides, isLoading } = useQuery({
     queryKey: ["hero-slides"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -72,6 +90,7 @@ const HeroSlider = () => {
   const slide = slides[current % slides.length];
   const goTo = (i: number) => { setCurrent(i); setProgress(0); };
 
+  if (isLoading) return <HeroSkeleton />;
   if (!slide) return null;
 
   return (

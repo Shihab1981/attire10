@@ -3,8 +3,29 @@ import { motion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import { useCategories } from "@/hooks/useCategories";
 
+const CategorySkeleton = () => (
+  <section className="py-10 md:py-16">
+    <div className="container">
+      <div className="flex items-end justify-between mb-6 md:mb-8">
+        <div className="space-y-2">
+          <div className="h-2.5 w-24 bg-muted-foreground/15 rounded animate-pulse" />
+          <div className="h-7 w-48 bg-muted-foreground/15 rounded animate-pulse" />
+        </div>
+        <div className="h-3 w-16 bg-muted-foreground/10 rounded animate-pulse" />
+      </div>
+      <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className="aspect-[3/4] bg-secondary animate-pulse rounded-sm" />
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
 const CategoryGrid = () => {
   const { categories } = useCategories();
+
+  if (categories.length === 0) return <CategorySkeleton />;
 
   return (
     <section className="py-10 md:py-16">
