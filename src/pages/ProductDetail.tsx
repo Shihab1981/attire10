@@ -440,14 +440,18 @@ const ProductDetail = () => {
                 {/* Add to Cart */}
                 <button
                   onClick={handleAddToCart}
-                  disabled={addedToCart}
+                  disabled={addedToCart || isOutOfStock}
                   className={`flex-1 flex items-center justify-center gap-3 py-4 text-[11px] font-body font-bold tracking-[0.2em] uppercase transition-all duration-300 active:scale-[0.98] ${
-                    addedToCart
-                      ? "bg-accent text-accent-foreground"
-                      : "shimmer-btn text-accent-foreground hover:shadow-lg hover:shadow-accent/20"
+                    isOutOfStock
+                      ? "bg-muted text-muted-foreground cursor-not-allowed"
+                      : addedToCart
+                        ? "bg-accent text-accent-foreground"
+                        : "shimmer-btn text-accent-foreground hover:shadow-lg hover:shadow-accent/20"
                   }`}
                 >
-                  {addedToCart ? (
+                  {isOutOfStock ? (
+                    "Out of Stock"
+                  ) : addedToCart ? (
                     <>
                       <Check size={16} />
                       Added to Cart!
