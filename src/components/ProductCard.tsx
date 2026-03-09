@@ -66,6 +66,19 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
 
           <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-accent transition-all duration-500 group-hover:w-full" />
 
+          {/* Favorite button */}
+          <button
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(product); }}
+            className="absolute top-2.5 right-2.5 z-10 w-8 h-8 bg-background/70 backdrop-blur-sm flex items-center justify-center rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-background"
+            aria-label="Toggle favorite"
+          >
+            <Heart
+              size={14}
+              strokeWidth={1.5}
+              className={`transition-colors ${isFav ? "fill-accent text-accent" : "text-muted-foreground hover:text-accent"}`}
+            />
+          </button>
+
           {/* Badges */}
           <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5">
             {flashSale && (
