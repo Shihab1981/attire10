@@ -16,6 +16,7 @@ import AdminFlashSales from "./pages/AdminFlashSales";
 import AdminHeroSlides from "./pages/AdminHeroSlides";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import TrackOrder from "./pages/TrackOrder";
+import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
