@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { categoryImages, type Category, type Size } from "@/data/products";
 import { useCartStore } from "@/store/cartStore";
+import { useFavoritesStore } from "@/store/favoritesStore";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SizeGuide from "@/components/SizeGuide";
