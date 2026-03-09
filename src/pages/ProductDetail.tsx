@@ -241,7 +241,12 @@ const ProductDetail = () => {
 
                 {/* Badges */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2">
-                  {product.new_arrival && (
+                  {isOutOfStock && (
+                    <span className="bg-foreground text-background text-[9px] font-body font-bold tracking-[0.2em] uppercase px-3 py-1.5">
+                      Out of Stock
+                    </span>
+                  )}
+                  {product.new_arrival && !isOutOfStock && (
                     <span className="bg-foreground text-background text-[9px] font-body font-bold tracking-[0.2em] uppercase px-3 py-1.5">
                       New
                     </span>
@@ -249,6 +254,11 @@ const ProductDetail = () => {
                   {hasDiscount && (
                     <span className="bg-accent text-accent-foreground text-[9px] font-body font-bold tracking-[0.2em] uppercase px-3 py-1.5">
                       -{discountPercent}% Off
+                    </span>
+                  )}
+                  {isLowStock && !isOutOfStock && (
+                    <span className="bg-destructive text-destructive-foreground text-[9px] font-body font-bold tracking-[0.1em] uppercase px-3 py-1.5">
+                      Only {stockQty} left
                     </span>
                   )}
                 </div>
