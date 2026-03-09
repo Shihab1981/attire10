@@ -34,6 +34,22 @@ const TrendingSection = () => {
 
   const { data: flashSalesMap } = useFlashSales();
 
+  if (isLoading) return (
+    <section className="py-10 md:py-16 bg-secondary/30">
+      <div className="container">
+        <div className="flex items-end justify-between mb-6 md:mb-8">
+          <div className="space-y-2">
+            <div className="h-2.5 w-20 bg-muted-foreground/15 rounded animate-pulse" />
+            <div className="h-7 w-40 bg-muted-foreground/15 rounded animate-pulse" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+          {[...Array(4)].map((_, i) => <ProductCardSkeleton key={i} />)}
+        </div>
+      </div>
+    </section>
+  );
+
   if (trending.length === 0) return null;
 
   return (

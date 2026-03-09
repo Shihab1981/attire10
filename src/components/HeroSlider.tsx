@@ -90,6 +90,7 @@ const HeroSlider = () => {
   const slide = slides[current % slides.length];
   const goTo = (i: number) => { setCurrent(i); setProgress(0); };
 
+  if (isLoading) return <HeroSkeleton />;
   if (!slide) return null;
 
   return (
