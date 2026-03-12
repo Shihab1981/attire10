@@ -286,10 +286,10 @@ const AdminDashboard = () => {
   });
 
   const stats = [
-    { label: "Total Revenue", value: `৳${(revenue ?? 0).toLocaleString()}`, icon: DollarSign, accent: true },
-    { label: "Total Orders", value: totalOrders ?? 0, icon: ShoppingCart, accent: false },
+    { label: "Today's Sales", value: `৳${(todayRevenue ?? 0).toLocaleString()}`, icon: TrendingUp, accent: true },
+    { label: "Total Revenue", value: `৳${(revenue ?? 0).toLocaleString()}`, icon: DollarSign, accent: false },
     { label: "Pending Orders", value: pendingOrders ?? 0, icon: Clock, accent: false },
-    { label: "Today's Orders", value: todayOrders ?? 0, icon: TrendingUp, accent: false },
+    { label: "Today's Orders", value: todayOrders ?? 0, icon: ShoppingCart, accent: false },
     { label: "Total Products", value: products ?? 0, icon: Package, accent: false },
     { label: "Out of Stock", value: outOfStock.length, icon: AlertTriangle, accent: false },
   ];
