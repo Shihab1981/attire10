@@ -140,6 +140,20 @@ const AdminDashboard = () => {
       return count ?? 0;
     },
   });
+
+  // Today's revenue
+  const { data: todayRevenue } = useQuery({
+    queryKey: ["admin-today-revenue"],
+    queryFn: async () => {
+      const today = startOfDay(new Date()).toISOString();
+      const { data } = await supabase
+        .from("orders")
+        .select("total_price")
+        .neq("status", "cancelled")
+        .gte("created_at", today);
+      return data?.reduce((sum, o) => sum + o.total_price, 0) ?? 0;
+    },
+  });
   // Announcement text
   useQuery({
     queryKey: ["admin-announcement"],
