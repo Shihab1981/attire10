@@ -118,7 +118,7 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
             </span>
           )}
         </div>
-        <div className="space-y-1">
+        <div className={`space-y-1 ${isOutOfStock ? 'opacity-60' : ''}`}>
           <p className="text-[10px] text-muted-foreground tracking-[0.2em] uppercase font-body">
             {product.sub_category}
           </p>
