@@ -53,11 +53,11 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
       className="group"
     >
       <Link to={`/product/${product.id}`} className="block">
-        <div className="relative aspect-[3/4] overflow-hidden bg-secondary mb-3">
+        <div className={`relative aspect-[3/4] overflow-hidden bg-secondary mb-3 ${isOutOfStock ? 'opacity-70' : ''}`}>
           <img
             src={image}
             alt={product.name}
-            className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
+            className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${isOutOfStock ? 'grayscale' : ''}`}
             loading="lazy"
           />
           {isOutOfStock && (
