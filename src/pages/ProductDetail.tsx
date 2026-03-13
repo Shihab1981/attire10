@@ -1,5 +1,5 @@
 import { useParams, Link } from "react-router-dom";
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { categoryImages, type Category, type Size } from "@/data/products";
@@ -10,7 +10,7 @@ import Footer from "@/components/Footer";
 import SizeGuide from "@/components/SizeGuide";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
-import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, Minus, Plus, Heart } from "lucide-react";
+import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, ChevronLeft, Minus, Plus, Heart, ZoomIn, X } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
