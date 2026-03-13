@@ -227,7 +227,19 @@ const ProductDetail = () => {
                 </div>
               )}
               {/* Main Image */}
-              <div className="relative flex-1 aspect-[3/4] bg-secondary overflow-hidden group cursor-crosshair">
+              <div
+                ref={imgContainerRef}
+                className="relative flex-1 aspect-[3/4] bg-secondary overflow-hidden group cursor-zoom-in"
+                onClick={() => setZoomOpen(true)}
+                onMouseMove={(e) => {
+                  if (!imgContainerRef.current) return;
+                  const rect = imgContainerRef.current.getBoundingClientRect();
+                  setZoomPos({
+                    x: ((e.clientX - rect.left) / rect.width) * 100,
+                    y: ((e.clientY - rect.top) / rect.height) * 100,
+                  });
+                }}
+              >
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImageIndex}
@@ -237,10 +249,32 @@ const ProductDetail = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-500 hidden md:block"
+                    style={{ transformOrigin: `${zoomPos.x}% ${zoomPos.y}%` }}
+                    onLoad={() => setImageLoaded(true)}
+                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.8)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                  />
+                </AnimatePresence>
+                {/* Mobile image (no hover zoom) */}
+                <AnimatePresence mode="wait">
+                  <motion.img
+                    key={`mobile-${activeImageIndex}`}
+                    src={displayImages[activeImageIndex] || mainImage}
+                    alt={product.name}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.3 }}
+                    className="w-full h-full object-cover md:hidden"
                     onLoad={() => setImageLoaded(true)}
                   />
                 </AnimatePresence>
+
+                {/* Zoom icon hint */}
+                <div className="absolute bottom-4 right-4 w-8 h-8 bg-background/70 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  <ZoomIn size={14} className="text-muted-foreground" />
+                </div>
 
                 {/* Badges */}
                 <div className="absolute top-4 left-4 flex flex-col gap-2">
@@ -268,7 +302,7 @@ const ProductDetail = () => {
 
                 {/* Wishlist */}
                 <button
-                  onClick={() => product && toggleFavorite(product)}
+                  onClick={(e) => { e.stopPropagation(); product && toggleFavorite(product); }}
                   className="absolute top-4 right-4 w-10 h-10 bg-background/80 backdrop-blur-sm flex items-center justify-center hover:bg-background transition-colors group/heart"
                 >
                   <Heart
@@ -285,13 +319,41 @@ const ProductDetail = () => {
                 {/* Bottom accent */}
                 <div className="absolute bottom-0 left-0 w-full h-[3px] bg-accent scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
 
+                {/* Mobile prev/next buttons */}
+                {displayImages.length > 1 && (
+                  <>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length);
+                        setImageLoaded(false);
+                      }}
+                      className="md:hidden absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-full shadow-md active:scale-95 transition-transform z-10"
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft size={18} className="text-foreground" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveImageIndex((prev) => (prev + 1) % displayImages.length);
+                        setImageLoaded(false);
+                      }}
+                      className="md:hidden absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-background/80 backdrop-blur-sm flex items-center justify-center rounded-full shadow-md active:scale-95 transition-transform z-10"
+                      aria-label="Next image"
+                    >
+                      <ChevronRight size={18} className="text-foreground" />
+                    </button>
+                  </>
+                )}
+
                 {/* Mobile dots */}
                 {displayImages.length > 1 && (
                   <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 md:hidden">
                     {displayImages.map((_, i) => (
                       <button
                         key={i}
-                        onClick={() => { setActiveImageIndex(i); setImageLoaded(false); }}
+                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex(i); setImageLoaded(false); }}
                         className={`w-2 h-2 rounded-full transition-all ${
                           activeImageIndex === i ? "bg-accent w-5" : "bg-foreground/30"
                         }`}
@@ -301,6 +363,56 @@ const ProductDetail = () => {
                 )}
               </div>
             </motion.div>
+
+            {/* Zoom Modal */}
+            <AnimatePresence>
+              {zoomOpen && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center"
+                  onClick={() => setZoomOpen(false)}
+                >
+                  <button
+                    onClick={() => setZoomOpen(false)}
+                    className="absolute top-5 right-5 w-10 h-10 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-10"
+                  >
+                    <X size={18} />
+                  </button>
+                  {/* Prev/Next in zoom */}
+                  {displayImages.length > 1 && (
+                    <>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length); }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-10"
+                      >
+                        <ChevronLeft size={20} />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev + 1) % displayImages.length); }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-10"
+                      >
+                        <ChevronRight size={20} />
+                      </button>
+                    </>
+                  )}
+                  <motion.img
+                    key={`zoom-${activeImageIndex}`}
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    src={displayImages[activeImageIndex] || mainImage}
+                    alt={product.name}
+                    className="max-w-[90vw] max-h-[90vh] object-contain cursor-zoom-out"
+                    onClick={() => setZoomOpen(false)}
+                  />
+                  <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-body text-muted-foreground tracking-[0.15em] uppercase">
+                    {activeImageIndex + 1} / {displayImages.length}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             {/* Product Details */}
             <motion.div
