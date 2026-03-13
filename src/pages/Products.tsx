@@ -73,6 +73,13 @@ const Products = () => {
         result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
         break;
     }
+
+    // Always show in-stock products first, then out-of-stock
+    result.sort((a, b) => {
+      if (a.in_stock === b.in_stock) return 0;
+      return a.in_stock ? -1 : 1;
+    });
+
     return result;
   }, [allProducts, selectedCategory, selectedSize, priceRange, filterParam, sortBy]);
 
