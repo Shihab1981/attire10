@@ -1,6 +1,6 @@
 import { useState, ReactNode } from "react";
 
-const ADMIN_PASSWORD = "attire2026";
+const ADMIN_PASSWORD = "Shihab100@";
 
 interface AdminAuthGateProps {
   children: ReactNode;
