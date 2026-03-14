@@ -628,7 +628,7 @@ const ProductDetail = () => {
                         <Facebook size={16} className="text-muted-foreground" />
                       </a>
                       <a
-                        href={`https://wa.me/?text=${encodeURIComponent(`${product.name} - ৳${product.price.toLocaleString()} ${window.location.href}`)}`}
+                        href={`https://wa.me/8801833723089?text=${encodeURIComponent(`${product.name} - ৳${product.price.toLocaleString()} ${window.location.href}`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-10 h-10 border border-border flex items-center justify-center hover:bg-secondary hover:border-accent/30 transition-all"
