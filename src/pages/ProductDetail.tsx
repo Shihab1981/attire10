@@ -36,7 +36,14 @@ const ProductDetail = () => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [shareOpen, setShareOpen] = useState(false);
   const imgContainerRef = useRef<HTMLDivElement>(null);
+  const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
+
+  // Track recently viewed
+  useEffect(() => {
+    if (id) addRecentlyViewed(id);
+  }, [id]);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
