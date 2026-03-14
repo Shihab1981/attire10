@@ -446,6 +446,7 @@ const Products = () => {
         </div>
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 };
