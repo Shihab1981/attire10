@@ -4,6 +4,7 @@ import CategoryGrid from "@/components/CategoryGrid";
 import TrendingSection from "@/components/TrendingSection";
 import TrustBanner from "@/components/TrustBanner";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 
 const Index = () => {
   return (
@@ -16,6 +17,7 @@ const Index = () => {
         <TrendingSection />
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 };

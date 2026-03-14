@@ -1,16 +1,19 @@
 import { useParams, Link } from "react-router-dom";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { categoryImages, type Category, type Size } from "@/data/products";
 import { useCartStore } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
+import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SizeGuide from "@/components/SizeGuide";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
-import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, ChevronLeft, Minus, Plus, Heart, ZoomIn, X } from "lucide-react";
+import RecentlyViewed from "@/components/RecentlyViewed";
+import BackToTop from "@/components/BackToTop";
+import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, ChevronLeft, Minus, Plus, Heart, ZoomIn, X, Share2, MessageCircle, Facebook, Link as LinkIcon, Copy } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -33,7 +36,14 @@ const ProductDetail = () => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [shareOpen, setShareOpen] = useState(false);
   const imgContainerRef = useRef<HTMLDivElement>(null);
+  const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
+
+  // Track recently viewed
+  useEffect(() => {
+    if (id) addRecentlyViewed(id);
+  }, [id]);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
@@ -580,8 +590,70 @@ const ProductDetail = () => {
                 </button>
               </div>
 
+              {/* WhatsApp Order */}
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedSize ? `\n📏 Size: ${selectedSize}` : ""}${selectedColor ? `\n🎨 Color: ${presetColorNames[selectedColor] || selectedColor}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-3 py-3.5 bg-[#25D366] text-[#fff] text-[11px] font-body font-bold tracking-[0.15em] uppercase hover:bg-[#1DA851] transition-colors active:scale-[0.98] mb-2"
+              >
+                <MessageCircle size={16} strokeWidth={2} />
+                Order via WhatsApp
+              </a>
+
+              {/* Share */}
+              <div className="relative mb-6">
+                <button
+                  onClick={() => setShareOpen(!shareOpen)}
+                  className="flex items-center gap-2 text-[10px] font-body font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors py-2"
+                >
+                  <Share2 size={14} strokeWidth={1.5} />
+                  Share this product
+                </button>
+                <AnimatePresence>
+                  {shareOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="flex gap-2 mt-2"
+                    >
+                      <a
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 border border-border flex items-center justify-center hover:bg-secondary hover:border-accent/30 transition-all"
+                        title="Share on Facebook"
+                      >
+                        <Facebook size={16} className="text-muted-foreground" />
+                      </a>
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(`${product.name} - ৳${product.price.toLocaleString()} ${window.location.href}`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 border border-border flex items-center justify-center hover:bg-secondary hover:border-accent/30 transition-all"
+                        title="Share on WhatsApp"
+                      >
+                        <MessageCircle size={16} className="text-muted-foreground" />
+                      </a>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          toast.success("Link copied!");
+                          setShareOpen(false);
+                        }}
+                        className="w-10 h-10 border border-border flex items-center justify-center hover:bg-secondary hover:border-accent/30 transition-all"
+                        title="Copy link"
+                      >
+                        <Copy size={16} className="text-muted-foreground" />
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Trust indicators */}
-              <div className="grid grid-cols-3 gap-3 mt-6">
+              <div className="grid grid-cols-3 gap-3">
                 {[
                   { icon: Truck, label: "Free Shipping", sub: "Over ৳2,000" },
                   { icon: RefreshCw, label: "7-Day Returns", sub: "Easy process" },
@@ -625,9 +697,34 @@ const ProductDetail = () => {
               </div>
             </section>
           )}
+
+          {/* Recently Viewed */}
+          <RecentlyViewed excludeId={product.id} />
+        </div>
+
+        {/* Sticky Mobile Add to Cart */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t border-border/60 px-4 py-3 flex items-center gap-3 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)]">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-body font-bold truncate">{product.name}</p>
+            <p className="text-sm font-display font-extrabold text-accent">৳{product.price.toLocaleString()}</p>
+          </div>
+          <button
+            onClick={handleAddToCart}
+            disabled={addedToCart || isOutOfStock}
+            className={`shrink-0 flex items-center gap-2 px-5 py-3 text-[10px] font-body font-bold tracking-[0.15em] uppercase transition-all active:scale-95 ${
+              isOutOfStock
+                ? "bg-muted text-muted-foreground"
+                : addedToCart
+                  ? "bg-accent text-accent-foreground"
+                  : "shimmer-btn text-accent-foreground"
+            }`}
+          >
+            {isOutOfStock ? "Sold Out" : addedToCart ? <><Check size={14} /> Added</> : <><ShoppingBag size={14} /> Add to Cart</>}
+          </button>
         </div>
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 };

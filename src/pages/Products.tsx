@@ -4,6 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import BackToTop from "@/components/BackToTop";
 import ProductCard from "@/components/ProductCard";
 import { type Size } from "@/data/products";
 import { useCategories } from "@/hooks/useCategories";
@@ -445,6 +446,7 @@ const Products = () => {
         </div>
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 };
