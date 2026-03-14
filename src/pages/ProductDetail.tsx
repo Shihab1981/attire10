@@ -697,9 +697,34 @@ const ProductDetail = () => {
               </div>
             </section>
           )}
+
+          {/* Recently Viewed */}
+          <RecentlyViewed excludeId={product.id} />
+        </div>
+
+        {/* Sticky Mobile Add to Cart */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-xl border-t border-border/60 px-4 py-3 flex items-center gap-3 shadow-[0_-4px_20px_-4px_rgba(0,0,0,0.1)]">
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-body font-bold truncate">{product.name}</p>
+            <p className="text-sm font-display font-extrabold text-accent">৳{product.price.toLocaleString()}</p>
+          </div>
+          <button
+            onClick={handleAddToCart}
+            disabled={addedToCart || isOutOfStock}
+            className={`shrink-0 flex items-center gap-2 px-5 py-3 text-[10px] font-body font-bold tracking-[0.15em] uppercase transition-all active:scale-95 ${
+              isOutOfStock
+                ? "bg-muted text-muted-foreground"
+                : addedToCart
+                  ? "bg-accent text-accent-foreground"
+                  : "shimmer-btn text-accent-foreground"
+            }`}
+          >
+            {isOutOfStock ? "Sold Out" : addedToCart ? <><Check size={14} /> Added</> : <><ShoppingBag size={14} /> Add to Cart</>}
+          </button>
         </div>
       </main>
       <Footer />
+      <BackToTop />
     </div>
   );
 };
