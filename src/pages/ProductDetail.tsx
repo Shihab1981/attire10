@@ -590,8 +590,70 @@ const ProductDetail = () => {
                 </button>
               </div>
 
+              {/* WhatsApp Order */}
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedSize ? `\n📏 Size: ${selectedSize}` : ""}${selectedColor ? `\n🎨 Color: ${presetColorNames[selectedColor] || selectedColor}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-3 py-3.5 bg-[#25D366] text-[#fff] text-[11px] font-body font-bold tracking-[0.15em] uppercase hover:bg-[#1DA851] transition-colors active:scale-[0.98] mb-2"
+              >
+                <MessageCircle size={16} strokeWidth={2} />
+                Order via WhatsApp
+              </a>
+
+              {/* Share */}
+              <div className="relative mb-6">
+                <button
+                  onClick={() => setShareOpen(!shareOpen)}
+                  className="flex items-center gap-2 text-[10px] font-body font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors py-2"
+                >
+                  <Share2 size={14} strokeWidth={1.5} />
+                  Share this product
+                </button>
+                <AnimatePresence>
+                  {shareOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -5 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -5 }}
+                      className="flex gap-2 mt-2"
+                    >
+                      <a
+                        href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.location.href)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 border border-border flex items-center justify-center hover:bg-secondary hover:border-accent/30 transition-all"
+                        title="Share on Facebook"
+                      >
+                        <Facebook size={16} className="text-muted-foreground" />
+                      </a>
+                      <a
+                        href={`https://wa.me/?text=${encodeURIComponent(`${product.name} - ৳${product.price.toLocaleString()} ${window.location.href}`)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 border border-border flex items-center justify-center hover:bg-secondary hover:border-accent/30 transition-all"
+                        title="Share on WhatsApp"
+                      >
+                        <MessageCircle size={16} className="text-muted-foreground" />
+                      </a>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          toast.success("Link copied!");
+                          setShareOpen(false);
+                        }}
+                        className="w-10 h-10 border border-border flex items-center justify-center hover:bg-secondary hover:border-accent/30 transition-all"
+                        title="Copy link"
+                      >
+                        <Copy size={16} className="text-muted-foreground" />
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
               {/* Trust indicators */}
-              <div className="grid grid-cols-3 gap-3 mt-6">
+              <div className="grid grid-cols-3 gap-3">
                 {[
                   { icon: Truck, label: "Free Shipping", sub: "Over ৳2,000" },
                   { icon: RefreshCw, label: "7-Day Returns", sub: "Easy process" },
