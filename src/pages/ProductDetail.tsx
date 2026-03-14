@@ -592,7 +592,7 @@ const ProductDetail = () => {
 
               {/* WhatsApp Order */}
               <a
-                href={`https://wa.me/?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedSize ? `\n📏 Size: ${selectedSize}` : ""}${selectedColor ? `\n🎨 Color: ${presetColorNames[selectedColor] || selectedColor}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
+                href={`https://wa.me/8801833723089?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedSize ? `\n📏 Size: ${selectedSize}` : ""}${selectedColor ? `\n🎨 Color: ${presetColorNames[selectedColor] || selectedColor}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-3 py-3.5 bg-[#25D366] text-[#fff] text-[11px] font-body font-bold tracking-[0.15em] uppercase hover:bg-[#1DA851] transition-colors active:scale-[0.98] mb-2"
@@ -628,7 +628,7 @@ const ProductDetail = () => {
                         <Facebook size={16} className="text-muted-foreground" />
                       </a>
                       <a
-                        href={`https://wa.me/?text=${encodeURIComponent(`${product.name} - ৳${product.price.toLocaleString()} ${window.location.href}`)}`}
+                        href={`https://wa.me/8801833723089?text=${encodeURIComponent(`${product.name} - ৳${product.price.toLocaleString()} ${window.location.href}`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="w-10 h-10 border border-border flex items-center justify-center hover:bg-secondary hover:border-accent/30 transition-all"
