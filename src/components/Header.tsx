@@ -73,9 +73,9 @@ const Header = () => {
             <Link to="/track-order" className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Track Order">
               <MapPin size={18} strokeWidth={1.5} />
             </Link>
-            <Link to="/products" className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Search">
+            <button onClick={() => setSearchOpen(true)} className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
-            </Link>
+            </button>
             <Link to="/favorites" className="p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Favorites">
               <Heart size={18} strokeWidth={1.5} />
               {favCount > 0 && (
