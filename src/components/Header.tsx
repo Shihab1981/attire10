@@ -135,6 +135,7 @@ const Header = () => {
           )}
         </AnimatePresence>
       </header>
+      <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 };
