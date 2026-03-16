@@ -103,6 +103,7 @@ const Products = () => {
   const clearFilters = () => {
     setSelectedCategory(null);
     setSelectedSize(null);
+    setSearchQuery("");
     setPriceRange([0, 5000]);
     setSearchParams({});
   };
