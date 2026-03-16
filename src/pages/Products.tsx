@@ -31,6 +31,7 @@ const Products = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
+  const [searchQuery, setSearchQuery] = useState(queryParam || "");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [gridCols, setGridCols] = useState<2 | 3>(3);
   const [sortOpen, setSortOpen] = useState(false);
