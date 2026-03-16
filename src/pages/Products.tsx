@@ -117,6 +117,12 @@ const Products = () => {
   const activeFilterCount = [searchQuery.trim(), selectedCategory, selectedSize, priceRange[0] > 0 || priceRange[1] < 5000].filter(Boolean).length;
 
   const activeFilters: { label: string; onClear: () => void }[] = [];
+  if (searchQuery.trim()) {
+    activeFilters.push({
+      label: `Search: "${searchQuery}"`,
+      onClear: () => { setSearchQuery(""); const p = new URLSearchParams(searchParams); p.delete("q"); setSearchParams(p); },
+    });
+  }
   if (selectedCategory) {
     activeFilters.push({
       label: categories.find((c) => c.slug === selectedCategory)?.name || selectedCategory,
