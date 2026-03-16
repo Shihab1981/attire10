@@ -98,7 +98,7 @@ const Products = () => {
     });
 
     return result;
-  }, [allProducts, selectedCategory, selectedSize, priceRange, filterParam, sortBy]);
+  }, [allProducts, selectedCategory, selectedSize, priceRange, filterParam, sortBy, searchQuery]);
 
   const clearFilters = () => {
     setSelectedCategory(null);
