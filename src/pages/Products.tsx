@@ -59,6 +59,16 @@ const Products = () => {
 
   const filtered = useMemo(() => {
     let result = [...allProducts];
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.sub_category.toLowerCase().includes(q) ||
+          p.description?.toLowerCase().includes(q)
+      );
+    }
     if (selectedCategory) result = result.filter((p) => p.category === selectedCategory);
     if (selectedSize) result = result.filter((p) => p.sizes.includes(selectedSize));
     if (filterParam === "new") result = result.filter((p) => p.new_arrival);
