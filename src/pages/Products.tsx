@@ -114,7 +114,7 @@ const Products = () => {
     else setSearchParams({});
   };
 
-  const activeFilterCount = [selectedCategory, selectedSize, priceRange[0] > 0 || priceRange[1] < 5000].filter(Boolean).length;
+  const activeFilterCount = [searchQuery.trim(), selectedCategory, selectedSize, priceRange[0] > 0 || priceRange[1] < 5000].filter(Boolean).length;
 
   const activeFilters: { label: string; onClear: () => void }[] = [];
   if (selectedCategory) {
