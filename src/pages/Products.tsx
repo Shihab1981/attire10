@@ -26,6 +26,7 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
   const filterParam = searchParams.get("filter");
+  const queryParam = searchParams.get("q");
   const { categories } = useCategories();
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
