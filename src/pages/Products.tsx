@@ -40,6 +40,10 @@ const Products = () => {
     setSelectedCategory(categoryParam);
   }, [categoryParam]);
 
+  React.useEffect(() => {
+    setSearchQuery(queryParam || "");
+  }, [queryParam]);
+
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const { data: flashSalesMap } = useFlashSales();
