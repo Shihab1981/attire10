@@ -26,10 +26,12 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const categoryParam = searchParams.get("category");
   const filterParam = searchParams.get("filter");
+  const queryParam = searchParams.get("q");
   const { categories } = useCategories();
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
+  const [searchQuery, setSearchQuery] = useState(queryParam || "");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [gridCols, setGridCols] = useState<2 | 3>(3);
   const [sortOpen, setSortOpen] = useState(false);
@@ -37,6 +39,10 @@ const Products = () => {
   React.useEffect(() => {
     setSelectedCategory(categoryParam);
   }, [categoryParam]);
+
+  React.useEffect(() => {
+    setSearchQuery(queryParam || "");
+  }, [queryParam]);
 
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [filtersOpen, setFiltersOpen] = useState(false);
@@ -53,6 +59,16 @@ const Products = () => {
 
   const filtered = useMemo(() => {
     let result = [...allProducts];
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      result = result.filter(
+        (p) =>
+          p.name.toLowerCase().includes(q) ||
+          p.category.toLowerCase().includes(q) ||
+          p.sub_category.toLowerCase().includes(q) ||
+          p.description?.toLowerCase().includes(q)
+      );
+    }
     if (selectedCategory) result = result.filter((p) => p.category === selectedCategory);
     if (selectedSize) result = result.filter((p) => p.sizes.includes(selectedSize));
     if (filterParam === "new") result = result.filter((p) => p.new_arrival);
@@ -82,11 +98,12 @@ const Products = () => {
     });
 
     return result;
-  }, [allProducts, selectedCategory, selectedSize, priceRange, filterParam, sortBy]);
+  }, [allProducts, selectedCategory, selectedSize, priceRange, filterParam, sortBy, searchQuery]);
 
   const clearFilters = () => {
     setSelectedCategory(null);
     setSelectedSize(null);
+    setSearchQuery("");
     setPriceRange([0, 5000]);
     setSearchParams({});
   };
@@ -97,9 +114,15 @@ const Products = () => {
     else setSearchParams({});
   };
 
-  const activeFilterCount = [selectedCategory, selectedSize, priceRange[0] > 0 || priceRange[1] < 5000].filter(Boolean).length;
+  const activeFilterCount = [searchQuery.trim(), selectedCategory, selectedSize, priceRange[0] > 0 || priceRange[1] < 5000].filter(Boolean).length;
 
   const activeFilters: { label: string; onClear: () => void }[] = [];
+  if (searchQuery.trim()) {
+    activeFilters.push({
+      label: `Search: "${searchQuery}"`,
+      onClear: () => { setSearchQuery(""); const p = new URLSearchParams(searchParams); p.delete("q"); setSearchParams(p); },
+    });
+  }
   if (selectedCategory) {
     activeFilters.push({
       label: categories.find((c) => c.slug === selectedCategory)?.name || selectedCategory,
@@ -126,7 +149,7 @@ const Products = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-muted-foreground font-body mb-3"
             >
-              {selectedCategory ? "Category" : filterParam === "new" ? "Latest" : "Our Collection"}
+              {searchQuery.trim() ? "Search Results" : selectedCategory ? "Category" : filterParam === "new" ? "Latest" : "Our Collection"}
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
@@ -134,7 +157,9 @@ const Products = () => {
               transition={{ delay: 0.1 }}
               className="font-display text-3xl md:text-5xl font-bold"
             >
-              {selectedCategory
+              {searchQuery.trim()
+                ? `"${searchQuery}"`
+                : selectedCategory
                 ? categories.find((c) => c.slug === selectedCategory)?.name
                 : filterParam === "new"
                 ? "New Arrivals"
