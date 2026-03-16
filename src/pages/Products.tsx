@@ -149,7 +149,7 @@ const Products = () => {
               animate={{ opacity: 1, y: 0 }}
               className="text-[10px] md:text-xs tracking-[0.3em] uppercase text-muted-foreground font-body mb-3"
             >
-              {selectedCategory ? "Category" : filterParam === "new" ? "Latest" : "Our Collection"}
+              {searchQuery.trim() ? "Search Results" : selectedCategory ? "Category" : filterParam === "new" ? "Latest" : "Our Collection"}
             </motion.p>
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
@@ -157,7 +157,9 @@ const Products = () => {
               transition={{ delay: 0.1 }}
               className="font-display text-3xl md:text-5xl font-bold"
             >
-              {selectedCategory
+              {searchQuery.trim()
+                ? `"${searchQuery}"`
+                : selectedCategory
                 ? categories.find((c) => c.slug === selectedCategory)?.name
                 : filterParam === "new"
                 ? "New Arrivals"
