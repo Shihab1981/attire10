@@ -194,7 +194,7 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
   };
 
   return (
-    <section className="mt-16 md:mt-24">
+    <section id="reviews-section" className="mt-16 md:mt-24">
       <div className="section-divider mb-12" />
 
       {/* Header */}
