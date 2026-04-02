@@ -1,21 +1,111 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Star, Send, User } from "lucide-react";
+import { Star, Send, User, ImagePlus, X, ZoomIn } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 interface ProductReviewsProps {
   productId: string;
 }
 
+const RatingStars = ({
+  value,
+  interactive = false,
+  size = 16,
+  onRate,
+  hoveredStar,
+  onHover,
+  onLeave,
+}: {
+  value: number;
+  interactive?: boolean;
+  size?: number;
+  onRate?: (v: number) => void;
+  hoveredStar?: number;
+  onHover?: (v: number) => void;
+  onLeave?: () => void;
+}) => (
+  <div className="flex gap-0.5">
+    {[1, 2, 3, 4, 5].map((s) => (
+      <button
+        key={s}
+        type="button"
+        disabled={!interactive}
+        onClick={() => interactive && onRate?.(s)}
+        onMouseEnter={() => interactive && onHover?.(s)}
+        onMouseLeave={() => interactive && onLeave?.()}
+        className={interactive ? "cursor-pointer" : "cursor-default"}
+      >
+        <Star
+          size={size}
+          className={`transition-colors ${
+            s <= (interactive ? (hoveredStar || value) : value)
+              ? "fill-accent text-accent"
+              : "text-border"
+          }`}
+        />
+      </button>
+    ))}
+  </div>
+);
+
+const ReviewImageGallery = ({ images }: { images: string[] }) => {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  if (!images || images.length === 0) return null;
+
+  return (
+    <>
+      <div className="flex gap-2 mt-3 flex-wrap">
+        {images.map((url, i) => (
+          <button
+            key={i}
+            onClick={() => { setActiveIdx(i); setLightboxOpen(true); }}
+            className="relative w-16 h-16 rounded overflow-hidden border border-border hover:border-accent/40 transition-colors group"
+          >
+            <img src={url} alt={`Review photo ${i + 1}`} className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/20 transition-colors flex items-center justify-center">
+              <ZoomIn size={14} className="text-background opacity-0 group-hover:opacity-100 transition-opacity" />
+            </div>
+          </button>
+        ))}
+      </div>
+      <Dialog open={lightboxOpen} onOpenChange={setLightboxOpen}>
+        <DialogContent className="max-w-2xl p-2 bg-background border-border">
+          <img src={images[activeIdx]} alt="Review photo" className="w-full h-auto max-h-[70vh] object-contain rounded" />
+          {images.length > 1 && (
+            <div className="flex gap-2 justify-center mt-2">
+              {images.map((url, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveIdx(i)}
+                  className={`w-12 h-12 rounded overflow-hidden border-2 transition-colors ${i === activeIdx ? "border-accent" : "border-border"}`}
+                >
+                  <img src={url} alt="" className="w-full h-full object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
 const ProductReviews = ({ productId }: ProductReviewsProps) => {
   const queryClient = useQueryClient();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("");
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [hoveredStar, setHoveredStar] = useState(0);
   const [showForm, setShowForm] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
 
   const { data: reviews = [], isLoading } = useQuery({
     queryKey: ["reviews", productId],
@@ -30,25 +120,60 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
     },
   });
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const valid = files.filter(f => f.type.startsWith("image/") && f.size <= 5 * 1024 * 1024);
+    if (valid.length !== files.length) toast.error("শুধুমাত্র 5MB পর্যন্ত ছবি আপলোড করা যাবে");
+    const total = [...selectedFiles, ...valid].slice(0, 4);
+    setSelectedFiles(total);
+    setPreviews(total.map(f => URL.createObjectURL(f)));
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removeFile = (idx: number) => {
+    URL.revokeObjectURL(previews[idx]);
+    setSelectedFiles(prev => prev.filter((_, i) => i !== idx));
+    setPreviews(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const uploadImages = async (): Promise<string[]> => {
+    const urls: string[] = [];
+    for (const file of selectedFiles) {
+      const ext = file.name.split(".").pop();
+      const path = `${productId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error } = await supabase.storage.from("review-images").upload(path, file);
+      if (error) throw error;
+      const { data: urlData } = supabase.storage.from("review-images").getPublicUrl(path);
+      urls.push(urlData.publicUrl);
+    }
+    return urls;
+  };
+
   const mutation = useMutation({
     mutationFn: async () => {
+      setUploading(true);
+      let imageUrls: string[] = [];
+      if (selectedFiles.length > 0) {
+        imageUrls = await uploadImages();
+      }
       const { error } = await supabase.from("reviews").insert({
         product_id: productId,
         reviewer_name: name.trim(),
         rating,
         comment: comment.trim(),
+        images: imageUrls,
       });
       if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews", productId] });
-      setName("");
-      setComment("");
-      setRating(5);
-      setShowForm(false);
+      setName(""); setComment(""); setRating(5); setShowForm(false);
+      previews.forEach(p => URL.revokeObjectURL(p));
+      setSelectedFiles([]); setPreviews([]);
+      setUploading(false);
       toast.success("রিভিউ সফলভাবে যোগ হয়েছে!");
     },
-    onError: () => toast.error("রিভিউ যোগ করতে সমস্যা হয়েছে"),
+    onError: () => { setUploading(false); toast.error("রিভিউ যোগ করতে সমস্যা হয়েছে"); },
   });
 
   const avgRating = reviews.length > 0
@@ -68,35 +193,10 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
     mutation.mutate();
   };
 
-  const RatingStars = ({ value, interactive = false, size = 16 }: { value: number; interactive?: boolean; size?: number }) => (
-    <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((s) => (
-        <button
-          key={s}
-          type="button"
-          disabled={!interactive}
-          onClick={() => interactive && setRating(s)}
-          onMouseEnter={() => interactive && setHoveredStar(s)}
-          onMouseLeave={() => interactive && setHoveredStar(0)}
-          className={interactive ? "cursor-pointer" : "cursor-default"}
-        >
-          <Star
-            size={size}
-            className={`transition-colors ${
-              s <= (interactive ? (hoveredStar || value) : value)
-                ? "fill-accent text-accent"
-                : "text-border"
-            }`}
-          />
-        </button>
-      ))}
-    </div>
-  );
-
   return (
     <section className="mt-16 md:mt-24">
       <div className="section-divider mb-12" />
-      
+
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
         <div>
@@ -150,7 +250,7 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
             <div className="border border-border p-6 space-y-5">
               <div>
                 <label className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-body mb-2 block">রেটিং</label>
-                <RatingStars value={rating} interactive size={24} />
+                <RatingStars value={rating} interactive size={24} onRate={setRating} hoveredStar={hoveredStar} onHover={setHoveredStar} onLeave={() => setHoveredStar(0)} />
               </div>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
@@ -174,13 +274,51 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                   className="w-full bg-secondary/50 border border-border px-4 py-3 text-sm font-body focus:outline-none focus:border-accent transition-colors resize-none"
                 />
               </div>
+
+              {/* Photo Upload */}
+              <div>
+                <label className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-body mb-2 block">ছবি যোগ করুন (সর্বোচ্চ ৪টি)</label>
+                <div className="flex gap-3 flex-wrap items-center">
+                  {previews.map((src, i) => (
+                    <div key={i} className="relative w-20 h-20 rounded border border-border overflow-hidden group">
+                      <img src={src} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => removeFile(i)}
+                        className="absolute top-1 right-1 w-5 h-5 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <X size={10} />
+                      </button>
+                    </div>
+                  ))}
+                  {selectedFiles.length < 4 && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="w-20 h-20 rounded border-2 border-dashed border-border hover:border-accent/40 flex flex-col items-center justify-center gap-1 transition-colors text-muted-foreground hover:text-accent"
+                    >
+                      <ImagePlus size={18} />
+                      <span className="text-[9px] font-body">ছবি</span>
+                    </button>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                </div>
+              </div>
+
               <button
                 type="submit"
-                disabled={mutation.isPending}
+                disabled={mutation.isPending || uploading}
                 className="shimmer-btn inline-flex items-center gap-2 px-8 py-3 text-accent-foreground text-[11px] font-bold tracking-[0.15em] uppercase font-body disabled:opacity-50"
               >
                 <Send size={14} />
-                {mutation.isPending ? "সাবমিট হচ্ছে..." : "রিভিউ সাবমিট"}
+                {mutation.isPending || uploading ? "সাবমিট হচ্ছে..." : "রিভিউ সাবমিট"}
               </button>
             </div>
           </motion.form>
@@ -222,6 +360,7 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                     {new Date(review.created_at).toLocaleDateString("bn-BD", { year: "numeric", month: "long", day: "numeric" })}
                   </p>
                   <p className="text-sm font-body text-muted-foreground leading-relaxed">{review.comment}</p>
+                  <ReviewImageGallery images={(review as any).images || []} />
                 </div>
               </div>
             </motion.div>
