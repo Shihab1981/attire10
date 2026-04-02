@@ -55,6 +55,23 @@ const ProductDetail = () => {
     enabled: !!id,
   });
 
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["reviews", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("product_id", id!);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length)
+    : 0;
+
   const { data: related = [] } = useQuery({
     queryKey: ["related-products", product?.category],
     queryFn: async () => {
