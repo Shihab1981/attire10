@@ -361,6 +361,12 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
                   </p>
                   <p className="text-sm font-body text-muted-foreground leading-relaxed">{review.comment}</p>
                   <ReviewImageGallery images={(review as any).images || []} />
+                  {(review as any).admin_reply && (
+                    <div className="mt-3 pl-4 border-l-2 border-accent/30 bg-accent/5 p-3 rounded-r">
+                      <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-accent mb-1 font-body">Admin Reply</p>
+                      <p className="text-sm font-body text-muted-foreground leading-relaxed">{(review as any).admin_reply}</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>
