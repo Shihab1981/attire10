@@ -454,9 +454,31 @@ const ProductDetail = () => {
               </p>
 
               {/* Name */}
-              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold leading-[1.1] tracking-tight mb-5">
+              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold leading-[1.1] tracking-tight mb-3">
                 {product.name}
               </h1>
+
+              {/* Review Summary Badge */}
+              {reviews.length > 0 && (
+                <button
+                  onClick={() => document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth" })}
+                  className="flex items-center gap-2 mb-4 group w-fit"
+                >
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        size={14}
+                        className={s <= Math.round(avgRating) ? "fill-accent text-accent" : "text-border"}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm font-body font-medium text-foreground">{avgRating.toFixed(1)}</span>
+                  <span className="text-xs font-body text-muted-foreground group-hover:text-accent transition-colors">
+                    ({reviews.length}টি রিভিউ)
+                  </span>
+                </button>
+              )}
 
               {/* Price */}
               <div className="flex items-baseline gap-3 mb-4">
