@@ -13,7 +13,7 @@ import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import BackToTop from "@/components/BackToTop";
-import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, ChevronLeft, Minus, Plus, Heart, ZoomIn, X, Share2, MessageCircle, Facebook, Link as LinkIcon, Copy } from "lucide-react";
+import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, ChevronLeft, Minus, Plus, Heart, ZoomIn, X, Share2, MessageCircle, Facebook, Link as LinkIcon, Copy, Star } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
