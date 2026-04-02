@@ -1,0 +1,1 @@
+CREATE POLICY "Reviews allow all deletes" ON public.reviews FOR DELETE TO public USING (true);
