@@ -13,7 +13,7 @@ import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
 import RecentlyViewed from "@/components/RecentlyViewed";
 import BackToTop from "@/components/BackToTop";
-import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, ChevronLeft, Minus, Plus, Heart, ZoomIn, X, Share2, MessageCircle, Facebook, Link as LinkIcon, Copy } from "lucide-react";
+import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, ChevronLeft, Minus, Plus, Heart, ZoomIn, X, Share2, MessageCircle, Facebook, Link as LinkIcon, Copy, Star } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -54,6 +54,23 @@ const ProductDetail = () => {
     },
     enabled: !!id,
   });
+
+  const { data: reviews = [] } = useQuery({
+    queryKey: ["reviews", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("rating")
+        .eq("product_id", id!);
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!id,
+  });
+
+  const avgRating = reviews.length > 0
+    ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length)
+    : 0;
 
   const { data: related = [] } = useQuery({
     queryKey: ["related-products", product?.category],
@@ -437,9 +454,31 @@ const ProductDetail = () => {
               </p>
 
               {/* Name */}
-              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold leading-[1.1] tracking-tight mb-5">
+              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold leading-[1.1] tracking-tight mb-3">
                 {product.name}
               </h1>
+
+              {/* Review Summary Badge */}
+              {reviews.length > 0 && (
+                <button
+                  onClick={() => document.getElementById("reviews-section")?.scrollIntoView({ behavior: "smooth" })}
+                  className="flex items-center gap-2 mb-4 group w-fit"
+                >
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        size={14}
+                        className={s <= Math.round(avgRating) ? "fill-accent text-accent" : "text-border"}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm font-body font-medium text-foreground">{avgRating.toFixed(1)}</span>
+                  <span className="text-xs font-body text-muted-foreground group-hover:text-accent transition-colors">
+                    ({reviews.length}টি রিভিউ)
+                  </span>
+                </button>
+              )}
 
               {/* Price */}
               <div className="flex items-baseline gap-3 mb-4">
