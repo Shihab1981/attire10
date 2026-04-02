@@ -282,6 +282,7 @@ export type Database = {
           comment: string
           created_at: string
           id: string
+          images: string[]
           product_id: string
           rating: number
           reviewer_name: string
@@ -290,6 +291,7 @@ export type Database = {
           comment?: string
           created_at?: string
           id?: string
+          images?: string[]
           product_id: string
           rating?: number
           reviewer_name: string
@@ -298,6 +300,7 @@ export type Database = {
           comment?: string
           created_at?: string
           id?: string
+          images?: string[]
           product_id?: string
           rating?: number
           reviewer_name?: string
