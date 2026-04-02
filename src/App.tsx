@@ -14,6 +14,7 @@ import AdminOrders from "./pages/AdminOrders";
 import AdminCoupons from "./pages/AdminCoupons";
 import AdminFlashSales from "./pages/AdminFlashSales";
 import AdminHeroSlides from "./pages/AdminHeroSlides";
+import AdminReviews from "./pages/AdminReviews";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import TrackOrder from "./pages/TrackOrder";
 import Favorites from "./pages/Favorites";
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/admin/orders" element={<AdminOrders />} />
           <Route path="/admin/coupons" element={<AdminCoupons />} />
           <Route path="/admin/flash-sales" element={<AdminFlashSales />} />
+          <Route path="/admin/reviews" element={<AdminReviews />} />
           <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

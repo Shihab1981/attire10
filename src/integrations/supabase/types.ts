@@ -279,6 +279,8 @@ export type Database = {
       }
       reviews: {
         Row: {
+          admin_reply: string | null
+          admin_reply_at: string | null
           comment: string
           created_at: string
           id: string
@@ -288,6 +290,8 @@ export type Database = {
           reviewer_name: string
         }
         Insert: {
+          admin_reply?: string | null
+          admin_reply_at?: string | null
           comment?: string
           created_at?: string
           id?: string
@@ -297,6 +301,8 @@ export type Database = {
           reviewer_name: string
         }
         Update: {
+          admin_reply?: string | null
+          admin_reply_at?: string | null
           comment?: string
           created_at?: string
           id?: string
