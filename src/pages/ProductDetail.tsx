@@ -36,8 +36,14 @@ const ProductDetail = () => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [isHovering, setIsHovering] = useState(false);
+  const [modalZoomLevel, setModalZoomLevel] = useState(1);
+  const [modalPan, setModalPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [shareOpen, setShareOpen] = useState(false);
   const imgContainerRef = useRef<HTMLDivElement>(null);
+  const modalImgRef = useRef<HTMLImageElement>(null);
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
 
   // Track recently viewed
@@ -257,7 +263,7 @@ const ProductDetail = () => {
               <div
                 ref={imgContainerRef}
                 className="relative flex-1 aspect-[3/4] bg-secondary overflow-hidden group cursor-zoom-in"
-                onClick={() => setZoomOpen(true)}
+                onClick={() => { setZoomOpen(true); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
                 onMouseMove={(e) => {
                   if (!imgContainerRef.current) return;
                   const rect = imgContainerRef.current.getBoundingClientRect();
@@ -266,7 +272,10 @@ const ProductDetail = () => {
                     y: ((e.clientY - rect.top) / rect.height) * 100,
                   });
                 }}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
               >
+                {/* Normal image */}
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImageIndex}
@@ -276,13 +285,35 @@ const ProductDetail = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="w-full h-full object-cover transition-transform duration-500 hidden md:block"
-                    style={{ transformOrigin: `${zoomPos.x}% ${zoomPos.y}%` }}
+                    className="w-full h-full object-cover"
                     onLoad={() => setImageLoaded(true)}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.8)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                   />
                 </AnimatePresence>
+
+                {/* Desktop hover zoom lens */}
+                {isHovering && (
+                  <div
+                    className="hidden md:block absolute pointer-events-none w-[200px] h-[200px] border-2 border-accent/40 rounded-full overflow-hidden shadow-lg z-20"
+                    style={{
+                      left: `calc(${zoomPos.x}% - 100px)`,
+                      top: `calc(${zoomPos.y}% - 100px)`,
+                    }}
+                  >
+                    <img
+                      src={displayImages[activeImageIndex] || mainImage}
+                      alt=""
+                      className="absolute"
+                      style={{
+                        width: `${imgContainerRef.current?.offsetWidth ? imgContainerRef.current.offsetWidth * 2.5 : 1000}px`,
+                        height: `${imgContainerRef.current?.offsetHeight ? imgContainerRef.current.offsetHeight * 2.5 : 1200}px`,
+                        left: `${-zoomPos.x * 2.5 + 100}px`,
+                        top: `${-zoomPos.y * 2.5 + 100}px`,
+                        maxWidth: 'none',
+                      }}
+                    />
+                  </div>
+                )}
+
                 {/* Mobile image (no hover zoom) */}
                 <AnimatePresence mode="wait">
                   <motion.img
@@ -293,7 +324,7 @@ const ProductDetail = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="w-full h-full object-cover md:hidden"
+                    className="w-full h-full object-cover md:hidden absolute inset-0"
                     onLoad={() => setImageLoaded(true)}
                   />
                 </AnimatePresence>
@@ -398,44 +429,117 @@ const ProductDetail = () => {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center"
-                  onClick={() => setZoomOpen(false)}
+                  className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center overflow-hidden"
+                  onClick={() => {
+                    if (modalZoomLevel > 1) {
+                      setModalZoomLevel(1);
+                      setModalPan({ x: 0, y: 0 });
+                    } else {
+                      setZoomOpen(false);
+                    }
+                  }}
+                  onWheel={(e) => {
+                    e.preventDefault();
+                    setModalZoomLevel((prev) => {
+                      const next = prev + (e.deltaY < 0 ? 0.3 : -0.3);
+                      const clamped = Math.min(Math.max(next, 1), 5);
+                      if (clamped === 1) setModalPan({ x: 0, y: 0 });
+                      return clamped;
+                    });
+                  }}
                 >
                   <button
-                    onClick={() => setZoomOpen(false)}
-                    className="absolute top-5 right-5 w-10 h-10 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-10"
+                    onClick={(e) => { e.stopPropagation(); setZoomOpen(false); }}
+                    className="absolute top-5 right-5 w-10 h-10 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-20"
                   >
                     <X size={18} />
                   </button>
+
+                  {/* Zoom controls */}
+                  <div className="absolute top-5 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-secondary/80 backdrop-blur-sm px-3 py-1.5 rounded-sm z-20">
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setModalZoomLevel((p) => Math.max(1, p - 0.5)); if (modalZoomLevel <= 1.5) setModalPan({ x: 0, y: 0 }); }}
+                      className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-sm transition-colors"
+                    >
+                      <Minus size={14} />
+                    </button>
+                    <span className="text-xs font-body font-medium min-w-[40px] text-center">{Math.round(modalZoomLevel * 100)}%</span>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); setModalZoomLevel((p) => Math.min(5, p + 0.5)); }}
+                      className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-sm transition-colors"
+                    >
+                      <Plus size={14} />
+                    </button>
+                  </div>
+
                   {/* Prev/Next in zoom */}
                   {displayImages.length > 1 && (
                     <>
                       <button
-                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length); }}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-10"
+                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-20"
                       >
                         <ChevronLeft size={20} />
                       </button>
                       <button
-                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev + 1) % displayImages.length); }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-10"
+                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev + 1) % displayImages.length); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-20"
                       >
                         <ChevronRight size={20} />
                       </button>
                     </>
                   )}
                   <motion.img
+                    ref={modalImgRef}
                     key={`zoom-${activeImageIndex}`}
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
                     src={displayImages[activeImageIndex] || mainImage}
                     alt={product.name}
-                    className="max-w-[90vw] max-h-[90vh] object-contain cursor-zoom-out"
-                    onClick={() => setZoomOpen(false)}
+                    className="max-w-[90vw] max-h-[85vh] object-contain select-none"
+                    style={{
+                      transform: `scale(${modalZoomLevel}) translate(${modalPan.x}px, ${modalPan.y}px)`,
+                      cursor: modalZoomLevel > 1 ? 'grab' : 'zoom-in',
+                      transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+                    }}
+                    draggable={false}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (modalZoomLevel === 1) {
+                        setModalZoomLevel(2.5);
+                      } else {
+                        setModalZoomLevel(1);
+                        setModalPan({ x: 0, y: 0 });
+                      }
+                    }}
+                    onMouseDown={(e) => {
+                      if (modalZoomLevel > 1) {
+                        e.stopPropagation();
+                        setIsDragging(true);
+                        setDragStart({ x: e.clientX - modalPan.x, y: e.clientY - modalPan.y });
+                      }
+                    }}
+                    onMouseMove={(e) => {
+                      if (isDragging && modalZoomLevel > 1) {
+                        e.stopPropagation();
+                        setModalPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+                      }
+                    }}
+                    onMouseUp={() => setIsDragging(false)}
+                    onMouseLeave={() => setIsDragging(false)}
+                    onDoubleClick={(e) => {
+                      e.stopPropagation();
+                      if (modalZoomLevel > 1) {
+                        setModalZoomLevel(1);
+                        setModalPan({ x: 0, y: 0 });
+                      } else {
+                        setModalZoomLevel(3);
+                      }
+                    }}
                   />
                   <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-body text-muted-foreground tracking-[0.15em] uppercase">
-                    {activeImageIndex + 1} / {displayImages.length}
+                    {activeImageIndex + 1} / {displayImages.length} • Scroll to zoom • Click to toggle
                   </div>
                 </motion.div>
               )}
