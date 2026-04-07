@@ -154,7 +154,33 @@ const AdminDashboard = () => {
       return data?.reduce((sum, o) => sum + o.total_price, 0) ?? 0;
     },
   });
-  // Announcement text
+
+  // Recent reviews
+  const { data: recentReviews = [] } = useQuery({
+    queryKey: ["admin-recent-reviews"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("id, reviewer_name, rating, comment, product_id, created_at, admin_reply")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: reviewProducts = [] } = useQuery({
+    queryKey: ["admin-review-products-map"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("products").select("id, name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const reviewProductMap = Object.fromEntries(reviewProducts.map((p) => [p.id, p.name]));
+
+
   useQuery({
     queryKey: ["admin-announcement"],
     queryFn: async () => {
