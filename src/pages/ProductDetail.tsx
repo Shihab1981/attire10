@@ -36,8 +36,14 @@ const ProductDetail = () => {
   const [addedToCart, setAddedToCart] = useState(false);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 50, y: 50 });
+  const [isHovering, setIsHovering] = useState(false);
+  const [modalZoomLevel, setModalZoomLevel] = useState(1);
+  const [modalPan, setModalPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [shareOpen, setShareOpen] = useState(false);
   const imgContainerRef = useRef<HTMLDivElement>(null);
+  const modalImgRef = useRef<HTMLImageElement>(null);
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
 
   // Track recently viewed
