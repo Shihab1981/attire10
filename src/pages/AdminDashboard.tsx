@@ -120,9 +120,10 @@ const AdminDashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
-        .select("id, name, category, in_stock")
-        .eq("in_stock", false)
-        .limit(5);
+        .select("id, name, category, in_stock, stock_quantity")
+        .lte("stock_quantity", 5)
+        .order("stock_quantity", { ascending: true })
+        .limit(8);
       if (error) throw error;
       return data;
     },
@@ -767,12 +768,15 @@ const AdminDashboard = () => {
             {outOfStock.length > 0 ? (
               <div className="space-y-3">
                 {outOfStock.map((p) => (
-                  <div key={p.id} className="flex items-start gap-3 p-3 bg-destructive/5 border border-destructive/10">
-                    <AlertTriangle size={14} className="text-destructive mt-0.5 shrink-0" />
-                    <div>
-                      <p className="text-sm font-medium leading-tight">{p.name}</p>
+                  <div key={p.id} className={`flex items-start gap-3 p-3 border ${p.stock_quantity === 0 ? "bg-destructive/5 border-destructive/10" : "bg-yellow-50/50 border-yellow-200/50 dark:bg-yellow-900/10 dark:border-yellow-800/30"}`}>
+                    <AlertTriangle size={14} className={`mt-0.5 shrink-0 ${p.stock_quantity === 0 ? "text-destructive" : "text-yellow-600 dark:text-yellow-500"}`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium leading-tight truncate">{p.name}</p>
                       <p className="text-[10px] text-muted-foreground capitalize mt-0.5">{p.category.replace("-", " ")}</p>
                     </div>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-sm shrink-0 ${p.stock_quantity === 0 ? "bg-destructive/10 text-destructive" : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400"}`}>
+                      {p.stock_quantity === 0 ? "Out" : p.stock_quantity}
+                    </span>
                   </div>
                 ))}
               </div>
