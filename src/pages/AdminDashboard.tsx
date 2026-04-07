@@ -26,6 +26,8 @@ const AdminDashboard = () => {
   const { categories: allCategories, extraCategories } = useCategories();
   const [newCatName, setNewCatName] = useState("");
   const [newCatDesc, setNewCatDesc] = useState("");
+  const [stockThreshold, setStockThreshold] = useState(5);
+  const [stockThresholdLoaded, setStockThresholdLoaded] = useState(false);
 
   const { data: products } = useQuery({
     queryKey: ["admin-products-count"],
@@ -115,13 +117,31 @@ const AdminDashboard = () => {
   });
 
   // Low stock products
+  // Stock threshold from settings
+  useQuery({
+    queryKey: ["admin-stock-threshold"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "stock_threshold")
+        .maybeSingle();
+      const val = data?.value ? parseInt(data.value) : 5;
+      if (!stockThresholdLoaded) {
+        setStockThreshold(val);
+        setStockThresholdLoaded(true);
+      }
+      return val;
+    },
+  });
+
   const { data: outOfStock = [] } = useQuery({
-    queryKey: ["admin-out-of-stock"],
+    queryKey: ["admin-out-of-stock", stockThreshold],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("products")
         .select("id, name, category, in_stock, stock_quantity")
-        .lte("stock_quantity", 5)
+        .lte("stock_quantity", stockThreshold)
         .order("stock_quantity", { ascending: true })
         .limit(8);
       if (error) throw error;
@@ -757,7 +777,37 @@ const AdminDashboard = () => {
             className="lg:col-span-4 bg-card border border-border p-5 md:p-6"
           >
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display font-bold text-base">Stock Alerts</h2>
+              <div>
+                <h2 className="font-display font-bold text-base">Stock Alerts</h2>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[10px] text-muted-foreground font-body">Threshold:</span>
+                  <input
+                    type="number"
+                    min={0}
+                    max={100}
+                    value={stockThreshold}
+                    onChange={(e) => setStockThreshold(Math.max(0, parseInt(e.target.value) || 0))}
+                    className="w-12 border border-border bg-background px-1.5 py-0.5 text-xs text-center font-medium focus:outline-none focus:border-accent transition-colors"
+                  />
+                  <button
+                    onClick={async () => {
+                      const value = String(stockThreshold);
+                      const { data: existing } = await supabase.from("site_settings").select("key").eq("key", "stock_threshold").maybeSingle();
+                      if (existing) {
+                        await supabase.from("site_settings").update({ value, updated_at: new Date().toISOString() }).eq("key", "stock_threshold");
+                      } else {
+                        await supabase.from("site_settings").insert({ key: "stock_threshold", value });
+                      }
+                      queryClient.invalidateQueries({ queryKey: ["admin-stock-threshold"] });
+                      queryClient.invalidateQueries({ queryKey: ["admin-out-of-stock"] });
+                      toast.success(`Threshold set to ${stockThreshold}`);
+                    }}
+                    className="text-[10px] px-2 py-0.5 bg-foreground text-background font-medium hover:bg-accent hover:text-accent-foreground transition-colors"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
               <Link
                 to="/admin/products"
                 className="flex items-center gap-1 text-xs text-accent hover:text-accent/80 transition-colors font-body"
