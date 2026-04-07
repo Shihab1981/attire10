@@ -263,7 +263,7 @@ const ProductDetail = () => {
               <div
                 ref={imgContainerRef}
                 className="relative flex-1 aspect-[3/4] bg-secondary overflow-hidden group cursor-zoom-in"
-                onClick={() => setZoomOpen(true)}
+                onClick={() => { setZoomOpen(true); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
                 onMouseMove={(e) => {
                   if (!imgContainerRef.current) return;
                   const rect = imgContainerRef.current.getBoundingClientRect();
@@ -272,7 +272,10 @@ const ProductDetail = () => {
                     y: ((e.clientY - rect.top) / rect.height) * 100,
                   });
                 }}
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
               >
+                {/* Normal image */}
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImageIndex}
@@ -282,13 +285,35 @@ const ProductDetail = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="w-full h-full object-cover transition-transform duration-500 hidden md:block"
-                    style={{ transformOrigin: `${zoomPos.x}% ${zoomPos.y}%` }}
+                    className="w-full h-full object-cover"
                     onLoad={() => setImageLoaded(true)}
-                    onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.8)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                   />
                 </AnimatePresence>
+
+                {/* Desktop hover zoom lens */}
+                {isHovering && (
+                  <div
+                    className="hidden md:block absolute pointer-events-none w-[200px] h-[200px] border-2 border-accent/40 rounded-full overflow-hidden shadow-lg z-20"
+                    style={{
+                      left: `calc(${zoomPos.x}% - 100px)`,
+                      top: `calc(${zoomPos.y}% - 100px)`,
+                    }}
+                  >
+                    <img
+                      src={displayImages[activeImageIndex] || mainImage}
+                      alt=""
+                      className="absolute"
+                      style={{
+                        width: `${imgContainerRef.current?.offsetWidth ? imgContainerRef.current.offsetWidth * 2.5 : 1000}px`,
+                        height: `${imgContainerRef.current?.offsetHeight ? imgContainerRef.current.offsetHeight * 2.5 : 1200}px`,
+                        left: `${-zoomPos.x * 2.5 + 100}px`,
+                        top: `${-zoomPos.y * 2.5 + 100}px`,
+                        maxWidth: 'none',
+                      }}
+                    />
+                  </div>
+                )}
+
                 {/* Mobile image (no hover zoom) */}
                 <AnimatePresence mode="wait">
                   <motion.img
@@ -299,7 +324,7 @@ const ProductDetail = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="w-full h-full object-cover md:hidden"
+                    className="w-full h-full object-cover md:hidden absolute inset-0"
                     onLoad={() => setImageLoaded(true)}
                   />
                 </AnimatePresence>
