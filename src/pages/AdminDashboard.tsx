@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import AdminAuthGate from "@/components/AdminAuthGate";
 import AdminLayout from "@/components/AdminLayout";
-import { Package, ShoppingCart, Tag, DollarSign, TrendingUp, Clock, AlertTriangle, ArrowUpRight, Eye, Megaphone, Save, ImageIcon, Upload, Plus, Trash2 } from "lucide-react";
+import { Package, ShoppingCart, Tag, DollarSign, TrendingUp, Clock, AlertTriangle, ArrowUpRight, Eye, Megaphone, Save, ImageIcon, Upload, Plus, Trash2, Star, MessageSquare } from "lucide-react";
 import { Link } from "react-router-dom";
 import { format, subDays, startOfDay } from "date-fns";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -154,7 +154,33 @@ const AdminDashboard = () => {
       return data?.reduce((sum, o) => sum + o.total_price, 0) ?? 0;
     },
   });
-  // Announcement text
+
+  // Recent reviews
+  const { data: recentReviews = [] } = useQuery({
+    queryKey: ["admin-recent-reviews"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("reviews")
+        .select("id, reviewer_name, rating, comment, product_id, created_at, admin_reply")
+        .order("created_at", { ascending: false })
+        .limit(5);
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const { data: reviewProducts = [] } = useQuery({
+    queryKey: ["admin-review-products-map"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("products").select("id, name");
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const reviewProductMap = Object.fromEntries(reviewProducts.map((p) => [p.id, p.name]));
+
+
   useQuery({
     queryKey: ["admin-announcement"],
     queryFn: async () => {
@@ -609,6 +635,59 @@ const AdminDashboard = () => {
           </motion.div>
         </div>
 
+        {/* Recent Reviews */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.65 }}
+          className="bg-card border border-border mt-6"
+        >
+          <div className="flex items-center justify-between p-5 md:p-6 pb-0 md:pb-0">
+            <div className="flex items-center gap-2">
+              <MessageSquare size={16} className="text-accent" />
+              <h2 className="font-display font-bold text-base">Recent Reviews</h2>
+            </div>
+            <Link
+              to="/admin/reviews"
+              className="flex items-center gap-1 text-xs text-accent hover:text-accent/80 transition-colors font-body"
+            >
+              View All <ArrowUpRight size={12} />
+            </Link>
+          </div>
+          {recentReviews.length > 0 ? (
+            <div className="p-5 md:p-6 pt-4 space-y-3">
+              {recentReviews.map((review) => (
+                <div key={review.id} className="flex items-start gap-3 p-3 border border-border/50 bg-secondary/10 rounded-sm">
+                  <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-accent">{review.reviewer_name.charAt(0).toUpperCase()}</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-0.5">
+                      <span className="text-sm font-medium truncate">{review.reviewer_name}</span>
+                      <div className="flex gap-0.5 shrink-0">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <Star key={s} size={10} className={s <= review.rating ? "fill-accent text-accent" : "text-border"} />
+                        ))}
+                      </div>
+                      {review.admin_reply && (
+                        <span className="text-[9px] px-1.5 py-0.5 bg-accent/10 text-accent font-medium shrink-0">Replied</span>
+                      )}
+                    </div>
+                    <p className="text-[11px] text-muted-foreground mb-1">
+                      {reviewProductMap[review.product_id] || "Unknown"} • {format(new Date(review.created_at), "dd MMM")}
+                    </p>
+                    <p className="text-xs text-muted-foreground line-clamp-1">{review.comment}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10">
+              <MessageSquare size={24} className="mx-auto text-muted-foreground/40 mb-2" />
+              <p className="text-sm text-muted-foreground">No reviews yet</p>
+            </div>
+          )}
+        </motion.div>
         <div className="grid lg:grid-cols-12 gap-6">
           {/* Recent Orders */}
           <motion.div
