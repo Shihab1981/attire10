@@ -305,62 +305,62 @@ const ProductDetail = () => {
                   setSwipeOffset(0);
                 }}
               >
-                {/* Normal image */}
+                {/* Main visible image */}
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImageIndex}
-                    src={displayImages[activeImageIndex] || mainImage}
-                    alt={product.name}
-                    initial={{ opacity: 0, scale: 1.05 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="w-full h-full object-cover"
-                    onLoad={() => setImageLoaded(true)}
-                  />
-                </AnimatePresence>
-
-                {/* Desktop hover zoom lens */}
-                {isHovering && (
-                  <div
-                    className="hidden md:block absolute pointer-events-none w-[200px] h-[200px] border-2 border-accent/40 rounded-full overflow-hidden shadow-lg z-20"
-                    style={{
-                      left: `calc(${zoomPos.x}% - 100px)`,
-                      top: `calc(${zoomPos.y}% - 100px)`,
-                    }}
-                  >
-                    <img
-                      src={displayImages[activeImageIndex] || mainImage}
-                      alt=""
-                      className="absolute"
-                      style={{
-                        width: `${imgContainerRef.current?.offsetWidth ? imgContainerRef.current.offsetWidth * 2.5 : 1000}px`,
-                        height: `${imgContainerRef.current?.offsetHeight ? imgContainerRef.current.offsetHeight * 2.5 : 1200}px`,
-                        left: `${-zoomPos.x * 2.5 + 100}px`,
-                        top: `${-zoomPos.y * 2.5 + 100}px`,
-                        maxWidth: 'none',
-                      }}
-                    />
-                  </div>
-                )}
-
-                {/* Mobile image (no hover zoom) */}
-                <AnimatePresence mode="wait">
-                  <motion.img
-                    key={`mobile-${activeImageIndex}`}
                     src={displayImages[activeImageIndex] || mainImage}
                     alt={product.name}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.3 }}
-                    className="w-full h-full object-cover md:hidden absolute inset-0"
+                    className="w-full h-full object-cover pointer-events-none"
                     onLoad={() => setImageLoaded(true)}
                   />
                 </AnimatePresence>
 
+                {/* Desktop: zoomed preview panel on the right */}
+                <AnimatePresence>
+                  {isHovering && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.15 }}
+                      className="hidden md:block absolute top-0 left-full ml-4 w-[500px] h-full bg-background border border-border/50 shadow-xl z-30 overflow-hidden pointer-events-none"
+                    >
+                      <img
+                        src={displayImages[activeImageIndex] || mainImage}
+                        alt=""
+                        className="absolute"
+                        style={{
+                          width: `${(imgContainerRef.current?.offsetWidth || 400) * 2.5}px`,
+                          height: `${(imgContainerRef.current?.offsetHeight || 600) * 2.5}px`,
+                          left: `${-(zoomPos.x / 100) * ((imgContainerRef.current?.offsetWidth || 400) * 2.5) + 250}px`,
+                          top: `${-(zoomPos.y / 100) * ((imgContainerRef.current?.offsetHeight || 600) * 2.5) + ((imgContainerRef.current?.offsetHeight || 600) / 2)}px`,
+                          maxWidth: 'none',
+                        }}
+                      />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Desktop: crosshair area indicator */}
+                {isHovering && (
+                  <div
+                    className="hidden md:block absolute pointer-events-none border-2 border-accent/30 bg-accent/5 z-20"
+                    style={{
+                      width: '120px',
+                      height: '120px',
+                      left: `calc(${zoomPos.x}% - 60px)`,
+                      top: `calc(${zoomPos.y}% - 60px)`,
+                    }}
+                  />
+                )}
+
                 {/* Zoom icon hint */}
-                <div className="absolute bottom-4 right-4 w-8 h-8 bg-background/70 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                <div className="absolute bottom-4 right-4 w-8 h-8 bg-background/70 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none md:hidden">
                   <ZoomIn size={14} className="text-muted-foreground" />
                 </div>
 
@@ -452,165 +452,150 @@ const ProductDetail = () => {
               </div>
             </motion.div>
 
-            {/* Zoom Modal */}
+            {/* Zoom Modal — clean fullscreen with scroll/pinch zoom + drag pan */}
             <AnimatePresence>
               {zoomOpen && (
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-50 bg-background/95 backdrop-blur-sm flex items-center justify-center overflow-hidden"
-                  onClick={() => {
-                    if (modalZoomLevel > 1) {
-                      setModalZoomLevel(1);
-                      setModalPan({ x: 0, y: 0 });
-                    } else {
-                      setZoomOpen(false);
-                    }
-                  }}
-                  onWheel={(e) => {
-                    e.preventDefault();
-                    setModalZoomLevel((prev) => {
-                      const next = prev + (e.deltaY < 0 ? 0.3 : -0.3);
-                      const clamped = Math.min(Math.max(next, 1), 5);
-                      if (clamped === 1) setModalPan({ x: 0, y: 0 });
-                      return clamped;
-                    });
-                  }}
+                  className="fixed inset-0 z-50 bg-background flex flex-col"
                 >
-                  <button
-                    onClick={(e) => { e.stopPropagation(); setZoomOpen(false); }}
-                    className="absolute top-5 right-5 w-10 h-10 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-20"
-                  >
-                    <X size={18} />
-                  </button>
-
-                  {/* Zoom controls */}
-                  <div className="absolute top-5 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-secondary/80 backdrop-blur-sm px-3 py-1.5 rounded-sm z-20">
+                  {/* Top bar */}
+                  <div className="flex items-center justify-between px-4 py-3 border-b border-border/30 shrink-0">
+                    <span className="text-xs font-body text-muted-foreground">
+                      {activeImageIndex + 1} / {displayImages.length}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setModalZoomLevel((p) => { const n = Math.max(1, p - 0.5); if (n === 1) setModalPan({ x: 0, y: 0 }); return n; })}
+                        className="w-8 h-8 flex items-center justify-center hover:bg-secondary rounded-sm transition-colors"
+                      >
+                        <Minus size={16} />
+                      </button>
+                      <span className="text-xs font-body font-medium min-w-[44px] text-center">{Math.round(modalZoomLevel * 100)}%</span>
+                      <button
+                        onClick={() => setModalZoomLevel((p) => Math.min(5, p + 0.5))}
+                        className="w-8 h-8 flex items-center justify-center hover:bg-secondary rounded-sm transition-colors"
+                      >
+                        <Plus size={16} />
+                      </button>
+                    </div>
                     <button
-                      onClick={(e) => { e.stopPropagation(); setModalZoomLevel((p) => Math.max(1, p - 0.5)); if (modalZoomLevel <= 1.5) setModalPan({ x: 0, y: 0 }); }}
-                      className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-sm transition-colors"
+                      onClick={() => { setZoomOpen(false); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
+                      className="w-8 h-8 flex items-center justify-center hover:bg-secondary rounded-sm transition-colors"
                     >
-                      <Minus size={14} />
-                    </button>
-                    <span className="text-xs font-body font-medium min-w-[40px] text-center">{Math.round(modalZoomLevel * 100)}%</span>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); setModalZoomLevel((p) => Math.min(5, p + 0.5)); }}
-                      className="w-7 h-7 flex items-center justify-center hover:bg-muted rounded-sm transition-colors"
-                    >
-                      <Plus size={14} />
+                      <X size={18} />
                     </button>
                   </div>
 
-                  {/* Prev/Next in zoom */}
-                  {displayImages.length > 1 && (
-                    <>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-20"
-                      >
-                        <ChevronLeft size={20} />
-                      </button>
-                      <button
-                        onClick={(e) => { e.stopPropagation(); setActiveImageIndex((prev) => (prev + 1) % displayImages.length); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 bg-secondary flex items-center justify-center hover:bg-muted transition-colors z-20"
-                      >
-                        <ChevronRight size={20} />
-                      </button>
-                    </>
-                  )}
-                  <motion.img
-                    ref={modalImgRef}
-                    key={`zoom-${activeImageIndex}`}
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.9, opacity: 0 }}
-                    src={displayImages[activeImageIndex] || mainImage}
-                    alt={product.name}
-                    className="max-w-[90vw] max-h-[85vh] object-contain select-none touch-none"
-                    style={{
-                      transform: `scale(${modalZoomLevel}) translate(${modalPan.x}px, ${modalPan.y}px)`,
-                      cursor: modalZoomLevel > 1 ? 'grab' : 'zoom-in',
-                      transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+                  {/* Image area */}
+                  <div
+                    className="flex-1 overflow-hidden flex items-center justify-center relative"
+                    onWheel={(e) => {
+                      e.preventDefault();
+                      setModalZoomLevel((prev) => {
+                        const next = prev + (e.deltaY < 0 ? 0.3 : -0.3);
+                        const clamped = Math.min(Math.max(next, 1), 5);
+                        if (clamped === 1) setModalPan({ x: 0, y: 0 });
+                        return clamped;
+                      });
                     }}
-                    draggable={false}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (modalZoomLevel === 1) {
-                        setModalZoomLevel(2.5);
-                      } else {
-                        setModalZoomLevel(1);
-                        setModalPan({ x: 0, y: 0 });
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      if (modalZoomLevel > 1) {
+                  >
+                    {/* Prev/Next */}
+                    {displayImages.length > 1 && (
+                      <>
+                        <button
+                          onClick={() => { setActiveImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-secondary/80 backdrop-blur-sm flex items-center justify-center hover:bg-secondary transition-colors z-20 rounded-full"
+                        >
+                          <ChevronLeft size={20} />
+                        </button>
+                        <button
+                          onClick={() => { setActiveImageIndex((prev) => (prev + 1) % displayImages.length); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-secondary/80 backdrop-blur-sm flex items-center justify-center hover:bg-secondary transition-colors z-20 rounded-full"
+                        >
+                          <ChevronRight size={20} />
+                        </button>
+                      </>
+                    )}
+
+                    <motion.img
+                      ref={modalImgRef}
+                      key={`zoom-${activeImageIndex}`}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      src={displayImages[activeImageIndex] || mainImage}
+                      alt={product.name}
+                      className="max-w-[90vw] max-h-[85vh] object-contain select-none touch-none"
+                      style={{
+                        transform: `scale(${modalZoomLevel}) translate(${modalPan.x}px, ${modalPan.y}px)`,
+                        cursor: modalZoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
+                        transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+                      }}
+                      draggable={false}
+                      onClick={(e) => {
                         e.stopPropagation();
-                        setIsDragging(true);
-                        setDragStart({ x: e.clientX - modalPan.x, y: e.clientY - modalPan.y });
-                      }
-                    }}
-                    onMouseMove={(e) => {
-                      if (isDragging && modalZoomLevel > 1) {
+                        if (modalZoomLevel === 1) {
+                          setModalZoomLevel(2.5);
+                        } else {
+                          setModalZoomLevel(1);
+                          setModalPan({ x: 0, y: 0 });
+                        }
+                      }}
+                      onMouseDown={(e) => {
+                        if (modalZoomLevel > 1) {
+                          e.preventDefault();
+                          setIsDragging(true);
+                          setDragStart({ x: e.clientX - modalPan.x, y: e.clientY - modalPan.y });
+                        }
+                      }}
+                      onMouseMove={(e) => {
+                        if (isDragging && modalZoomLevel > 1) {
+                          setModalPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
+                        }
+                      }}
+                      onMouseUp={() => setIsDragging(false)}
+                      onMouseLeave={() => setIsDragging(false)}
+                      onDoubleClick={(e) => {
                         e.stopPropagation();
-                        setModalPan({ x: e.clientX - dragStart.x, y: e.clientY - dragStart.y });
-                      }
-                    }}
-                    onMouseUp={() => setIsDragging(false)}
-                    onMouseLeave={() => setIsDragging(false)}
-                    onDoubleClick={(e) => {
-                      e.stopPropagation();
-                      if (modalZoomLevel > 1) {
-                        setModalZoomLevel(1);
-                        setModalPan({ x: 0, y: 0 });
-                      } else {
-                        setModalZoomLevel(3);
-                      }
-                    }}
-                    onTouchStart={(e) => {
-                      e.stopPropagation();
-                      if (e.touches.length === 2) {
-                        const dx = e.touches[0].clientX - e.touches[1].clientX;
-                        const dy = e.touches[0].clientY - e.touches[1].clientY;
-                        setPinchStartDist(Math.hypot(dx, dy));
-                        setPinchStartZoom(modalZoomLevel);
-                      } else if (e.touches.length === 1 && modalZoomLevel > 1) {
-                        setIsDragging(true);
-                        setTouchStart({ x: e.touches[0].clientX - modalPan.x, y: e.touches[0].clientY - modalPan.y });
-                      }
-                    }}
-                    onTouchMove={(e) => {
-                      e.stopPropagation();
-                      if (e.touches.length === 2) {
-                        e.preventDefault();
-                        const dx = e.touches[0].clientX - e.touches[1].clientX;
-                        const dy = e.touches[0].clientY - e.touches[1].clientY;
-                        const dist = Math.hypot(dx, dy);
-                        if (pinchStartDist > 0) {
-                          const newZoom = Math.min(Math.max(pinchStartZoom * (dist / pinchStartDist), 1), 5);
+                        if (modalZoomLevel > 1) { setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }
+                        else { setModalZoomLevel(3); }
+                      }}
+                      onTouchStart={(e) => {
+                        if (e.touches.length === 2) {
+                          const dx = e.touches[0].clientX - e.touches[1].clientX;
+                          const dy = e.touches[0].clientY - e.touches[1].clientY;
+                          setPinchStartDist(Math.hypot(dx, dy));
+                          setPinchStartZoom(modalZoomLevel);
+                        } else if (e.touches.length === 1 && modalZoomLevel > 1) {
+                          setIsDragging(true);
+                          setTouchStart({ x: e.touches[0].clientX - modalPan.x, y: e.touches[0].clientY - modalPan.y });
+                        }
+                      }}
+                      onTouchMove={(e) => {
+                        if (e.touches.length === 2 && pinchStartDist > 0) {
+                          e.preventDefault();
+                          const dx = e.touches[0].clientX - e.touches[1].clientX;
+                          const dy = e.touches[0].clientY - e.touches[1].clientY;
+                          const newZoom = Math.min(Math.max(pinchStartZoom * (Math.hypot(dx, dy) / pinchStartDist), 1), 5);
                           setModalZoomLevel(newZoom);
                           if (newZoom === 1) setModalPan({ x: 0, y: 0 });
+                        } else if (e.touches.length === 1 && isDragging && modalZoomLevel > 1 && touchStart) {
+                          setModalPan({ x: e.touches[0].clientX - touchStart.x, y: e.touches[0].clientY - touchStart.y });
                         }
-                      } else if (e.touches.length === 1 && isDragging && modalZoomLevel > 1 && touchStart) {
-                        setModalPan({
-                          x: e.touches[0].clientX - touchStart.x,
-                          y: e.touches[0].clientY - touchStart.y,
-                        });
-                      }
-                    }}
-                    onTouchEnd={(e) => {
-                      e.stopPropagation();
-                      if (e.touches.length < 2) {
-                        setPinchStartDist(0);
-                      }
-                      if (e.touches.length === 0) {
-                        setIsDragging(false);
-                        setTouchStart(null);
-                      }
-                    }}
-                  />
-                  <div className="absolute bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-body text-muted-foreground tracking-[0.15em] uppercase">
-                    {activeImageIndex + 1} / {displayImages.length} • Scroll to zoom • Click to toggle
+                      }}
+                      onTouchEnd={(e) => {
+                        if (e.touches.length < 2) setPinchStartDist(0);
+                        if (e.touches.length === 0) { setIsDragging(false); setTouchStart(null); }
+                      }}
+                    />
+                  </div>
+
+                  {/* Bottom hint */}
+                  <div className="text-center py-2 text-[10px] font-body text-muted-foreground tracking-wider uppercase shrink-0">
+                    Click to zoom • Scroll or pinch to adjust • Drag to pan
                   </div>
                 </motion.div>
               )}
