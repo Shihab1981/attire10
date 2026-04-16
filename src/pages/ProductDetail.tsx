@@ -500,7 +500,7 @@ const ProductDetail = () => {
                     exit={{ scale: 0.9, opacity: 0 }}
                     src={displayImages[activeImageIndex] || mainImage}
                     alt={product.name}
-                    className="max-w-[90vw] max-h-[85vh] object-contain select-none"
+                    className="max-w-[90vw] max-h-[85vh] object-contain select-none touch-none"
                     style={{
                       transform: `scale(${modalZoomLevel}) translate(${modalPan.x}px, ${modalPan.y}px)`,
                       cursor: modalZoomLevel > 1 ? 'grab' : 'zoom-in',
