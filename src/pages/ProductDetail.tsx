@@ -42,6 +42,9 @@ const ProductDetail = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [shareOpen, setShareOpen] = useState(false);
+  const [pinchStartDist, setPinchStartDist] = useState(0);
+  const [pinchStartZoom, setPinchStartZoom] = useState(1);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const modalImgRef = useRef<HTMLImageElement>(null);
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
@@ -497,7 +500,7 @@ const ProductDetail = () => {
                     exit={{ scale: 0.9, opacity: 0 }}
                     src={displayImages[activeImageIndex] || mainImage}
                     alt={product.name}
-                    className="max-w-[90vw] max-h-[85vh] object-contain select-none"
+                    className="max-w-[90vw] max-h-[85vh] object-contain select-none touch-none"
                     style={{
                       transform: `scale(${modalZoomLevel}) translate(${modalPan.x}px, ${modalPan.y}px)`,
                       cursor: modalZoomLevel > 1 ? 'grab' : 'zoom-in',
@@ -535,6 +538,47 @@ const ProductDetail = () => {
                         setModalPan({ x: 0, y: 0 });
                       } else {
                         setModalZoomLevel(3);
+                      }
+                    }}
+                    onTouchStart={(e) => {
+                      e.stopPropagation();
+                      if (e.touches.length === 2) {
+                        const dx = e.touches[0].clientX - e.touches[1].clientX;
+                        const dy = e.touches[0].clientY - e.touches[1].clientY;
+                        setPinchStartDist(Math.hypot(dx, dy));
+                        setPinchStartZoom(modalZoomLevel);
+                      } else if (e.touches.length === 1 && modalZoomLevel > 1) {
+                        setIsDragging(true);
+                        setTouchStart({ x: e.touches[0].clientX - modalPan.x, y: e.touches[0].clientY - modalPan.y });
+                      }
+                    }}
+                    onTouchMove={(e) => {
+                      e.stopPropagation();
+                      if (e.touches.length === 2) {
+                        e.preventDefault();
+                        const dx = e.touches[0].clientX - e.touches[1].clientX;
+                        const dy = e.touches[0].clientY - e.touches[1].clientY;
+                        const dist = Math.hypot(dx, dy);
+                        if (pinchStartDist > 0) {
+                          const newZoom = Math.min(Math.max(pinchStartZoom * (dist / pinchStartDist), 1), 5);
+                          setModalZoomLevel(newZoom);
+                          if (newZoom === 1) setModalPan({ x: 0, y: 0 });
+                        }
+                      } else if (e.touches.length === 1 && isDragging && modalZoomLevel > 1 && touchStart) {
+                        setModalPan({
+                          x: e.touches[0].clientX - touchStart.x,
+                          y: e.touches[0].clientY - touchStart.y,
+                        });
+                      }
+                    }}
+                    onTouchEnd={(e) => {
+                      e.stopPropagation();
+                      if (e.touches.length < 2) {
+                        setPinchStartDist(0);
+                      }
+                      if (e.touches.length === 0) {
+                        setIsDragging(false);
+                        setTouchStart(null);
                       }
                     }}
                   />
