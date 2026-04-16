@@ -45,6 +45,8 @@ const ProductDetail = () => {
   const [pinchStartDist, setPinchStartDist] = useState(0);
   const [pinchStartZoom, setPinchStartZoom] = useState(1);
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
+  const [swipeStartX, setSwipeStartX] = useState<number | null>(null);
+  const [swipeOffset, setSwipeOffset] = useState(0);
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const modalImgRef = useRef<HTMLImageElement>(null);
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
