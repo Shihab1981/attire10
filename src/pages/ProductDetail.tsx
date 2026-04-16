@@ -268,7 +268,7 @@ const ProductDetail = () => {
               <div
                 ref={imgContainerRef}
                 className="relative flex-1 aspect-[3/4] bg-secondary overflow-hidden group cursor-zoom-in"
-                onClick={() => { setZoomOpen(true); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }}
+                onClick={() => { if (Math.abs(swipeOffset) < 5) { setZoomOpen(true); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); } }}
                 onMouseMove={(e) => {
                   if (!imgContainerRef.current) return;
                   const rect = imgContainerRef.current.getBoundingClientRect();
@@ -279,6 +279,31 @@ const ProductDetail = () => {
                 }}
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
+                onTouchStart={(e) => {
+                  if (e.touches.length === 1) {
+                    setSwipeStartX(e.touches[0].clientX);
+                    setSwipeOffset(0);
+                  }
+                }}
+                onTouchMove={(e) => {
+                  if (swipeStartX !== null && e.touches.length === 1) {
+                    setSwipeOffset(e.touches[0].clientX - swipeStartX);
+                  }
+                }}
+                onTouchEnd={() => {
+                  if (swipeStartX !== null && displayImages.length > 1) {
+                    const threshold = 50;
+                    if (swipeOffset < -threshold) {
+                      setActiveImageIndex((prev) => (prev + 1) % displayImages.length);
+                      setImageLoaded(false);
+                    } else if (swipeOffset > threshold) {
+                      setActiveImageIndex((prev) => (prev - 1 + displayImages.length) % displayImages.length);
+                      setImageLoaded(false);
+                    }
+                  }
+                  setSwipeStartX(null);
+                  setSwipeOffset(0);
+                }}
               >
                 {/* Normal image */}
                 <AnimatePresence mode="wait">
