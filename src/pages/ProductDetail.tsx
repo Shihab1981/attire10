@@ -42,6 +42,9 @@ const ProductDetail = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [shareOpen, setShareOpen] = useState(false);
+  const [pinchStartDist, setPinchStartDist] = useState(0);
+  const [pinchStartZoom, setPinchStartZoom] = useState(1);
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null);
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const modalImgRef = useRef<HTMLImageElement>(null);
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
