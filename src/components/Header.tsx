@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import SearchOverlay from "./SearchOverlay";
+import InstallPWAButton from "./InstallPWAButton";
 
 
 const Header = () => {
@@ -69,7 +70,7 @@ const Header = () => {
           </nav>
 
           <div className="flex items-center gap-1 md:gap-2">
-            
+            <InstallPWAButton />
             <Link to="/track-order" className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Track Order">
               <MapPin size={18} strokeWidth={1.5} />
             </Link>
