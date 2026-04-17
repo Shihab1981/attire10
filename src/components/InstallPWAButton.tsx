@@ -1,6 +1,6 @@
 import { Download } from "lucide-react";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { Link } from "react-router-dom";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -68,19 +68,18 @@ const InstallPWAButton = () => {
     setDeferredPrompt(null);
   };
 
-  // Hide if already installed, or no prompt available and not iOS
+  // Hide only if already installed; always show otherwise (links to /install for manual)
   if (isInstalled) return null;
-  if (!deferredPrompt && !isIOS) return null;
 
   return (
-    <button
-      onClick={handleInstall}
+    <Link
+      to="/install"
       className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-[10px] font-medium tracking-[0.15em] uppercase border border-accent/40 text-accent hover:bg-accent hover:text-accent-foreground rounded-sm transition-all"
       aria-label="Install ATTIRE app"
     >
       <Download size={14} strokeWidth={1.5} />
       <span>Install App</span>
-    </button>
+    </Link>
   );
 };
 
