@@ -19,6 +19,8 @@ import OrderConfirmation from "./pages/OrderConfirmation";
 import TrackOrder from "./pages/TrackOrder";
 import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
+import Offline from "./pages/Offline";
+import OfflineIndicator from "./components/OfflineIndicator";
 
 const queryClient = new QueryClient();
 
@@ -28,6 +30,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <OfflineIndicator />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/products" element={<Products />} />
@@ -44,6 +47,7 @@ const App = () => (
           <Route path="/admin/flash-sales" element={<AdminFlashSales />} />
           <Route path="/admin/reviews" element={<AdminReviews />} />
           <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
+          <Route path="/offline" element={<Offline />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
