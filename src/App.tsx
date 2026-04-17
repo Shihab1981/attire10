@@ -20,6 +20,7 @@ import TrackOrder from "./pages/TrackOrder";
 import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 import Offline from "./pages/Offline";
+import Install from "./pages/Install";
 import OfflineIndicator from "./components/OfflineIndicator";
 
 const queryClient = new QueryClient();
@@ -48,6 +49,7 @@ const App = () => (
           <Route path="/admin/reviews" element={<AdminReviews />} />
           <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
           <Route path="/offline" element={<Offline />} />
+          <Route path="/install" element={<Install />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
