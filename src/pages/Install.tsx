@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Download, Smartphone, Monitor, Apple, Share, Plus, CheckCircle2, Wifi, Bell, Zap, MoreVertical, Home } from "lucide-react";
+import { Download, Smartphone, Monitor, Apple, Share, Plus, CheckCircle2, Wifi, Bell, Zap, MoreVertical, Home, ArrowUp } from "lucide-react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -255,9 +255,42 @@ const Install = () => {
     { icon: Smartphone, title: "App-like Experience", desc: "Full screen, no browser bars" },
   ];
 
+  // Pulse arrow visibility (auto-hide after 8s or on scroll)
+  const [showArrow, setShowArrow] = useState(true);
+  useEffect(() => {
+    if (isInstalled) {
+      setShowArrow(false);
+      return;
+    }
+    const timer = setTimeout(() => setShowArrow(false), 8000);
+    const onScroll = () => {
+      if (window.scrollY > 80) setShowArrow(false);
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+    };
+  }, [isInstalled]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
+      {showArrow && !isInstalled && (
+        <div
+          className="fixed top-[60px] right-3 sm:right-6 z-40 pointer-events-none animate-fade-in"
+          aria-hidden="true"
+        >
+          <div className="flex flex-col items-center gap-1 animate-bounce">
+            <ArrowUp size={22} strokeWidth={2.5} className="text-accent drop-shadow-md" />
+            <span className="text-[9px] font-bold tracking-[0.15em] uppercase text-accent bg-background/95 px-2 py-0.5 rounded-sm shadow-md whitespace-nowrap border border-accent/30">
+              Tap Install
+            </span>
+          </div>
+          {/* Pulse ring behind arrow */}
+          <span className="absolute -top-1 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-accent/30 animate-ping" />
+        </div>
+      )}
       <main className="flex-1">
         {/* Hero */}
         <section className="container py-12 md:py-20 text-center">
