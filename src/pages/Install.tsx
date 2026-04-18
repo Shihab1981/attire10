@@ -1,8 +1,197 @@
 import { useEffect, useState } from "react";
-import { Download, Smartphone, Monitor, Apple, Share, Plus, CheckCircle2, Wifi, Bell, Zap } from "lucide-react";
+import { Download, Smartphone, Monitor, Apple, Share, Plus, CheckCircle2, Wifi, Bell, Zap, MoreVertical, Home } from "lucide-react";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+
+// Visual illustrations for install steps
+const AndroidMenuIllustration = () => (
+  <div className="bg-secondary/40 rounded-md p-4 mt-3 border border-border/40">
+    <div className="bg-background rounded-md shadow-sm overflow-hidden max-w-[220px] mx-auto">
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border/40">
+        <div className="flex items-center gap-1.5">
+          <div className="w-1.5 h-1.5 rounded-full bg-muted-foreground/40" />
+          <div className="h-2 w-20 bg-muted-foreground/20 rounded-sm" />
+        </div>
+        <div className="relative">
+          <MoreVertical size={14} className="text-foreground" />
+          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-accent animate-ping opacity-75" />
+          <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-accent" />
+        </div>
+      </div>
+      <div className="p-2 text-[9px] text-muted-foreground text-center">Tap menu (⋮) top-right</div>
+    </div>
+  </div>
+);
+
+const AndroidInstallOptionIllustration = () => (
+  <div className="bg-secondary/40 rounded-md p-4 mt-3 border border-border/40">
+    <div className="bg-background rounded-md shadow-sm overflow-hidden max-w-[220px] mx-auto">
+      <div className="py-1">
+        <div className="px-3 py-1.5 text-[9px] text-muted-foreground">New tab</div>
+        <div className="px-3 py-1.5 text-[9px] text-muted-foreground">Bookmarks</div>
+        <div className="px-3 py-1.5 text-[9px] bg-accent/10 text-accent font-medium flex items-center gap-1.5 border-l-2 border-accent">
+          <Download size={10} /> Install app
+        </div>
+        <div className="px-3 py-1.5 text-[9px] text-muted-foreground">Settings</div>
+      </div>
+    </div>
+    <p className="text-[9px] text-muted-foreground text-center mt-2">Select "Install app"</p>
+  </div>
+);
+
+const AndroidConfirmIllustration = () => (
+  <div className="bg-secondary/40 rounded-md p-4 mt-3 border border-border/40">
+    <div className="bg-background rounded-md shadow-sm p-3 max-w-[220px] mx-auto">
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-8 h-8 rounded-md bg-accent/20 flex items-center justify-center">
+          <span className="text-[8px] font-bold text-accent">A</span>
+        </div>
+        <div className="flex-1">
+          <div className="h-2 w-16 bg-foreground/80 rounded-sm mb-1" />
+          <div className="h-1.5 w-10 bg-muted-foreground/30 rounded-sm" />
+        </div>
+      </div>
+      <div className="flex justify-end gap-1.5">
+        <div className="px-2 py-1 text-[8px] text-muted-foreground">Cancel</div>
+        <div className="px-2 py-1 text-[8px] bg-accent text-accent-foreground rounded-sm font-medium">Install</div>
+      </div>
+    </div>
+    <p className="text-[9px] text-muted-foreground text-center mt-2">Tap "Install" to confirm</p>
+  </div>
+);
+
+const IosShareIllustration = () => (
+  <div className="bg-secondary/40 rounded-md p-4 mt-3 border border-border/40">
+    <div className="bg-background rounded-md shadow-sm overflow-hidden max-w-[220px] mx-auto">
+      <div className="px-3 py-2 text-[9px] text-center text-muted-foreground border-b border-border/40">
+        attire10.lovable.app
+      </div>
+      <div className="flex items-center justify-around py-2 border-t border-border/40">
+        <div className="text-muted-foreground/40 text-[10px]">‹</div>
+        <div className="text-muted-foreground/40 text-[10px]">›</div>
+        <div className="relative">
+          <Share size={14} className="text-accent" />
+          <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-accent animate-ping" />
+        </div>
+        <div className="text-muted-foreground/40 text-[10px]">▢</div>
+        <div className="text-muted-foreground/40 text-[10px]">≡</div>
+      </div>
+    </div>
+    <p className="text-[9px] text-muted-foreground text-center mt-2">Tap Share icon at bottom of Safari</p>
+  </div>
+);
+
+const IosAddToHomeIllustration = () => (
+  <div className="bg-secondary/40 rounded-md p-4 mt-3 border border-border/40">
+    <div className="bg-background rounded-md shadow-sm overflow-hidden max-w-[220px] mx-auto">
+      <div className="py-1">
+        <div className="px-3 py-1.5 text-[9px] text-muted-foreground flex items-center justify-between">
+          Copy <span>⎘</span>
+        </div>
+        <div className="px-3 py-1.5 text-[9px] text-muted-foreground flex items-center justify-between">
+          Add to Reading List <span>⊕</span>
+        </div>
+        <div className="px-3 py-1.5 text-[9px] bg-accent/10 text-accent font-medium flex items-center justify-between border-l-2 border-accent">
+          Add to Home Screen <Plus size={10} />
+        </div>
+        <div className="px-3 py-1.5 text-[9px] text-muted-foreground flex items-center justify-between">
+          Markup <span>✎</span>
+        </div>
+      </div>
+    </div>
+    <p className="text-[9px] text-muted-foreground text-center mt-2">Scroll & tap "Add to Home Screen"</p>
+  </div>
+);
+
+const IosConfirmIllustration = () => (
+  <div className="bg-secondary/40 rounded-md p-4 mt-3 border border-border/40">
+    <div className="bg-background rounded-md shadow-sm p-2 max-w-[220px] mx-auto">
+      <div className="flex items-center justify-between mb-2">
+        <div className="text-[9px] text-muted-foreground">Cancel</div>
+        <div className="text-[9px] font-semibold">Add to Home Screen</div>
+        <div className="text-[9px] text-accent font-bold relative">
+          Add
+          <span className="absolute -top-1 -right-2 w-2 h-2 rounded-full bg-accent animate-ping" />
+        </div>
+      </div>
+      <div className="flex items-center gap-2 p-2 bg-secondary/40 rounded-sm">
+        <div className="w-7 h-7 rounded-md bg-accent/20 flex items-center justify-center">
+          <Home size={10} className="text-accent" />
+        </div>
+        <div className="flex-1">
+          <div className="h-1.5 w-12 bg-foreground/70 rounded-sm mb-1" />
+          <div className="h-1 w-16 bg-muted-foreground/30 rounded-sm" />
+        </div>
+      </div>
+    </div>
+    <p className="text-[9px] text-muted-foreground text-center mt-2">Tap "Add" in top-right</p>
+  </div>
+);
+
+const DesktopAddressBarIllustration = () => (
+  <div className="bg-secondary/40 rounded-md p-4 mt-3 border border-border/40">
+    <div className="bg-background rounded-md shadow-sm overflow-hidden max-w-[280px] mx-auto">
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40">
+        <div className="flex gap-1">
+          <div className="w-2 h-2 rounded-full bg-red-400" />
+          <div className="w-2 h-2 rounded-full bg-yellow-400" />
+          <div className="w-2 h-2 rounded-full bg-green-400" />
+        </div>
+        <div className="flex-1 flex items-center gap-2 px-2 py-1 bg-secondary/60 rounded-sm">
+          <div className="h-1.5 flex-1 bg-muted-foreground/20 rounded-sm" />
+          <div className="relative">
+            <div className="w-3 h-3 rounded-sm border border-accent flex items-center justify-center">
+              <Plus size={8} className="text-accent" strokeWidth={3} />
+            </div>
+            <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-accent animate-ping" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <p className="text-[9px] text-muted-foreground text-center mt-2">Click install icon (⊕) in address bar</p>
+  </div>
+);
+
+const DesktopInstallDialogIllustration = () => (
+  <div className="bg-secondary/40 rounded-md p-4 mt-3 border border-border/40">
+    <div className="bg-background rounded-md shadow-sm p-3 max-w-[240px] mx-auto border border-border/40">
+      <div className="flex items-center gap-2 mb-2">
+        <div className="w-8 h-8 rounded-md bg-accent/20 flex items-center justify-center">
+          <span className="text-[8px] font-bold text-accent">A</span>
+        </div>
+        <div>
+          <div className="text-[9px] font-semibold">Install ATTIRE?</div>
+          <div className="text-[8px] text-muted-foreground">attire10.lovable.app</div>
+        </div>
+      </div>
+      <div className="flex justify-end gap-1.5">
+        <div className="px-2 py-1 text-[8px] text-muted-foreground">Cancel</div>
+        <div className="px-2 py-1 text-[8px] bg-accent text-accent-foreground rounded-sm font-medium">Install</div>
+      </div>
+    </div>
+    <p className="text-[9px] text-muted-foreground text-center mt-2">Click "Install" in the popup</p>
+  </div>
+);
+
+const DesktopPinIllustration = () => (
+  <div className="bg-secondary/40 rounded-md p-4 mt-3 border border-border/40">
+    <div className="bg-background rounded-md shadow-sm p-3 max-w-[240px] mx-auto">
+      <div className="flex items-center justify-center gap-2 py-3">
+        <div className="w-8 h-8 rounded-md bg-accent/20 flex items-center justify-center">
+          <span className="text-[10px] font-bold text-accent">A</span>
+        </div>
+        <div className="text-[10px] font-display font-bold">ATTIRE</div>
+      </div>
+      <div className="border-t border-border/40 pt-2 flex justify-center gap-2">
+        <div className="w-5 h-5 rounded-sm bg-secondary/60" />
+        <div className="w-5 h-5 rounded-sm bg-secondary/60" />
+        <div className="w-5 h-5 rounded-sm bg-accent/30 border border-accent" />
+      </div>
+    </div>
+    <p className="text-[9px] text-muted-foreground text-center mt-2">Pin to taskbar or dock</p>
+  </div>
+);
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -158,9 +347,18 @@ const Install = () => {
                   title="Install on Android"
                   subtitle="Chrome, Edge, or Samsung Internet"
                   steps={[
-                    { text: "Tap the 'Install Now' button above, or open the browser menu (⋮)" },
-                    { text: "Select 'Install app' or 'Add to Home screen'" },
-                    { text: "Tap 'Install' to confirm — ATTIRE will appear on your home screen" },
+                    {
+                      text: "Tap the 'Install Now' button above, or open the browser menu (⋮)",
+                      illustration: <AndroidMenuIllustration />,
+                    },
+                    {
+                      text: "Select 'Install app' or 'Add to Home screen'",
+                      illustration: <AndroidInstallOptionIllustration />,
+                    },
+                    {
+                      text: "Tap 'Install' to confirm — ATTIRE will appear on your home screen",
+                      illustration: <AndroidConfirmIllustration />,
+                    },
                   ]}
                 />
               )}
@@ -172,12 +370,17 @@ const Install = () => {
                     {
                       text: "Tap the Share icon at the bottom of Safari",
                       icon: <Share size={16} className="text-accent" />,
+                      illustration: <IosShareIllustration />,
                     },
                     {
                       text: "Scroll down and tap 'Add to Home Screen'",
                       icon: <Plus size={16} className="text-accent" />,
+                      illustration: <IosAddToHomeIllustration />,
                     },
-                    { text: "Tap 'Add' in the top-right corner to confirm" },
+                    {
+                      text: "Tap 'Add' in the top-right corner to confirm",
+                      illustration: <IosConfirmIllustration />,
+                    },
                   ]}
                 />
               )}
@@ -186,9 +389,18 @@ const Install = () => {
                   title="Install on Desktop"
                   subtitle="Chrome, Edge, or Brave"
                   steps={[
-                    { text: "Click the 'Install Now' button above, or look for the install icon (⊕) in the address bar" },
-                    { text: "Click 'Install' in the popup dialog" },
-                    { text: "ATTIRE will open in its own window — pin it to your taskbar or dock" },
+                    {
+                      text: "Click the 'Install Now' button above, or look for the install icon (⊕) in the address bar",
+                      illustration: <DesktopAddressBarIllustration />,
+                    },
+                    {
+                      text: "Click 'Install' in the popup dialog",
+                      illustration: <DesktopInstallDialogIllustration />,
+                    },
+                    {
+                      text: "ATTIRE will open in its own window — pin it to your taskbar or dock",
+                      illustration: <DesktopPinIllustration />,
+                    },
                   ]}
                 />
               )}
@@ -208,22 +420,25 @@ const Steps = ({
 }: {
   title: string;
   subtitle: string;
-  steps: { text: string; icon?: React.ReactNode }[];
+  steps: { text: string; icon?: React.ReactNode; illustration?: React.ReactNode }[];
 }) => (
   <div>
     <h2 className="font-display text-xl md:text-2xl font-bold uppercase tracking-wider mb-1">
       {title}
     </h2>
     <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground mb-8">{subtitle}</p>
-    <ol className="space-y-5">
+    <ol className="space-y-8">
       {steps.map((step, i) => (
         <li key={i} className="flex gap-4 items-start">
           <span className="flex-shrink-0 w-8 h-8 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-display font-bold text-sm">
             {i + 1}
           </span>
-          <div className="flex-1 pt-1 flex items-center gap-2 flex-wrap">
-            <span className="text-sm leading-relaxed">{step.text}</span>
-            {step.icon}
+          <div className="flex-1 pt-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-sm leading-relaxed">{step.text}</span>
+              {step.icon}
+            </div>
+            {step.illustration}
           </div>
         </li>
       ))}
