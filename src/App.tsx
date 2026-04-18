@@ -22,6 +22,7 @@ import NotFound from "./pages/NotFound";
 import Offline from "./pages/Offline";
 import Install from "./pages/Install";
 import OfflineIndicator from "./components/OfflineIndicator";
+import InstallBanner from "./components/InstallBanner";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <OfflineIndicator />
+        <InstallBanner />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/products" element={<Products />} />
