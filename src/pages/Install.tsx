@@ -134,9 +134,9 @@ const DesktopAddressBarIllustration = () => (
     <div className="bg-background rounded-md shadow-sm overflow-hidden max-w-[280px] mx-auto">
       <div className="flex items-center gap-2 px-3 py-2 border-b border-border/40">
         <div className="flex gap-1">
-          <div className="w-2 h-2 rounded-full bg-red-400" />
-          <div className="w-2 h-2 rounded-full bg-yellow-400" />
-          <div className="w-2 h-2 rounded-full bg-green-400" />
+          <div className="w-2 h-2 rounded-full" style={{ background: '#ff5f57' }} />
+          <div className="w-2 h-2 rounded-full" style={{ background: '#febc2e' }} />
+          <div className="w-2 h-2 rounded-full" style={{ background: '#28c840' }} />
         </div>
         <div className="flex-1 flex items-center gap-2 px-2 py-1 bg-secondary/60 rounded-sm">
           <div className="h-1.5 flex-1 bg-muted-foreground/20 rounded-sm" />
