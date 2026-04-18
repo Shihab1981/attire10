@@ -22,11 +22,12 @@ const InstallPWAButton = () => {
   return (
     <Link
       to="/install"
-      className="hidden sm:flex items-center gap-1.5 px-3 py-2 text-[10px] font-medium tracking-[0.15em] uppercase border border-accent/40 text-accent hover:bg-accent hover:text-accent-foreground rounded-sm transition-all"
+      className="flex items-center gap-1.5 px-2 py-2 sm:px-3 text-[10px] font-medium tracking-[0.15em] uppercase border border-accent/40 text-accent hover:bg-accent hover:text-accent-foreground rounded-sm transition-all"
       aria-label="Install ATTIRE app"
     >
       <Download size={14} strokeWidth={1.5} />
-      <span>Install App</span>
+      <span className="hidden sm:inline">Install App</span>
+      <span className="sm:hidden">Install</span>
     </Link>
   );
 };
