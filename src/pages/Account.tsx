@@ -296,11 +296,19 @@ const AddressForm = ({ userId, address, onClose }: { userId: string; address?: a
         await supabase.from("addresses").update({ is_default: false }).eq("user_id", userId);
       }
 
+      const row = {
+        label: parsed.data.label,
+        recipient_name: parsed.data.recipient_name,
+        phone: parsed.data.phone,
+        address_line: parsed.data.address_line,
+        is_default: form.is_default,
+      };
+
       if (address) {
-        const { error } = await supabase.from("addresses").update({ ...parsed.data, is_default: form.is_default }).eq("id", address.id);
+        const { error } = await supabase.from("addresses").update(row).eq("id", address.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("addresses").insert([{ ...parsed.data, is_default: form.is_default, user_id: userId }]);
+        const { error } = await supabase.from("addresses").insert({ ...row, user_id: userId });
         if (error) throw error;
       }
     },
