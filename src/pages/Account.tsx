@@ -300,7 +300,7 @@ const AddressForm = ({ userId, address, onClose }: { userId: string; address?: a
         const { error } = await supabase.from("addresses").update({ ...parsed.data, is_default: form.is_default }).eq("id", address.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("addresses").insert({ ...parsed.data, is_default: form.is_default, user_id: userId });
+        const { error } = await supabase.from("addresses").insert([{ ...parsed.data, is_default: form.is_default, user_id: userId }]);
         if (error) throw error;
       }
     },
