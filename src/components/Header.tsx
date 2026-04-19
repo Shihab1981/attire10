@@ -71,38 +71,38 @@ const Header = () => {
             ))}
           </nav>
 
-          <div className="flex items-center gap-1 md:gap-2">
+          <div className="flex items-center gap-0.5 sm:gap-1 md:gap-2">
             <InstallPWAButton />
             <button onClick={() => setSearchOpen(true)} className="p-2 sm:p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
             </button>
             <Link
               to={user ? "/account" : "/auth"}
-              className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all relative"
+              className="p-2 sm:p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all relative"
               aria-label={user ? "My Account" : "Sign in"}
             >
               <User size={18} strokeWidth={1.5} />
-              {user && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />}
+              {user && <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />}
             </Link>
-            <Link to="/favorites" className="p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Favorites">
+            <Link to="/favorites" className="p-2 sm:p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Favorites">
               <Heart size={18} strokeWidth={1.5} />
               {favCount > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute top-0.5 right-0.5 bg-accent text-accent-foreground text-[9px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-sm"
+                  className="absolute top-0 right-0 sm:top-0.5 sm:right-0.5 bg-accent text-accent-foreground text-[9px] font-bold w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] flex items-center justify-center rounded-full shadow-sm"
                 >
                   {favCount}
                 </motion.span>
               )}
             </Link>
-            <Link to="/cart" className="p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Cart">
+            <Link to="/cart" className="p-2 sm:p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Cart">
               <ShoppingBag size={18} strokeWidth={1.5} />
               {totalItems > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  className="absolute top-0.5 right-0.5 bg-accent text-accent-foreground text-[9px] font-bold w-[18px] h-[18px] flex items-center justify-center rounded-full shadow-sm"
+                  className="absolute top-0 right-0 sm:top-0.5 sm:right-0.5 bg-accent text-accent-foreground text-[9px] font-bold w-[16px] h-[16px] sm:w-[18px] sm:h-[18px] flex items-center justify-center rounded-full shadow-sm"
                 >
                   {totalItems}
                 </motion.span>
