@@ -21,6 +21,9 @@ import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 import Offline from "./pages/Offline";
 import Install from "./pages/Install";
+import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
+import Account from "./pages/Account";
 import OfflineIndicator from "./components/OfflineIndicator";
 import InstallBanner from "./components/InstallBanner";
 
@@ -52,6 +55,9 @@ const App = () => (
           <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
           <Route path="/offline" element={<Offline />} />
           <Route path="/install" element={<Install />} />
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/account" element={<Account />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

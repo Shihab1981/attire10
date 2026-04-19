@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useCartStore } from "@/store/cartStore";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import { categoryImages, type Category } from "@/data/products";
 import { divisionNames, getDistricts, getUpazilas } from "@/data/bangladesh-locations";
 import { toast } from "sonner";
@@ -16,8 +17,10 @@ const getShippingCharge = (division: string, subtotal: number) => subtotal >= FR
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
+  const [autoFilled, setAutoFilled] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -30,6 +33,25 @@ const Checkout = () => {
   const [couponCode, setCouponCode] = useState("");
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [discount, setDiscount] = useState(0);
+
+  // Auto-fill from logged-in user's profile + default address
+  useEffect(() => {
+    if (!user || autoFilled) return;
+    (async () => {
+      const [{ data: profile }, { data: addresses }] = await Promise.all([
+        supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle(),
+        supabase.from("addresses").select("*").eq("user_id", user.id).eq("is_default", true).limit(1),
+      ]);
+      const def = addresses?.[0];
+      setForm((prev) => ({
+        ...prev,
+        name: prev.name || def?.recipient_name || profile?.full_name || "",
+        phone: prev.phone || def?.phone || profile?.phone || "",
+        address: prev.address || def?.address_line || "",
+      }));
+      setAutoFilled(true);
+    })();
+  }, [user, autoFilled]);
 
   const subtotal = totalPrice();
   const districts = getDistricts(form.division);
@@ -76,6 +98,7 @@ const Checkout = () => {
         coupon_code: appliedCoupon,
         total_price: finalTotal,
         status: "pending",
+        user_id: user?.id ?? null,
       }).select().single();
 
       if (orderError) throw orderError;

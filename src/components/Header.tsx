@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-import { ShoppingBag, Search, Menu, X, MapPin, Heart } from "lucide-react";
+import { ShoppingBag, Search, Menu, X, MapPin, Heart, User } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 import SearchOverlay from "./SearchOverlay";
 import InstallPWAButton from "./InstallPWAButton";
 
@@ -13,6 +14,7 @@ import InstallPWAButton from "./InstallPWAButton";
 const Header = () => {
   const totalItems = useCartStore((s) => s.totalItems());
   const favCount = useFavoritesStore((s) => s.items.length);
+  const { user } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -77,6 +79,14 @@ const Header = () => {
             <button onClick={() => setSearchOpen(true)} className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
             </button>
+            <Link
+              to={user ? "/account" : "/auth"}
+              className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all relative"
+              aria-label={user ? "My Account" : "Sign in"}
+            >
+              <User size={18} strokeWidth={1.5} />
+              {user && <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />}
+            </Link>
             <Link to="/favorites" className="p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Favorites">
               <Heart size={18} strokeWidth={1.5} />
               {favCount > 0 && (

@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      addresses: {
+        Row: {
+          address_line: string
+          created_at: string
+          id: string
+          is_default: boolean
+          label: string
+          phone: string
+          recipient_name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address_line: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          phone: string
+          recipient_name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address_line?: string
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          phone?: string
+          recipient_name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       coupons: {
         Row: {
           active: boolean
@@ -182,6 +218,7 @@ export type Database = {
           subtotal: number
           total_price: number
           updated_at: string
+          user_id: string | null
         }
         Insert: {
           coupon_code?: string | null
@@ -195,6 +232,7 @@ export type Database = {
           subtotal?: number
           total_price?: number
           updated_at?: string
+          user_id?: string | null
         }
         Update: {
           coupon_code?: string | null
@@ -208,6 +246,7 @@ export type Database = {
           subtotal?: number
           total_price?: number
           updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -273,6 +312,33 @@ export type Database = {
           stock_quantity?: number
           sub_category?: string
           trending?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          default_address: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          default_address?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          default_address?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
           updated_at?: string
         }
         Relationships: []
