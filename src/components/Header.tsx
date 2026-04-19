@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ShoppingBag, Search, Menu, X, MapPin, Heart, User } from "lucide-react";
+import { ShoppingBag, Search, Menu, X, Heart, User } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { useState, useEffect } from "react";
@@ -73,10 +73,7 @@ const Header = () => {
 
           <div className="flex items-center gap-1 md:gap-2">
             <InstallPWAButton />
-            <Link to="/track-order" className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Track Order">
-              <MapPin size={18} strokeWidth={1.5} />
-            </Link>
-            <button onClick={() => setSearchOpen(true)} className="p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Search">
+            <button onClick={() => setSearchOpen(true)} className="p-2 sm:p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
             </button>
             <Link
