@@ -110,6 +110,19 @@
   animation: marquee 30s linear infinite;
 }
 
+/* Pulse glow for active install button */
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 3px hsl(var(--accent) / 0.15), 0 0 18px hsl(var(--accent) / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 5px hsl(var(--accent) / 0.25), 0 0 28px hsl(var(--accent) / 0.6);
+  }
+}
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
 /* Elegant underline effect */
 .link-underline {
   position: relative;
