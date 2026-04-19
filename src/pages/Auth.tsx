@@ -60,7 +60,7 @@ const Auth = () => {
       } else {
         const parsed = loginSchema.safeParse({ email: form.email, password: form.password });
         if (!parsed.success) { toast.error(parsed.error.errors[0].message); return; }
-        const { error } = await supabase.auth.signInWithPassword(parsed.data);
+        const { error } = await supabase.auth.signInWithPassword({ email: parsed.data.email, password: parsed.data.password });
         if (error) {
           if (error.message.includes("Invalid login credentials")) toast.error("Wrong email or password.");
           else if (error.message.includes("Email not confirmed")) toast.error("Please verify your email first.");
