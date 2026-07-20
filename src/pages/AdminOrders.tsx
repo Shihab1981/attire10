@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { adminApi } from "@/lib/adminApi";
 import AdminAuthGate from "@/components/AdminAuthGate";
 import AdminLayout from "@/components/AdminLayout";
 import { toast } from "sonner";
@@ -26,19 +27,21 @@ const AdminOrders = () => {
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ["admin-orders"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("*, order_items(*)")
-        .order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
+      const orders = await adminApi.select("orders", { select: "*" });
+      const items = await adminApi.select("order_items", { select: "*" });
+      const byOrder: Record<string, any[]> = {};
+      (items || []).forEach((i: any) => {
+        (byOrder[i.order_id] ||= []).push(i);
+      });
+      return (orders || [])
+        .map((o: any) => ({ ...o, order_items: byOrder[o.id] || [] }))
+        .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     },
   });
 
   const updateStatus = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase.from("orders").update({ status }).eq("id", id);
-      if (error) throw error;
+      await adminApi.update("orders", { status }, { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
