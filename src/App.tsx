@@ -21,9 +21,6 @@ import Favorites from "./pages/Favorites";
 import NotFound from "./pages/NotFound";
 import Offline from "./pages/Offline";
 import Install from "./pages/Install";
-import Auth from "./pages/Auth";
-import ResetPassword from "./pages/ResetPassword";
-import Account from "./pages/Account";
 import OfflineIndicator from "./components/OfflineIndicator";
 import InstallBanner from "./components/InstallBanner";
 
