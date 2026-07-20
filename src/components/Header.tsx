@@ -14,7 +14,7 @@ import InstallPWAButton from "./InstallPWAButton";
 const Header = () => {
   const totalItems = useCartStore((s) => s.totalItems());
   const favCount = useFavoritesStore((s) => s.items.length);
-  const { user } = useAuth();
+  
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
