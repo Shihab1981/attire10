@@ -373,12 +373,7 @@ const AdminDashboard = () => {
                 if (allCategories.some(c => c.slug === slug)) { toast.error("Category already exists"); return; }
                 const newCat: CategoryItem = { slug, name: newCatName.trim(), image: "/placeholder.svg", description: newCatDesc.trim() };
                 const updated = [...extraCategories, newCat];
-                const { data: existing } = await supabase.from("site_settings").select("key").eq("key", "extra_categories").maybeSingle();
-                if (existing) {
-                  await supabase.from("site_settings").update({ value: JSON.stringify(updated), updated_at: new Date().toISOString() }).eq("key", "extra_categories");
-                } else {
-                  await supabase.from("site_settings").insert({ key: "extra_categories", value: JSON.stringify(updated) });
-                }
+                await adminApi.upsert("site_settings", { key: "extra_categories", value: JSON.stringify(updated), updated_at: new Date().toISOString() });
                 queryClient.invalidateQueries({ queryKey: ["extra-categories"] });
                 setNewCatName(""); setNewCatDesc("");
                 toast.success(`"${newCat.name}" category added!`);
@@ -425,7 +420,7 @@ const AdminDashboard = () => {
                     <button
                       onClick={async () => {
                         const updated = extraCategories.filter((e: CategoryItem) => e.slug !== cat.slug);
-                        await supabase.from("site_settings").update({ value: JSON.stringify(updated), updated_at: new Date().toISOString() }).eq("key", "extra_categories");
+                        await adminApi.upsert("site_settings", { key: "extra_categories", value: JSON.stringify(updated), updated_at: new Date().toISOString() });
                         queryClient.invalidateQueries({ queryKey: ["extra-categories"] });
                         toast.success(`"${cat.name}" removed`);
                       }}
@@ -699,12 +694,7 @@ const AdminDashboard = () => {
                   <button
                     onClick={async () => {
                       const value = String(stockThreshold);
-                      const { data: existing } = await supabase.from("site_settings").select("key").eq("key", "stock_threshold").maybeSingle();
-                      if (existing) {
-                        await supabase.from("site_settings").update({ value, updated_at: new Date().toISOString() }).eq("key", "stock_threshold");
-                      } else {
-                        await supabase.from("site_settings").insert({ key: "stock_threshold", value });
-                      }
+                      await adminApi.upsert("site_settings", { key: "stock_threshold", value, updated_at: new Date().toISOString() });
                       queryClient.invalidateQueries({ queryKey: ["admin-stock-threshold"] });
                       queryClient.invalidateQueries({ queryKey: ["admin-out-of-stock"] });
                       toast.success(`Threshold set to ${stockThreshold}`);
