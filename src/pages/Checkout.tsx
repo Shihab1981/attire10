@@ -17,10 +17,8 @@ const getShippingCharge = (division: string, subtotal: number) => subtotal >= FR
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [submitting, setSubmitting] = useState(false);
   const [orderPlaced, setOrderPlaced] = useState(false);
-  const [autoFilled, setAutoFilled] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
