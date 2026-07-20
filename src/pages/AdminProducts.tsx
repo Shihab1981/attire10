@@ -142,11 +142,9 @@ const AdminProducts = () => {
   const saveMutation = useMutation({
     mutationFn: async (data: typeof form) => {
       if (editingId) {
-        const { error } = await supabase.from("products").update(data).eq("id", editingId);
-        if (error) throw error;
+        await adminApi.update("products", data, { id: editingId });
       } else {
-        const { error } = await supabase.from("products").insert(data);
-        if (error) throw error;
+        await adminApi.insert("products", data);
       }
     },
     onSuccess: () => {
@@ -161,8 +159,7 @@ const AdminProducts = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("products").delete().eq("id", id);
-      if (error) throw error;
+      await adminApi.delete("products", { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-products"] });
