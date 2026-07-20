@@ -1,26 +1,31 @@
 import { useState, ReactNode } from "react";
-
-const ADMIN_PASSWORD = "Shihab100@";
+import { supabase } from "@/integrations/supabase/client";
+import { setAdminPassword, getAdminPassword } from "@/lib/adminApi";
 
 interface AdminAuthGateProps {
   children: ReactNode;
 }
 
 const AdminAuthGate = ({ children }: AdminAuthGateProps) => {
-  const [authenticated, setAuthenticated] = useState(
-    () => sessionStorage.getItem("admin_auth") === "true"
-  );
+  const [authenticated, setAuthenticated] = useState(() => !!getAdminPassword());
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [checking, setChecking] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem("admin_auth", "true");
-      setAuthenticated(true);
-    } else {
+    setChecking(true);
+    // Verify against edge function (server-side password check).
+    const { data, error: fnErr } = await supabase.functions.invoke("admin-api", {
+      body: { action: "select", table: "site_settings", select: "key", password },
+    });
+    setChecking(false);
+    if (fnErr || data?.error) {
       setError("Incorrect password");
+      return;
     }
+    setAdminPassword(password);
+    setAuthenticated(true);
   };
 
   if (authenticated) return <>{children}</>;
