@@ -46,9 +46,10 @@ const AdminAuthGate = ({ children }: AdminAuthGateProps) => {
         {error && <p className="text-destructive text-xs mb-3">{error}</p>}
         <button
           type="submit"
-          className="w-full bg-foreground text-background py-3 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors"
+          disabled={checking}
+          className="w-full bg-foreground text-background py-3 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
         >
-          Enter Dashboard
+          {checking ? "Checking..." : "Enter Dashboard"}
         </button>
       </form>
     </div>
