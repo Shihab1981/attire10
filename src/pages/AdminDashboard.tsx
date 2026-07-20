@@ -106,32 +106,12 @@ const AdminDashboard = () => {
     },
   });
 
-  // Today's orders
-  const { data: todayOrders } = useQuery({
-    queryKey: ["admin-today-orders"],
-    queryFn: async () => {
-      const today = startOfDay(new Date()).toISOString();
-      const { count } = await supabase
-        .from("orders")
-        .select("*", { count: "exact", head: true })
-        .gte("created_at", today);
-      return count ?? 0;
-    },
-  });
+  // Today's orders / revenue derived from allOrders
+  const todayStart = startOfDay(new Date()).getTime();
+  const todaysOrders = allOrders.filter((o: any) => new Date(o.created_at).getTime() >= todayStart);
+  const todayOrders = todaysOrders.length;
+  const todayRevenue = todaysOrders.filter((o: any) => o.status !== "cancelled").reduce((s: number, o: any) => s + o.total_price, 0);
 
-  // Today's revenue
-  const { data: todayRevenue } = useQuery({
-    queryKey: ["admin-today-revenue"],
-    queryFn: async () => {
-      const today = startOfDay(new Date()).toISOString();
-      const { data } = await supabase
-        .from("orders")
-        .select("total_price")
-        .neq("status", "cancelled")
-        .gte("created_at", today);
-      return data?.reduce((sum, o) => sum + o.total_price, 0) ?? 0;
-    },
-  });
 
   // Recent reviews
   const { data: recentReviews = [] } = useQuery({
