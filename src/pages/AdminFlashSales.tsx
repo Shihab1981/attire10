@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { adminApi } from "@/lib/adminApi";
 import AdminAuthGate from "@/components/AdminAuthGate";
 import AdminLayout from "@/components/AdminLayout";
 import { Zap, Plus, Trash2, ToggleLeft, ToggleRight, CalendarIcon } from "lucide-react";
@@ -47,12 +48,11 @@ const AdminFlashSales = () => {
       const endDate = new Date(endsAt);
       endDate.setHours(h, m, 0, 0);
 
-      const { error } = await supabase.from("flash_sales").insert({
+      await adminApi.insert("flash_sales", {
         product_id: productId,
         sale_price: parseInt(salePrice),
         ends_at: endDate.toISOString(),
       });
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-flash-sales"] });
@@ -68,8 +68,7 @@ const AdminFlashSales = () => {
 
   const toggleMutation = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
-      const { error } = await supabase.from("flash_sales").update({ active: !active }).eq("id", id);
-      if (error) throw error;
+      await adminApi.update("flash_sales", { active: !active }, { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-flash-sales"] });
@@ -79,8 +78,7 @@ const AdminFlashSales = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("flash_sales").delete().eq("id", id);
-      if (error) throw error;
+      await adminApi.delete("flash_sales", { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-flash-sales"] });

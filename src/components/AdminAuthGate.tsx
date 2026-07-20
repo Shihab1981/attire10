@@ -1,26 +1,31 @@
 import { useState, ReactNode } from "react";
-
-const ADMIN_PASSWORD = "Shihab100@";
+import { supabase } from "@/integrations/supabase/client";
+import { setAdminPassword, getAdminPassword } from "@/lib/adminApi";
 
 interface AdminAuthGateProps {
   children: ReactNode;
 }
 
 const AdminAuthGate = ({ children }: AdminAuthGateProps) => {
-  const [authenticated, setAuthenticated] = useState(
-    () => sessionStorage.getItem("admin_auth") === "true"
-  );
+  const [authenticated, setAuthenticated] = useState(() => !!getAdminPassword());
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [checking, setChecking] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem("admin_auth", "true");
-      setAuthenticated(true);
-    } else {
+    setChecking(true);
+    // Verify against edge function (server-side password check).
+    const { data, error: fnErr } = await supabase.functions.invoke("admin-api", {
+      body: { action: "select", table: "site_settings", select: "key", password },
+    });
+    setChecking(false);
+    if (fnErr || data?.error) {
       setError("Incorrect password");
+      return;
     }
+    setAdminPassword(password);
+    setAuthenticated(true);
   };
 
   if (authenticated) return <>{children}</>;
@@ -41,9 +46,10 @@ const AdminAuthGate = ({ children }: AdminAuthGateProps) => {
         {error && <p className="text-destructive text-xs mb-3">{error}</p>}
         <button
           type="submit"
-          className="w-full bg-foreground text-background py-3 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors"
+          disabled={checking}
+          className="w-full bg-foreground text-background py-3 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50"
         >
-          Enter Dashboard
+          {checking ? "Checking..." : "Enter Dashboard"}
         </button>
       </form>
     </div>

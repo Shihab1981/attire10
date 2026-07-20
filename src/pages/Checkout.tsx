@@ -41,17 +41,13 @@ const Checkout = () => {
   const applyCoupon = async () => {
     const code = couponCode.trim().toUpperCase();
     if (!code) return;
-    const { data, error } = await supabase
-      .from("coupons")
-      .select("*")
-      .eq("code", code)
-      .eq("active", true)
-      .single();
-    if (error || !data) { toast.error("Invalid or expired coupon code"); return; }
+    const { data, error } = await supabase.functions.invoke("validate-coupon", {
+      body: { code, subtotal },
+    });
+    if (error || !data || data.error) { toast.error("Invalid or expired coupon code"); return; }
     setAppliedCoupon(data.code);
-    const d = data.type === "percent" ? Math.round(subtotal * data.value / 100) : data.value;
-    setDiscount(d);
-    toast.success(`Coupon "${data.code}" applied! You save ৳${d.toLocaleString()}`);
+    setDiscount(data.discount);
+    toast.success(`Coupon "${data.code}" applied! You save ৳${data.discount.toLocaleString()}`);
   };
 
   const removeCoupon = () => { setAppliedCoupon(null); setDiscount(0); setCouponCode(""); };
@@ -70,35 +66,25 @@ const Checkout = () => {
 
     setSubmitting(true);
     try {
-      const { data: order, error: orderError } = await supabase.from("orders").insert({
-        customer_name: form.name.trim(),
-        customer_phone: form.phone.trim(),
-        customer_address: fullAddress,
-        subtotal,
-        discount,
-        coupon_code: appliedCoupon,
-        total_price: finalTotal,
-        status: "pending",
-        user_id: null,
-      }).select().single();
-
-      if (orderError) throw orderError;
-
-      const orderItems = items.map((item) => ({
-        order_id: order.id,
-        product_id: item.product.id,
-        product_name: item.product.name,
-        size: item.size,
-        quantity: item.quantity,
-        price: item.product.price,
-      }));
-
-      const { error: itemsError } = await supabase.from("order_items").insert(orderItems);
-      if (itemsError) throw itemsError;
+      const { data, error } = await supabase.functions.invoke("place-order", {
+        body: {
+          customer_name: form.name.trim(),
+          customer_phone: form.phone.trim(),
+          customer_address: fullAddress,
+          items: items.map((item) => ({
+            product_id: item.product.id,
+            size: item.size,
+            quantity: item.quantity,
+          })),
+          coupon_code: appliedCoupon,
+          shipping_charge: shippingCharge,
+        },
+      });
+      if (error || !data?.order_id) throw error || new Error("Order failed");
 
       setOrderPlaced(true);
       clearCart();
-      navigate(`/order-confirmation/${order.id}`);
+      navigate(`/order-confirmation/${data.order_id}`);
     } catch {
       toast.error("অর্ডার প্লেস করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
     } finally {

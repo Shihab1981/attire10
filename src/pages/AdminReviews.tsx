@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { adminApi } from "@/lib/adminApi";
 import { Star, MessageSquare, Send, X, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import AdminLayout from "@/components/AdminLayout";
@@ -36,11 +37,7 @@ const AdminReviews = () => {
 
   const replyMutation = useMutation({
     mutationFn: async ({ id, reply }: { id: string; reply: string }) => {
-      const { error } = await supabase
-        .from("reviews")
-        .update({ admin_reply: reply, admin_reply_at: new Date().toISOString() } as any)
-        .eq("id", id);
-      if (error) throw error;
+      await adminApi.update("reviews", { admin_reply: reply, admin_reply_at: new Date().toISOString() }, { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });
@@ -53,8 +50,7 @@ const AdminReviews = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("reviews").delete().eq("id", id);
-      if (error) throw error;
+      await adminApi.delete("reviews", { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-reviews"] });

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { adminApi } from "@/lib/adminApi";
 import AdminAuthGate from "@/components/AdminAuthGate";
 import AdminLayout from "@/components/AdminLayout";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -38,12 +39,9 @@ const AdminHeroSlides = () => {
   });
 
   const uploadImage = async (file: File): Promise<string> => {
-    const ext = file.name.split(".").pop();
+    const ext = file.name.split(".").pop() || "jpg";
     const fileName = `hero-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-    const { error } = await supabase.storage.from("product-images").upload(fileName, file);
-    if (error) throw error;
-    const { data } = supabase.storage.from("product-images").getPublicUrl(fileName);
-    return data.publicUrl;
+    return adminApi.uploadImage("product-images", file, fileName);
   };
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,11 +63,9 @@ const AdminHeroSlides = () => {
   const saveMutation = useMutation({
     mutationFn: async (data: typeof form) => {
       if (editingId) {
-        const { error } = await supabase.from("hero_slides").update(data).eq("id", editingId);
-        if (error) throw error;
+        await adminApi.update("hero_slides", data, { id: editingId });
       } else {
-        const { error } = await supabase.from("hero_slides").insert(data);
-        if (error) throw error;
+        await adminApi.insert("hero_slides", data);
       }
     },
     onSuccess: () => {
@@ -84,8 +80,7 @@ const AdminHeroSlides = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("hero_slides").delete().eq("id", id);
-      if (error) throw error;
+      await adminApi.delete("hero_slides", { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-hero-slides"] });
@@ -95,8 +90,7 @@ const AdminHeroSlides = () => {
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
-      const { error } = await supabase.from("hero_slides").update({ active }).eq("id", id);
-      if (error) throw error;
+      await adminApi.update("hero_slides", { active }, { id });
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["admin-hero-slides"] }),
   });

@@ -136,34 +136,36 @@ const ProductReviews = ({ productId }: ProductReviewsProps) => {
     setPreviews(prev => prev.filter((_, i) => i !== idx));
   };
 
-  const uploadImages = async (): Promise<string[]> => {
-    const urls: string[] = [];
-    for (const file of selectedFiles) {
-      const ext = file.name.split(".").pop();
-      const path = `${productId}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
-      const { error } = await supabase.storage.from("review-images").upload(path, file);
-      if (error) throw error;
-      const { data: urlData } = supabase.storage.from("review-images").getPublicUrl(path);
-      urls.push(urlData.publicUrl);
-    }
-    return urls;
-  };
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const s = reader.result as string;
+        resolve(s.split(",")[1] || "");
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
   const mutation = useMutation({
     mutationFn: async () => {
       setUploading(true);
-      let imageUrls: string[] = [];
-      if (selectedFiles.length > 0) {
-        imageUrls = await uploadImages();
-      }
-      const { error } = await supabase.from("reviews").insert({
-        product_id: productId,
-        reviewer_name: name.trim(),
-        rating,
-        comment: comment.trim(),
-        images: imageUrls,
+      const images = await Promise.all(
+        selectedFiles.map(async (f) => ({
+          base64: await fileToBase64(f),
+          contentType: f.type || "image/jpeg",
+        }))
+      );
+      const { data, error } = await supabase.functions.invoke("submit-review", {
+        body: {
+          product_id: productId,
+          reviewer_name: name.trim(),
+          rating,
+          comment: comment.trim(),
+          images,
+        },
       });
-      if (error) throw error;
+      if (error || data?.error) throw error || new Error("Failed");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["reviews", productId] });

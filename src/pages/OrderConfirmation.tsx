@@ -22,12 +22,9 @@ const OrderConfirmation = () => {
   useEffect(() => {
     const fetchOrder = async () => {
       if (!orderId) return;
-      const [orderRes, itemsRes] = await Promise.all([
-        supabase.from("orders").select("*").eq("id", orderId).single(),
-        supabase.from("order_items").select("*").eq("order_id", orderId),
-      ]);
-      if (orderRes.data) setOrder(orderRes.data);
-      if (itemsRes.data) setOrderItems(itemsRes.data);
+      const { data } = await supabase.functions.invoke("track-order", { body: { query: orderId } });
+      if (data?.order) setOrder(data.order);
+      if (data?.items) setOrderItems(data.items);
       setLoading(false);
     };
     fetchOrder();
