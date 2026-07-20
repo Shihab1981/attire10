@@ -17,22 +17,20 @@ const AdminCoupons = () => {
   const { data: coupons = [], isLoading } = useQuery({
     queryKey: ["admin-coupons"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("coupons").select("*").order("created_at", { ascending: false });
-      if (error) throw error;
-      return data;
+      const data = await adminApi.select("coupons", { select: "*" });
+      return (data || []).sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     },
   });
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof form) => {
-      const { error } = await supabase.from("coupons").insert({
+      await adminApi.insert("coupons", {
         code: data.code.toUpperCase().trim(),
         type: data.type,
         value: data.value,
         active: data.active,
         expires_at: data.expires_at || null,
       });
-      if (error) throw error;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
@@ -45,8 +43,7 @@ const AdminCoupons = () => {
 
   const toggleActive = useMutation({
     mutationFn: async ({ id, active }: { id: string; active: boolean }) => {
-      const { error } = await supabase.from("coupons").update({ active }).eq("id", id);
-      if (error) throw error;
+      await adminApi.update("coupons", { active }, { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
@@ -56,8 +53,7 @@ const AdminCoupons = () => {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const { error } = await supabase.from("coupons").delete().eq("id", id);
-      if (error) throw error;
+      await adminApi.delete("coupons", { id });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin-coupons"] });
