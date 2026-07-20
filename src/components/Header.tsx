@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ShoppingBag, Search, Menu, X, Heart, User } from "lucide-react";
+import { ShoppingBag, Search, Menu, X, Heart } from "lucide-react";
 import { useCartStore } from "@/store/cartStore";
 import { useFavoritesStore } from "@/store/favoritesStore";
 import { useState, useEffect } from "react";
