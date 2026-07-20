@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useCartStore } from "@/store/cartStore";
 import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
+
 import { categoryImages, type Category } from "@/data/products";
 import { divisionNames, getDistricts, getUpazilas } from "@/data/bangladesh-locations";
 import { toast } from "sonner";
