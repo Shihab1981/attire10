@@ -15,6 +15,7 @@ import AdminCoupons from "./pages/AdminCoupons";
 import AdminFlashSales from "./pages/AdminFlashSales";
 import AdminHeroSlides from "./pages/AdminHeroSlides";
 import AdminReviews from "./pages/AdminReviews";
+import AdminAuthGate from "./components/AdminAuthGate";
 import OrderConfirmation from "./pages/OrderConfirmation";
 import TrackOrder from "./pages/TrackOrder";
 import Favorites from "./pages/Favorites";
