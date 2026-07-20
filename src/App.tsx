@@ -44,13 +44,13 @@ const App = () => (
           <Route path="/order-confirmation/:orderId" element={<OrderConfirmation />} />
           <Route path="/track-order" element={<TrackOrder />} />
           <Route path="/favorites" element={<Favorites />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/admin/products" element={<AdminProducts />} />
-          <Route path="/admin/orders" element={<AdminOrders />} />
-          <Route path="/admin/coupons" element={<AdminCoupons />} />
-          <Route path="/admin/flash-sales" element={<AdminFlashSales />} />
-          <Route path="/admin/reviews" element={<AdminReviews />} />
-          <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
+          <Route path="/admin" element={<AdminAuthGate><AdminDashboard /></AdminAuthGate>} />
+          <Route path="/admin/products" element={<AdminAuthGate><AdminProducts /></AdminAuthGate>} />
+          <Route path="/admin/orders" element={<AdminAuthGate><AdminOrders /></AdminAuthGate>} />
+          <Route path="/admin/coupons" element={<AdminAuthGate><AdminCoupons /></AdminAuthGate>} />
+          <Route path="/admin/flash-sales" element={<AdminAuthGate><AdminFlashSales /></AdminAuthGate>} />
+          <Route path="/admin/reviews" element={<AdminAuthGate><AdminReviews /></AdminAuthGate>} />
+          <Route path="/admin/hero-slides" element={<AdminAuthGate><AdminHeroSlides /></AdminAuthGate>} />
           <Route path="/offline" element={<Offline />} />
           <Route path="/install" element={<Install />} />
           <Route path="*" element={<NotFound />} />
