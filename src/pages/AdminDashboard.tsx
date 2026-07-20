@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { adminApi } from "@/lib/adminApi";
 import AdminAuthGate from "@/components/AdminAuthGate";
 import AdminLayout from "@/components/AdminLayout";
 import { Package, ShoppingCart, Tag, DollarSign, TrendingUp, Clock, AlertTriangle, ArrowUpRight, Eye, Megaphone, Save, ImageIcon, Upload, Plus, Trash2, Star, MessageSquare } from "lucide-react";
@@ -37,84 +38,40 @@ const AdminDashboard = () => {
     },
   });
 
-  const { data: totalOrders } = useQuery({
-    queryKey: ["admin-orders-count"],
-    queryFn: async () => {
-      const { count } = await supabase.from("orders").select("*", { count: "exact", head: true });
-      return count ?? 0;
-    },
+  // Fetch all orders once via admin-api (bypasses RLS with admin password) and derive everything.
+  const { data: allOrders = [] } = useQuery({
+    queryKey: ["admin-dashboard-orders"],
+    queryFn: async () => (await adminApi.select("orders", { select: "id, customer_name, customer_phone, total_price, status, created_at" })) || [],
   });
 
-  const { data: pendingOrders } = useQuery({
-    queryKey: ["admin-pending-orders"],
-    queryFn: async () => {
-      const { count } = await supabase.from("orders").select("*", { count: "exact", head: true }).eq("status", "pending");
-      return count ?? 0;
-    },
-  });
+  const totalOrders = allOrders.length;
+  const pendingOrders = allOrders.filter((o: any) => o.status === "pending").length;
+  const revenue = allOrders.filter((o: any) => o.status !== "cancelled").reduce((s: number, o: any) => s + o.total_price, 0);
 
-  const { data: revenue } = useQuery({
-    queryKey: ["admin-revenue"],
-    queryFn: async () => {
-      const { data } = await supabase.from("orders").select("total_price").neq("status", "cancelled");
-      return data?.reduce((sum, o) => sum + o.total_price, 0) ?? 0;
-    },
-  });
+  const recentOrders = [...allOrders]
+    .sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    .slice(0, 5);
 
-  // Recent orders
-  const { data: recentOrders = [] } = useQuery({
-    queryKey: ["admin-recent-orders"],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("orders")
-        .select("id, customer_name, customer_phone, total_price, status, created_at")
-        .order("created_at", { ascending: false })
-        .limit(5);
-      if (error) throw error;
-      return data;
-    },
-  });
+  // Revenue chart last 7 days
+  const revenueChart = (() => {
+    const dayMap: Record<string, number> = {};
+    for (let i = 6; i >= 0; i--) dayMap[format(subDays(new Date(), i), "MMM dd")] = 0;
+    const cutoff = subDays(new Date(), 6).getTime();
+    allOrders.forEach((o: any) => {
+      if (o.status === "cancelled") return;
+      const t = new Date(o.created_at).getTime();
+      if (t < cutoff) return;
+      const day = format(new Date(o.created_at), "MMM dd");
+      if (dayMap[day] !== undefined) dayMap[day] += o.total_price;
+    });
+    return Object.entries(dayMap).map(([name, amount]) => ({ name, amount }));
+  })();
 
-  // Revenue last 7 days
-  const { data: revenueChart = [] } = useQuery({
-    queryKey: ["admin-revenue-chart"],
-    queryFn: async () => {
-      const sevenDaysAgo = subDays(new Date(), 6).toISOString();
-      const { data, error } = await supabase
-        .from("orders")
-        .select("total_price, created_at")
-        .neq("status", "cancelled")
-        .gte("created_at", sevenDaysAgo);
-      if (error) throw error;
-
-      // Group by day
-      const dayMap: Record<string, number> = {};
-      for (let i = 6; i >= 0; i--) {
-        const day = format(subDays(new Date(), i), "MMM dd");
-        dayMap[day] = 0;
-      }
-      data?.forEach((o) => {
-        const day = format(new Date(o.created_at), "MMM dd");
-        if (dayMap[day] !== undefined) dayMap[day] += o.total_price;
-      });
-
-      return Object.entries(dayMap).map(([name, amount]) => ({ name, amount }));
-    },
-  });
-
-  // Order status breakdown
-  const { data: statusBreakdown = [] } = useQuery({
-    queryKey: ["admin-status-breakdown"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("orders").select("status");
-      if (error) throw error;
-      const counts: Record<string, number> = {};
-      data?.forEach((o) => {
-        counts[o.status] = (counts[o.status] || 0) + 1;
-      });
-      return Object.entries(counts).map(([name, value]) => ({ name, value }));
-    },
-  });
+  const statusBreakdown = (() => {
+    const counts: Record<string, number> = {};
+    allOrders.forEach((o: any) => { counts[o.status] = (counts[o.status] || 0) + 1; });
+    return Object.entries(counts).map(([name, value]) => ({ name, value }));
+  })();
 
   // Low stock products
   // Stock threshold from settings
