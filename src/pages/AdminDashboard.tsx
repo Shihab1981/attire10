@@ -157,11 +157,7 @@ const AdminDashboard = () => {
 
   const saveAnnouncement = useMutation({
     mutationFn: async (text: string) => {
-      const { error } = await supabase
-        .from("site_settings")
-        .update({ value: text, updated_at: new Date().toISOString() })
-        .eq("key", "announcement_text");
-      if (error) throw error;
+      await adminApi.upsert("site_settings", { key: "announcement_text", value: text, updated_at: new Date().toISOString() });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["announcement-text"] });
@@ -214,53 +210,27 @@ const AdminDashboard = () => {
   });
 
   const handleCategoryImageUpload = async (slug: string, file: File) => {
-    const ext = file.name.split(".").pop();
-    const path = `categories/${slug}-${Date.now()}.${ext}`;
-    const { error: uploadError } = await supabase.storage
-      .from("product-images")
-      .upload(path, file);
-    if (uploadError) {
-      toast.error("Upload failed");
-      return;
-    }
-    const { data: urlData } = supabase.storage
-      .from("product-images")
-      .getPublicUrl(path);
-    const newImages = { ...categoryImages, [slug]: urlData.publicUrl };
-    setCategoryImages(newImages);
-    const { error } = await supabase
-      .from("site_settings")
-      .update({ value: JSON.stringify(newImages), updated_at: new Date().toISOString() })
-      .eq("key", "category_images");
-    if (error) {
-      toast.error("Failed to save");
-    } else {
+    try {
+      const ext = file.name.split(".").pop() || "jpg";
+      const path = `categories/${slug}-${Date.now()}.${ext}`;
+      const publicUrl = await adminApi.uploadImage("product-images", file, path);
+      const newImages = { ...categoryImages, [slug]: publicUrl };
+      setCategoryImages(newImages);
+      await adminApi.upsert("site_settings", { key: "category_images", value: JSON.stringify(newImages), updated_at: new Date().toISOString() });
       queryClient.invalidateQueries({ queryKey: ["category-images"] });
       toast.success(`${slug} image updated!`);
+    } catch {
+      toast.error("Failed to save");
     }
   };
 
   const saveCategoryCustomizations = useMutation({
     mutationFn: async (customizations: Record<string, { name?: string; description?: string }>) => {
-      const value = JSON.stringify(customizations);
-      // Try update first, then upsert
-      const { data: existing } = await supabase
-        .from("site_settings")
-        .select("key")
-        .eq("key", "category_customizations")
-        .maybeSingle();
-      if (existing) {
-        const { error } = await supabase
-          .from("site_settings")
-          .update({ value, updated_at: new Date().toISOString() })
-          .eq("key", "category_customizations");
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from("site_settings")
-          .insert({ key: "category_customizations", value });
-        if (error) throw error;
-      }
+      await adminApi.upsert("site_settings", {
+        key: "category_customizations",
+        value: JSON.stringify(customizations),
+        updated_at: new Date().toISOString(),
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["category-customizations"] });
