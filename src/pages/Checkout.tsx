@@ -79,7 +79,7 @@ const Checkout = () => {
         coupon_code: appliedCoupon,
         total_price: finalTotal,
         status: "pending",
-        user_id: user?.id ?? null,
+        user_id: null,
       }).select().single();
 
       if (orderError) throw orderError;
