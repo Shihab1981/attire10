@@ -32,24 +32,7 @@ const Checkout = () => {
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
   const [discount, setDiscount] = useState(0);
 
-  // Auto-fill from logged-in user's profile + default address
-  useEffect(() => {
-    if (!user || autoFilled) return;
-    (async () => {
-      const [{ data: profile }, { data: addresses }] = await Promise.all([
-        supabase.from("profiles").select("full_name, phone").eq("id", user.id).maybeSingle(),
-        supabase.from("addresses").select("*").eq("user_id", user.id).eq("is_default", true).limit(1),
-      ]);
-      const def = addresses?.[0];
-      setForm((prev) => ({
-        ...prev,
-        name: prev.name || def?.recipient_name || profile?.full_name || "",
-        phone: prev.phone || def?.phone || profile?.phone || "",
-        address: prev.address || def?.address_line || "",
-      }));
-      setAutoFilled(true);
-    })();
-  }, [user, autoFilled]);
+
 
   const subtotal = totalPrice();
   const districts = getDistricts(form.division);
