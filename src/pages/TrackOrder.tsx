@@ -34,31 +34,13 @@ const TrackOrder = () => {
     setLoading(true);
     setSearched(true);
 
-    // Try by ID first, then by phone
-    let orderData: Order | null = null;
-    const { data: byId } = await supabase.from("orders").select("*").eq("id", q).maybeSingle();
-    if (byId) {
-      orderData = byId;
-    } else {
-      // Try short ID match
-      const { data: allOrders } = await supabase.from("orders").select("*").order("created_at", { ascending: false });
-      const match = allOrders?.find(o => o.id.slice(0, 8).toUpperCase() === q.toUpperCase());
-      if (match) {
-        orderData = match;
-      } else {
-        // Try by phone
-        const { data: byPhone } = await supabase.from("orders").select("*").eq("customer_phone", q).order("created_at", { ascending: false }).limit(1).maybeSingle();
-        if (byPhone) orderData = byPhone;
-      }
-    }
-
-    if (orderData) {
-      setOrder(orderData);
-      const { data: items } = await supabase.from("order_items").select("*").eq("order_id", orderData.id);
-      setOrderItems(items || []);
-    } else {
+    const { data, error } = await supabase.functions.invoke("track-order", { body: { query: q } });
+    if (error || !data?.order) {
       setOrder(null);
       setOrderItems([]);
+    } else {
+      setOrder(data.order);
+      setOrderItems(data.items || []);
     }
     setLoading(false);
   };
