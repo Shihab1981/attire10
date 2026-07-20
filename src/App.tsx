@@ -52,9 +52,6 @@ const App = () => (
           <Route path="/admin/hero-slides" element={<AdminHeroSlides />} />
           <Route path="/offline" element={<Offline />} />
           <Route path="/install" element={<Install />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/account" element={<Account />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
