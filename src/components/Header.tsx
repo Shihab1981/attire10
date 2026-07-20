@@ -76,14 +76,7 @@ const Header = () => {
             <button onClick={() => setSearchOpen(true)} className="p-2 sm:p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Search">
               <Search size={18} strokeWidth={1.5} />
             </button>
-            <Link
-              to={user ? "/account" : "/auth"}
-              className="p-2 sm:p-2.5 hover:bg-secondary/60 rounded-sm hover:text-accent transition-all relative"
-              aria-label={user ? "My Account" : "Sign in"}
-            >
-              <User size={18} strokeWidth={1.5} />
-              {user && <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-1.5 h-1.5 bg-accent rounded-full" />}
-            </Link>
+
             <Link to="/favorites" className="p-2 sm:p-2.5 relative hover:bg-secondary/60 rounded-sm hover:text-accent transition-all" aria-label="Favorites">
               <Heart size={18} strokeWidth={1.5} />
               {favCount > 0 && (
