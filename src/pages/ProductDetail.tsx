@@ -535,7 +535,8 @@ const ProductDetail = () => {
 
                   {/* Image area */}
                   <div
-                    className="flex-1 overflow-hidden flex items-center justify-center relative"
+                    ref={zoomAreaRef}
+                    className="flex-1 overflow-hidden flex items-center justify-center relative touch-none"
                     onWheel={(e) => {
                       e.preventDefault();
                       setModalZoomLevel((prev) => {
