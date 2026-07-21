@@ -57,6 +57,83 @@ const ProductDetail = () => {
     if (id) addRecentlyViewed(id);
   }, [id]);
 
+  // Native pinch-to-zoom + pan for mobile (passive:false so preventDefault works)
+  useEffect(() => {
+    if (!zoomOpen) return;
+    const area = zoomAreaRef.current;
+    if (!area) return;
+
+    let startDist = 0;
+    let startZoom = 1;
+    let startMid = { x: 0, y: 0 };
+    let startPan = { x: 0, y: 0 };
+    let panStart: { x: number; y: number } | null = null;
+    let curZoom = modalZoomLevel;
+    let curPan = { ...modalPan };
+
+    const dist = (t: TouchList) => {
+      const dx = t[0].clientX - t[1].clientX;
+      const dy = t[0].clientY - t[1].clientY;
+      return Math.hypot(dx, dy);
+    };
+    const mid = (t: TouchList) => ({
+      x: (t[0].clientX + t[1].clientX) / 2,
+      y: (t[0].clientY + t[1].clientY) / 2,
+    });
+
+    const onStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        startDist = dist(e.touches);
+        startZoom = curZoom;
+        startMid = mid(e.touches);
+        startPan = { ...curPan };
+        panStart = null;
+      } else if (e.touches.length === 1 && curZoom > 1) {
+        panStart = { x: e.touches[0].clientX - curPan.x, y: e.touches[0].clientY - curPan.y };
+      }
+    };
+    const onMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && startDist > 0) {
+        e.preventDefault();
+        const ratio = dist(e.touches) / startDist;
+        const newZoom = Math.min(Math.max(startZoom * ratio, 1), 5);
+        const m = mid(e.touches);
+        // keep pinch center anchored while zooming
+        const newPan = {
+          x: startPan.x + (m.x - startMid.x),
+          y: startPan.y + (m.y - startMid.y),
+        };
+        curZoom = newZoom;
+        curPan = newZoom === 1 ? { x: 0, y: 0 } : newPan;
+        setModalZoomLevel(curZoom);
+        setModalPan(curPan);
+      } else if (e.touches.length === 1 && panStart && curZoom > 1) {
+        e.preventDefault();
+        curPan = {
+          x: e.touches[0].clientX - panStart.x,
+          y: e.touches[0].clientY - panStart.y,
+        };
+        setModalPan(curPan);
+      }
+    };
+    const onEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) startDist = 0;
+      if (e.touches.length === 0) panStart = null;
+    };
+
+    area.addEventListener("touchstart", onStart, { passive: false });
+    area.addEventListener("touchmove", onMove, { passive: false });
+    area.addEventListener("touchend", onEnd);
+    area.addEventListener("touchcancel", onEnd);
+    return () => {
+      area.removeEventListener("touchstart", onStart);
+      area.removeEventListener("touchmove", onMove);
+      area.removeEventListener("touchend", onEnd);
+      area.removeEventListener("touchcancel", onEnd);
+    };
+  }, [zoomOpen, activeImageIndex]);
+
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
