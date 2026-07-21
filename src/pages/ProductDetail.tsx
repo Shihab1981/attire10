@@ -305,7 +305,7 @@ const ProductDetail = () => {
                   setSwipeOffset(0);
                 }}
               >
-                {/* Main visible image */}
+                {/* Main visible image with inline transform-origin zoom on hover (desktop) */}
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeImageIndex}
@@ -314,50 +314,16 @@ const ProductDetail = () => {
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.3 }}
-                    className="w-full h-full object-cover pointer-events-none"
-                    onLoad={() => setImageLoaded(true)}
-                  />
-                </AnimatePresence>
-
-                {/* Desktop: zoomed preview panel on the right */}
-                <AnimatePresence>
-                  {isHovering && (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.15 }}
-                      className="hidden md:block absolute top-0 left-full ml-4 w-[500px] h-full bg-background border border-border/50 shadow-xl z-30 overflow-hidden pointer-events-none"
-                    >
-                      <img
-                        src={displayImages[activeImageIndex] || mainImage}
-                        alt=""
-                        className="absolute"
-                        style={{
-                          width: `${(imgContainerRef.current?.offsetWidth || 400) * 2.5}px`,
-                          height: `${(imgContainerRef.current?.offsetHeight || 600) * 2.5}px`,
-                          left: `${-(zoomPos.x / 100) * ((imgContainerRef.current?.offsetWidth || 400) * 2.5) + 250}px`,
-                          top: `${-(zoomPos.y / 100) * ((imgContainerRef.current?.offsetHeight || 600) * 2.5) + ((imgContainerRef.current?.offsetHeight || 600) / 2)}px`,
-                          maxWidth: 'none',
-                        }}
-                      />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Desktop: crosshair area indicator */}
-                {isHovering && (
-                  <div
-                    className="hidden md:block absolute pointer-events-none border-2 border-accent/30 bg-accent/5 z-20"
+                    transition={{ opacity: { duration: 0.3 } }}
+                    className="w-full h-full object-cover pointer-events-none select-none will-change-transform transition-transform duration-200 ease-out"
                     style={{
-                      width: '120px',
-                      height: '120px',
-                      left: `calc(${zoomPos.x}% - 60px)`,
-                      top: `calc(${zoomPos.y}% - 60px)`,
+                      transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                      transform: isHovering && window.innerWidth >= 768 ? 'scale(2.2)' : 'scale(1)',
                     }}
+                    onLoad={() => setImageLoaded(true)}
+                    draggable={false}
                   />
-                )}
+                </AnimatePresence>
 
                 {/* Zoom icon hint */}
                 <div className="absolute bottom-4 right-4 w-8 h-8 bg-background/70 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none md:hidden">
