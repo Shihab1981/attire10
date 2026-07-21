@@ -49,6 +49,7 @@ const ProductDetail = () => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const modalImgRef = useRef<HTMLImageElement>(null);
+  const zoomAreaRef = useRef<HTMLDivElement>(null);
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
 
   // Track recently viewed
