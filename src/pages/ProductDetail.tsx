@@ -49,12 +49,90 @@ const ProductDetail = () => {
   const [swipeOffset, setSwipeOffset] = useState(0);
   const imgContainerRef = useRef<HTMLDivElement>(null);
   const modalImgRef = useRef<HTMLImageElement>(null);
+  const zoomAreaRef = useRef<HTMLDivElement>(null);
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
 
   // Track recently viewed
   useEffect(() => {
     if (id) addRecentlyViewed(id);
   }, [id]);
+
+  // Native pinch-to-zoom + pan for mobile (passive:false so preventDefault works)
+  useEffect(() => {
+    if (!zoomOpen) return;
+    const area = zoomAreaRef.current;
+    if (!area) return;
+
+    let startDist = 0;
+    let startZoom = 1;
+    let startMid = { x: 0, y: 0 };
+    let startPan = { x: 0, y: 0 };
+    let panStart: { x: number; y: number } | null = null;
+    let curZoom = modalZoomLevel;
+    let curPan = { ...modalPan };
+
+    const dist = (t: TouchList) => {
+      const dx = t[0].clientX - t[1].clientX;
+      const dy = t[0].clientY - t[1].clientY;
+      return Math.hypot(dx, dy);
+    };
+    const mid = (t: TouchList) => ({
+      x: (t[0].clientX + t[1].clientX) / 2,
+      y: (t[0].clientY + t[1].clientY) / 2,
+    });
+
+    const onStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        startDist = dist(e.touches);
+        startZoom = curZoom;
+        startMid = mid(e.touches);
+        startPan = { ...curPan };
+        panStart = null;
+      } else if (e.touches.length === 1 && curZoom > 1) {
+        panStart = { x: e.touches[0].clientX - curPan.x, y: e.touches[0].clientY - curPan.y };
+      }
+    };
+    const onMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && startDist > 0) {
+        e.preventDefault();
+        const ratio = dist(e.touches) / startDist;
+        const newZoom = Math.min(Math.max(startZoom * ratio, 1), 5);
+        const m = mid(e.touches);
+        // keep pinch center anchored while zooming
+        const newPan = {
+          x: startPan.x + (m.x - startMid.x),
+          y: startPan.y + (m.y - startMid.y),
+        };
+        curZoom = newZoom;
+        curPan = newZoom === 1 ? { x: 0, y: 0 } : newPan;
+        setModalZoomLevel(curZoom);
+        setModalPan(curPan);
+      } else if (e.touches.length === 1 && panStart && curZoom > 1) {
+        e.preventDefault();
+        curPan = {
+          x: e.touches[0].clientX - panStart.x,
+          y: e.touches[0].clientY - panStart.y,
+        };
+        setModalPan(curPan);
+      }
+    };
+    const onEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) startDist = 0;
+      if (e.touches.length === 0) panStart = null;
+    };
+
+    area.addEventListener("touchstart", onStart, { passive: false });
+    area.addEventListener("touchmove", onMove, { passive: false });
+    area.addEventListener("touchend", onEnd);
+    area.addEventListener("touchcancel", onEnd);
+    return () => {
+      area.removeEventListener("touchstart", onStart);
+      area.removeEventListener("touchmove", onMove);
+      area.removeEventListener("touchend", onEnd);
+      area.removeEventListener("touchcancel", onEnd);
+    };
+  }, [zoomOpen, activeImageIndex]);
 
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
@@ -457,7 +535,8 @@ const ProductDetail = () => {
 
                   {/* Image area */}
                   <div
-                    className="flex-1 overflow-hidden flex items-center justify-center relative"
+                    ref={zoomAreaRef}
+                    className="flex-1 overflow-hidden flex items-center justify-center relative touch-none"
                     onWheel={(e) => {
                       e.preventDefault();
                       setModalZoomLevel((prev) => {
@@ -496,9 +575,11 @@ const ProductDetail = () => {
                       alt={product.name}
                       className="max-w-[90vw] max-h-[85vh] object-contain select-none touch-none"
                       style={{
-                        transform: `scale(${modalZoomLevel}) translate(${modalPan.x}px, ${modalPan.y}px)`,
+                        transform: `translate(${modalPan.x}px, ${modalPan.y}px) scale(${modalZoomLevel})`,
+                        transformOrigin: 'center center',
                         cursor: modalZoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'zoom-in',
                         transition: isDragging ? 'none' : 'transform 0.2s ease-out',
+                        willChange: 'transform',
                       }}
                       draggable={false}
                       onClick={(e) => {
@@ -528,33 +609,6 @@ const ProductDetail = () => {
                         e.stopPropagation();
                         if (modalZoomLevel > 1) { setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); }
                         else { setModalZoomLevel(3); }
-                      }}
-                      onTouchStart={(e) => {
-                        if (e.touches.length === 2) {
-                          const dx = e.touches[0].clientX - e.touches[1].clientX;
-                          const dy = e.touches[0].clientY - e.touches[1].clientY;
-                          setPinchStartDist(Math.hypot(dx, dy));
-                          setPinchStartZoom(modalZoomLevel);
-                        } else if (e.touches.length === 1 && modalZoomLevel > 1) {
-                          setIsDragging(true);
-                          setTouchStart({ x: e.touches[0].clientX - modalPan.x, y: e.touches[0].clientY - modalPan.y });
-                        }
-                      }}
-                      onTouchMove={(e) => {
-                        if (e.touches.length === 2 && pinchStartDist > 0) {
-                          e.preventDefault();
-                          const dx = e.touches[0].clientX - e.touches[1].clientX;
-                          const dy = e.touches[0].clientY - e.touches[1].clientY;
-                          const newZoom = Math.min(Math.max(pinchStartZoom * (Math.hypot(dx, dy) / pinchStartDist), 1), 5);
-                          setModalZoomLevel(newZoom);
-                          if (newZoom === 1) setModalPan({ x: 0, y: 0 });
-                        } else if (e.touches.length === 1 && isDragging && modalZoomLevel > 1 && touchStart) {
-                          setModalPan({ x: e.touches[0].clientX - touchStart.x, y: e.touches[0].clientY - touchStart.y });
-                        }
-                      }}
-                      onTouchEnd={(e) => {
-                        if (e.touches.length < 2) setPinchStartDist(0);
-                        if (e.touches.length === 0) { setIsDragging(false); setTouchStart(null); }
                       }}
                     />
                   </div>
