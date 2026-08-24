@@ -56,9 +56,14 @@ const Header = () => {
             {mobileOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
           </button>
 
-          <Link to="/" className="font-display text-xl md:text-2xl font-extrabold tracking-[0.15em] uppercase relative group">
-            ATTIRE
-            <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-accent transition-all duration-300 group-hover:w-full" />
+          <Link to="/" className="flex items-center shrink-0" aria-label="Gadzet Hub home">
+            <img
+              src={brandLogo}
+              alt="Gadzet Hub logo"
+              width={160}
+              height={48}
+              className="h-7 md:h-9 w-auto object-contain"
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-10">
