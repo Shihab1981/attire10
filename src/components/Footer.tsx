@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
+import brandLogo from "@/assets/devicehub-logo.png";
 
 const Footer = () => (
   <footer className="bg-foreground text-primary-foreground">
