@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 import SearchOverlay from "./SearchOverlay";
 import InstallPWAButton from "./InstallPWAButton";
+import brandLogo from "@/assets/devicehub-logo.png";
 
 
 const Header = () => {
@@ -26,11 +27,12 @@ const Header = () => {
   }, []);
 
   const navLinks = [
-    { to: "/products?category=t-shirts", label: "T-Shirts" },
-    { to: "/products?category=panjabi", label: "Panjabi" },
-    { to: "/products?category=polo-shirts", label: "Polo Shirts" },
-    { to: "/products?category=pants", label: "Pants" },
-    { to: "/products?category=trousers", label: "Trousers" },
+    { to: "/products?category=smartphones", label: "Smartphones" },
+    { to: "/products?category=audio", label: "Audio" },
+    { to: "/products?category=smartwatches", label: "Smartwatches" },
+    { to: "/products?category=laptops", label: "Laptops" },
+    { to: "/products?category=accessories", label: "Accessories" },
+    { to: "/products?category=gaming", label: "Gaming" },
   ];
 
   return (

@@ -1,10 +1,10 @@
-import { Truck, Shield, RefreshCw, Headphones } from "lucide-react";
+import { Truck, ShieldCheck, RefreshCw, Headphones } from "lucide-react";
 
 const features = [
-  { icon: Truck, title: "Free Shipping", desc: "Over ৳2,000" },
-  { icon: Shield, title: "100% Authentic", desc: "Genuine quality" },
-  { icon: RefreshCw, title: "Easy Returns", desc: "7-day policy" },
-  { icon: Headphones, title: "24/7 Support", desc: "Always here" },
+  { icon: Truck, title: "Free Delivery", desc: "Over ৳2,000" },
+  { icon: ShieldCheck, title: "1 Year Warranty", desc: "Official coverage" },
+  { icon: RefreshCw, title: "7-Day Replacement", desc: "Faulty units" },
+  { icon: Headphones, title: "Tech Support", desc: "Setup help" },
 ];
 
 const TrustBanner = () => (
