@@ -23,8 +23,8 @@ export default defineConfig(({ mode }) => ({
       },
       includeAssets: ["favicon.ico", "robots.txt", "pwa-192.png", "pwa-512.png"],
       manifest: {
-        name: "GADZET HUB - Men's Fashion",
-        short_name: "GADZET HUB",
+        name: "Gadzet Hub - Gadgets & Electronics",
+        short_name: "Gadzet Hub",
         description: "Gadzet Hub - Premium gadgets, phones, audio and accessories in Bangladesh",
         theme_color: "#cc5a2e",
         background_color: "#faf8f5",
