@@ -4,25 +4,25 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
-import hero1 from "@/assets/hero-1.jpg";
-import hero2 from "@/assets/hero-2.jpg";
+import hero1 from "@/assets/hero-gadget-1.jpg";
+import hero2 from "@/assets/hero-gadget-2.jpg";
 
 const fallbackSlides = [
   {
     image_url: hero1,
-    overline: "New Collection — SS'26",
-    title: "Modern\nElegance",
-    subtitle: "Crafted for the man who values substance over spectacle",
-    cta_text: "Discover Collection",
+    overline: "New Arrivals — 2026",
+    title: "Tech That\nKeeps Up",
+    subtitle: "Flagship phones, earbuds and wearables with official warranty",
+    cta_text: "Shop New Arrivals",
     cta_link: "/products?filter=new",
   },
   {
     image_url: hero2,
-    overline: "Premium Essentials",
-    title: "Everyday\nStyle",
-    subtitle: "Where comfort meets uncompromising quality",
+    overline: "Setup Essentials",
+    title: "Build Your\nDesk Setup",
+    subtitle: "Laptops, keyboards and accessories that just work",
     cta_text: "Shop Now",
-    cta_link: "/products?category=polo-shirts",
+    cta_link: "/products?category=accessories",
   },
 ];
 

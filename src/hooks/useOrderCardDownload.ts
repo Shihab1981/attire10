@@ -74,7 +74,7 @@ export const useOrderCardDownload = () => {
       ctx.textAlign = "left";
 
       // Brand name
-      drawText("ATTIRE", padding + 56, y, { size: 28, weight: "800", color: "#1C1917" });
+      drawText("GADZET HUB", padding + 56, y, { size: 28, weight: "800", color: "#1C1917" });
       drawText("Premium Clothing", padding + 56, y + 18, { size: 10, weight: "500", color: "#A8A29E" });
 
       // Receipt label on right
@@ -241,7 +241,7 @@ export const useOrderCardDownload = () => {
         y += qrSize + 20;
 
         // Final footer
-        drawText("Thank you for shopping with ATTIRE!", W / 2, y, {
+        drawText("Thank you for shopping with GADZET HUB!", W / 2, y, {
           size: 12,
           weight: "500",
           color: "#A8A29E",
@@ -258,7 +258,7 @@ export const useOrderCardDownload = () => {
 
         // Download
         const link = document.createElement("a");
-        link.download = `ATTIRE-Order-${order.id.slice(0, 8).toUpperCase()}.png`;
+        link.download = `GADZET HUB-Order-${order.id.slice(0, 8).toUpperCase()}.png`;
         link.href = tempCanvas.toDataURL("image/png");
         link.click();
       };

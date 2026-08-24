@@ -12,7 +12,8 @@ import { SlidersHorizontal, X, ArrowUpDown, Grid3X3, LayoutGrid, ChevronDown, Ta
 import { motion, AnimatePresence } from "framer-motion";
 import { useFlashSales } from "@/hooks/useFlashSales";
 
-const allSizes: Size[] = ["S", "M", "L", "XL", "XXL"];
+import { allVariants } from "@/data/products";
+const allSizes: Size[] = allVariants;
 
 type SortOption = "newest" | "price-low" | "price-high" | "name-az";
 const sortOptions: { value: SortOption; label: string }[] = [
@@ -130,7 +131,7 @@ const Products = () => {
     });
   }
   if (selectedSize) {
-    activeFilters.push({ label: `Size: ${selectedSize}`, onClear: () => setSelectedSize(null) });
+    activeFilters.push({ label: `Variant: ${selectedSize}`, onClear: () => setSelectedSize(null) });
   }
   if (priceRange[0] > 0 || priceRange[1] < 5000) {
     activeFilters.push({ label: `৳${priceRange[0]}–৳${priceRange[1]}`, onClear: () => setPriceRange([0, 5000]) });
@@ -332,11 +333,11 @@ const Products = () => {
                       </div>
                     </div>
 
-                    {/* Size */}
+                    {/* Variant */}
                     <div className="border border-border/60 p-5">
                       <h3 className="flex items-center gap-2 text-[10px] font-body font-semibold tracking-[0.25em] uppercase text-muted-foreground mb-4">
                         <Ruler size={12} strokeWidth={1.5} />
-                        Size
+                        Variant
                       </h3>
                       <div className="flex flex-wrap gap-2">
                         {allSizes.map((s) => (

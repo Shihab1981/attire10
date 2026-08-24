@@ -161,7 +161,7 @@ const DesktopInstallDialogIllustration = () => (
           <span className="text-[8px] font-bold text-accent">A</span>
         </div>
         <div>
-          <div className="text-[9px] font-semibold">Install ATTIRE?</div>
+          <div className="text-[9px] font-semibold">Install GADZET HUB?</div>
           <div className="text-[8px] text-muted-foreground">attire10.lovable.app</div>
         </div>
       </div>
@@ -181,7 +181,7 @@ const DesktopPinIllustration = () => (
         <div className="w-8 h-8 rounded-md bg-accent/20 flex items-center justify-center">
           <span className="text-[10px] font-bold text-accent">A</span>
         </div>
-        <div className="text-[10px] font-display font-bold">ATTIRE</div>
+        <div className="text-[10px] font-display font-bold">GADZET HUB</div>
       </div>
       <div className="border-t border-border/40 pt-2 flex justify-center gap-2">
         <div className="w-5 h-5 rounded-sm bg-secondary/60" />
@@ -226,7 +226,7 @@ const Install = () => {
     const installedHandler = () => {
       setIsInstalled(true);
       setDeferredPrompt(null);
-      toast.success("ATTIRE installed successfully!");
+      toast.success("GADZET HUB installed successfully!");
     };
 
     window.addEventListener("beforeinstallprompt", handler);
@@ -244,7 +244,7 @@ const Install = () => {
     }
     await deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
-    if (outcome === "accepted") toast.success("Installing ATTIRE...");
+    if (outcome === "accepted") toast.success("Installing GADZET HUB...");
     setDeferredPrompt(null);
   };
 
@@ -301,10 +301,10 @@ const Install = () => {
             Progressive Web App
           </p>
           <h1 className="font-display text-3xl md:text-5xl font-extrabold tracking-[0.05em] uppercase mb-4">
-            Install ATTIRE
+            Install GADZET HUB
           </h1>
           <p className="text-muted-foreground max-w-xl mx-auto text-sm md:text-base leading-relaxed mb-8">
-            Get the full ATTIRE experience on your device. Faster, smoother, and works even when you're offline.
+            Get the full GADZET HUB experience on your device. Faster, smoother, and works even when you're offline.
           </p>
 
           {isInstalled ? (
@@ -389,7 +389,7 @@ const Install = () => {
                       illustration: <AndroidInstallOptionIllustration />,
                     },
                     {
-                      text: "Tap 'Install' to confirm — ATTIRE will appear on your home screen",
+                      text: "Tap 'Install' to confirm — GADZET HUB will appear on your home screen",
                       illustration: <AndroidConfirmIllustration />,
                     },
                   ]}
@@ -431,7 +431,7 @@ const Install = () => {
                       illustration: <DesktopInstallDialogIllustration />,
                     },
                     {
-                      text: "ATTIRE will open in its own window — pin it to your taskbar or dock",
+                      text: "GADZET HUB will open in its own window — pin it to your taskbar or dock",
                       illustration: <DesktopPinIllustration />,
                     },
                   ]}

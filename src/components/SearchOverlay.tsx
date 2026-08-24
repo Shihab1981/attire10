@@ -8,7 +8,8 @@ import { categoryImages, type Category, type Size } from "@/data/products";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
-const allSizes: Size[] = ["S", "M", "L", "XL", "XXL"];
+import { allVariants } from "@/data/products";
+const allSizes: Size[] = allVariants;
 
 const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const navigate = useNavigate();
@@ -145,10 +146,10 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
                     className="overflow-hidden"
                   >
                     <div className="flex flex-wrap gap-6 py-4 border-t border-b border-border/50 mb-4">
-                      {/* Size filter */}
+                      {/* Variant filter */}
                       <div>
                         <p className="text-[9px] tracking-[0.2em] uppercase font-body font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-                          <Ruler size={11} /> Size
+                          <Ruler size={11} /> Variant
                         </p>
                         <div className="flex gap-1.5">
                           {allSizes.map((s) => (

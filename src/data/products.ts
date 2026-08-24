@@ -1,25 +1,39 @@
-import catTshirt from "@/assets/cat-tshirt.jpg";
-import catPanjabi from "@/assets/cat-panjabi.jpg";
-import catPolo from "@/assets/cat-polo.jpg";
-import catPants from "@/assets/cat-pants.jpg";
-import catTrousers from "@/assets/cat-trousers.jpg";
+import catSmartphones from "@/assets/cat-smartphones.jpg";
+import catAudio from "@/assets/cat-audio.jpg";
+import catSmartwatch from "@/assets/cat-smartwatch.jpg";
+import catLaptops from "@/assets/cat-laptops.jpg";
+import catAccessories from "@/assets/cat-accessories.jpg";
+import catGaming from "@/assets/cat-gaming.jpg";
 
-export type Category = "t-shirts" | "panjabi" | "polo-shirts" | "pants" | "trousers";
-export type Size = "S" | "M" | "L" | "XL" | "XXL";
+export type Category =
+  | "smartphones"
+  | "audio"
+  | "smartwatches"
+  | "laptops"
+  | "accessories"
+  | "gaming";
+
+/** Product variant (storage / model option). Kept as a string for flexibility. */
+export type Size = string;
+
+/** Variant options used by filters across the store. */
+export const allVariants: Size[] = ["Standard", "64GB", "128GB", "256GB", "512GB", "1TB"];
 
 export const categories: { slug: Category; name: string; image: string; description: string }[] = [
-  { slug: "t-shirts", name: "T-Shirts", image: catTshirt, description: "Half & Full Sleeve" },
-  { slug: "panjabi", name: "Panjabi", image: catPanjabi, description: "Traditional & Slim Fit" },
-  { slug: "polo-shirts", name: "Polo Shirts", image: catPolo, description: "Premium Collared" },
-  { slug: "pants", name: "Pants", image: catPants, description: "Denim, Gabardine & Formal" },
-  { slug: "trousers", name: "Trousers", image: catTrousers, description: "Casual & Activewear" },
+  { slug: "smartphones", name: "Smartphones", image: catSmartphones, description: "Flagship & Budget Phones" },
+  { slug: "audio", name: "Audio", image: catAudio, description: "Earbuds, Headphones & Speakers" },
+  { slug: "smartwatches", name: "Smartwatches", image: catSmartwatch, description: "Fitness & Smart Bands" },
+  { slug: "laptops", name: "Laptops", image: catLaptops, description: "Ultrabooks & Workstations" },
+  { slug: "accessories", name: "Accessories", image: catAccessories, description: "Chargers, Cables & Power Banks" },
+  { slug: "gaming", name: "Gaming", image: catGaming, description: "Keyboards, Mice & Consoles" },
 ];
 
 // Category images map for fallback when product has no image
 export const categoryImages: Record<Category, string> = {
-  "t-shirts": catTshirt,
-  panjabi: catPanjabi,
-  "polo-shirts": catPolo,
-  pants: catPants,
-  trousers: catTrousers,
+  smartphones: catSmartphones,
+  audio: catAudio,
+  smartwatches: catSmartwatch,
+  laptops: catLaptops,
+  accessories: catAccessories,
+  gaming: catGaming,
 };

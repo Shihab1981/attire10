@@ -23,7 +23,7 @@ const Offline = () => {
         </button>
         <div className="mt-12 pt-8 border-t border-border/40">
           <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground/70 font-medium">
-            ATTIRE
+            GADZET HUB
           </p>
         </div>
       </div>

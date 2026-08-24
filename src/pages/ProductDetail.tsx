@@ -8,7 +8,7 @@ import { useFavoritesStore } from "@/store/favoritesStore";
 import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import SizeGuide from "@/components/SizeGuide";
+import WarrantyInfo from "@/components/WarrantyInfo";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
 import RecentlyViewed from "@/components/RecentlyViewed";
@@ -280,7 +280,7 @@ const ProductDetail = () => {
     : allImages;
 
   const handleAddToCart = () => {
-    if (!selectedSize) { toast.error("Please select a size"); return; }
+    if (!selectedSize) { toast.error("Please select a variant"); return; }
     if (colors.length > 0 && !selectedColor) { toast.error("Please select a color"); return; }
     for (let i = 0; i < quantity; i++) addItem(product, selectedSize, selectedColor || undefined);
     setAddedToCart(true);
@@ -696,9 +696,9 @@ const ProductDetail = () => {
                 {product.description}
               </p>
 
-              {/* Fabric */}
+              {/* Key spec */}
               <div className="flex items-center gap-3 mb-8 bg-secondary/50 border border-border/50 px-5 py-3.5">
-                <span className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Fabric</span>
+                <span className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Specs</span>
                 <div className="w-px h-4 bg-border" />
                 <span className="text-sm font-body font-medium">{product.fabric}</span>
               </div>
@@ -737,13 +737,13 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Size Selection */}
+              {/* Variant Selection */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">
-                    Select Size {selectedSize && <span className="text-accent ml-1">— {selectedSize}</span>}
+                    Select Variant {selectedSize && <span className="text-accent ml-1">— {selectedSize}</span>}
                   </h3>
-                  <SizeGuide />
+                  <WarrantyInfo />
                 </div>
                 <div className="flex flex-wrap gap-2.5">
                   {product.sizes.map((s) => (
@@ -811,7 +811,7 @@ const ProductDetail = () => {
 
               {/* WhatsApp Order */}
               <a
-                href={`https://wa.me/8801833723089?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedSize ? `\n📏 Size: ${selectedSize}` : ""}${selectedColor ? `\n🎨 Color: ${presetColorNames[selectedColor] || selectedColor}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
+                href={`https://wa.me/8801833723089?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedSize ? `\n⚙️ Variant: ${selectedSize}` : ""}${selectedColor ? `\n🎨 Color: ${presetColorNames[selectedColor] || selectedColor}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-3 py-3.5 bg-[#25D366] text-[#fff] text-[11px] font-body font-bold tracking-[0.15em] uppercase hover:bg-[#1DA851] transition-colors active:scale-[0.98] mb-2"
