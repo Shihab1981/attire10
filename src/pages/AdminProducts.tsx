@@ -30,7 +30,7 @@ const presetColors = [
 ];
 
 const emptyForm = {
-  name: "", category: "t-shirts", sub_category: "", price: 0, original_price: null as number | null,
+  name: "", category: "smartphones", sub_category: "", price: 0, original_price: null as number | null,
   image_url: "/placeholder.svg", sizes: ["S", "M", "L", "XL", "XXL"] as string[],
   fabric: "", description: "", trending: false, new_arrival: false, in_stock: true,
   colors: [] as string[], images: [] as string[],
