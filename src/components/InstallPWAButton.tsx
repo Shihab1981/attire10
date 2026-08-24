@@ -29,7 +29,7 @@ const InstallPWAButton = () => {
           ? "border-accent bg-accent/10 shadow-[0_0_0_3px_hsl(var(--accent)/0.15),0_0_20px_hsl(var(--accent)/0.45)] animate-pulse-glow"
           : "border-accent/40"
       }`}
-      aria-label="Install ATTIRE app"
+      aria-label="Install GADZET HUB app"
     >
       {isOnInstallPage && (
         <span className="absolute inset-0 rounded-sm ring-2 ring-accent/50 animate-ping pointer-events-none" />

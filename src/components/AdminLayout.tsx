@@ -18,7 +18,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
     <div className="min-h-screen flex flex-col md:flex-row">
       <aside className="w-full md:w-60 bg-foreground text-primary-foreground shrink-0">
         <div className="p-6">
-          <h2 className="font-display text-lg font-bold mb-1">ATTIRE</h2>
+          <h2 className="font-display text-lg font-bold mb-1">GADZET HUB</h2>
           <p className="text-primary-foreground/50 text-xs">Admin Panel</p>
         </div>
         <nav className="px-3 pb-6 flex md:flex-col gap-1 overflow-x-auto">

@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Download, X } from "lucide-react";
 
-const DISMISS_KEY = "attire_install_banner_dismissed";
-const PAGE_COUNT_KEY = "attire_page_view_count";
+const DISMISS_KEY = "gadzethub_install_banner_dismissed";
+const PAGE_COUNT_KEY = "gadzethub_page_view_count";
 const MIN_PAGES = 2;
 
 const InstallBanner = () => {
@@ -63,7 +63,7 @@ const InstallBanner = () => {
         </div>
         <div className="flex-1 min-w-0">
           <p className="font-display font-bold text-xs uppercase tracking-wider leading-tight">
-            Install ATTIRE
+            Install GADZET HUB
           </p>
           <p className="text-[10px] text-background/70 leading-tight mt-0.5">
             Faster access from your home screen
