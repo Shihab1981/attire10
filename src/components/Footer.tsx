@@ -31,9 +31,16 @@ const Footer = () => (
     <div className="container py-14 md:py-16">
       <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
         <div className="col-span-2 md:col-span-1">
-          <h3 className="font-display text-xl font-extrabold tracking-[0.15em] uppercase mb-4">ATTIRE</h3>
+          <img
+            src={brandLogo}
+            alt="Gadzet Hub logo"
+            width={160}
+            height={48}
+            loading="lazy"
+            className="h-8 w-auto object-contain bg-primary-foreground rounded-sm p-1 mb-4"
+          />
           <p className="text-primary-foreground/35 text-sm leading-relaxed font-body font-light">
-            Premium men's apparel for the modern gentleman. Quality fabrics, timeless style.
+            Gadzet Hub — genuine gadgets for everyday life. Phones, audio, wearables and accessories with official warranty.
           </p>
           <div className="mt-6 h-[2px] w-10 bg-accent/60" />
         </div>
@@ -42,11 +49,12 @@ const Footer = () => (
             Shop
           </h4>
           <ul className="space-y-3 text-sm text-primary-foreground/35 font-body">
-            <li><Link to="/products?category=t-shirts" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">T-Shirts</Link></li>
-            <li><Link to="/products?category=panjabi" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Panjabi</Link></li>
-            <li><Link to="/products?category=polo-shirts" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Polo Shirts</Link></li>
-            <li><Link to="/products?category=pants" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Pants</Link></li>
-            <li><Link to="/products?category=trousers" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Trousers</Link></li>
+            <li><Link to="/products?category=smartphones" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Smartphones</Link></li>
+            <li><Link to="/products?category=audio" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Audio</Link></li>
+            <li><Link to="/products?category=smartwatches" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Smartwatches</Link></li>
+            <li><Link to="/products?category=laptops" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Laptops</Link></li>
+            <li><Link to="/products?category=accessories" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Accessories</Link></li>
+            <li><Link to="/products?category=gaming" className="link-underline hover:text-primary-foreground hover:pl-1 transition-all">Gaming</Link></li>
           </ul>
         </div>
         <div>
@@ -54,9 +62,9 @@ const Footer = () => (
             Information
           </h4>
           <ul className="space-y-3 text-sm text-primary-foreground/35 font-body">
-            <li><span className="cursor-default hover:text-primary-foreground transition-colors">Size Guide</span></li>
+            <li><span className="cursor-default hover:text-primary-foreground transition-colors">Warranty & Service</span></li>
             <li><span className="cursor-default hover:text-primary-foreground transition-colors">Shipping & Delivery</span></li>
-            <li><span className="cursor-default hover:text-primary-foreground transition-colors">Returns & Exchange</span></li>
+            <li><span className="cursor-default hover:text-primary-foreground transition-colors">Returns & Replacement</span></li>
             <li><span className="cursor-default hover:text-primary-foreground transition-colors">Contact Us</span></li>
           </ul>
         </div>
