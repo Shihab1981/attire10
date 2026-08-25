@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
-import brandLogo from "@/assets/devicehub-logo.png";
+import brandLogoAsset from "@/assets/devicehub-logo.png.asset.json";
+const brandLogo = brandLogoAsset.url;
 
 const Footer = () => (
   <footer className="bg-foreground text-primary-foreground">
@@ -11,7 +12,7 @@ const Footer = () => (
           <p className="text-[10px] tracking-[0.3em] uppercase text-primary-foreground/40 font-body mb-3">Newsletter</p>
           <h3 className="font-display text-2xl md:text-4xl font-extrabold leading-tight">Stay in the loop</h3>
           <p className="text-primary-foreground/40 text-sm font-body mt-3 leading-relaxed">
-            Be the first to know about new collections and exclusive offers.
+            Be the first to know about new gadget arrivals and exclusive offers.
           </p>
         </div>
         <div className="flex w-full md:w-auto">
@@ -34,14 +35,14 @@ const Footer = () => (
         <div className="col-span-2 md:col-span-1">
           <img
             src={brandLogo}
-            alt="Gadzet Hub logo"
+            alt="Device Hub logo"
             width={160}
             height={48}
             loading="lazy"
             className="h-8 w-auto object-contain bg-primary-foreground rounded-sm p-1 mb-4"
           />
           <p className="text-primary-foreground/35 text-sm leading-relaxed font-body font-light">
-            Gadzet Hub — genuine gadgets for everyday life. Phones, audio, wearables and accessories with official warranty.
+            Device Hub — genuine gadgets for everyday life. Phones, audio, wearables and accessories with official warranty.
           </p>
           <div className="mt-6 h-[2px] w-10 bg-accent/60" />
         </div>
@@ -85,7 +86,7 @@ const Footer = () => (
     <div className="border-t border-primary-foreground/8">
       <div className="container py-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <p className="text-[11px] text-primary-foreground/25 font-body tracking-wider">
-          © 2026 Attire. All rights reserved.
+          © 2026 Device Hub. All rights reserved.
         </p>
         <div className="flex gap-6 text-[11px] text-primary-foreground/25 font-body tracking-wider">
           <span className="hover:text-primary-foreground/50 transition-colors cursor-default">Privacy Policy</span>
