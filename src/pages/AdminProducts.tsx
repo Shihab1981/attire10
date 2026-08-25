@@ -145,7 +145,14 @@ const AdminProducts = () => {
   };
 
   const saveMutation = useMutation({
-    mutationFn: async (data: typeof form) => {
+    mutationFn: async (raw: typeof form) => {
+      const data = {
+        ...raw,
+        key_features: raw.key_features.map((f) => f.trim()).filter(Boolean),
+        specs: raw.specs
+          .map((s) => ({ label: s.label.trim(), value: s.value.trim() }))
+          .filter((s) => s.label && s.value),
+      };
       if (editingId) {
         await adminApi.update("products", data, { id: editingId });
       } else {
