@@ -149,7 +149,7 @@ const Header = () => {
   );
 };
 
-const defaultAnnouncement = "✦ Free Shipping on Orders Over ৳2,000 ✦ New Arrivals Every Week ✦ Premium Quality Fabrics ✦ 100% Authentic Products";
+const defaultAnnouncement = "✦ Free Shipping on Orders Over ৳2,000 ✦ New Arrivals Every Week ✦ 1 Year Official Warranty ✦ 100% Authentic Products";
 
 const AnnouncementBar = () => {
   const { data: text } = useQuery({

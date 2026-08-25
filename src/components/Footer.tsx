@@ -12,7 +12,7 @@ const Footer = () => (
           <p className="text-[10px] tracking-[0.3em] uppercase text-primary-foreground/40 font-body mb-3">Newsletter</p>
           <h3 className="font-display text-2xl md:text-4xl font-extrabold leading-tight">Stay in the loop</h3>
           <p className="text-primary-foreground/40 text-sm font-body mt-3 leading-relaxed">
-            Be the first to know about new collections and exclusive offers.
+            Be the first to know about new gadget arrivals and exclusive offers.
           </p>
         </div>
         <div className="flex w-full md:w-auto">
