@@ -474,13 +474,92 @@ const AdminProducts = () => {
                   ))}
                 </div>
               </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-sm font-medium mb-1">Brand Name</label>
+                  <input value={form.brand} onChange={(e) => setForm({ ...form, brand: e.target.value })} placeholder="e.g. Samsung" className="w-full border border-border px-3 py-2 bg-background text-sm" maxLength={100} />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Warranty</label>
+                  <input value={form.warranty} onChange={(e) => setForm({ ...form, warranty: e.target.value })} placeholder="e.g. 1 Year Official Warranty" className="w-full border border-border px-3 py-2 bg-background text-sm" maxLength={200} />
+                </div>
+              </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Fabric</label>
-                <input value={form.fabric} onChange={(e) => setForm({ ...form, fabric: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm" maxLength={200} />
+                <label className="block text-sm font-medium mb-1">Short Spec (headline)</label>
+                <input value={form.fabric} onChange={(e) => setForm({ ...form, fabric: e.target.value })} placeholder="e.g. 8GB RAM · 256GB · 5000mAh" className="w-full border border-border px-3 py-2 bg-background text-sm" maxLength={200} />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm min-h-[80px] resize-none" maxLength={1000} />
+                <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm min-h-[80px] resize-none" maxLength={2000} />
+              </div>
+
+              {/* Key Features */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium">Key Features</label>
+                  <button type="button" onClick={() => setForm({ ...form, key_features: [...form.key_features, ""] })} className="text-xs border border-border px-2 py-1 hover:bg-secondary">+ Add feature</button>
+                </div>
+                <div className="space-y-2">
+                  {form.key_features.length === 0 && <p className="text-[11px] text-muted-foreground">কোনো feature নেই — "Add feature" চাপুন।</p>}
+                  {form.key_features.map((f, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        value={f}
+                        onChange={(e) => {
+                          const next = [...form.key_features];
+                          next[i] = e.target.value;
+                          setForm({ ...form, key_features: next });
+                        }}
+                        placeholder="e.g. 120Hz AMOLED Display"
+                        className="flex-1 border border-border px-3 py-2 bg-background text-sm"
+                        maxLength={160}
+                      />
+                      <button type="button" onClick={() => setForm({ ...form, key_features: form.key_features.filter((_, x) => x !== i) })} className="px-2 border border-border hover:text-destructive">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Specifications */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium">Specifications</label>
+                  <button type="button" onClick={() => setForm({ ...form, specs: [...form.specs, { label: "", value: "" }] })} className="text-xs border border-border px-2 py-1 hover:bg-secondary">+ Add spec</button>
+                </div>
+                <div className="space-y-2">
+                  {form.specs.length === 0 && <p className="text-[11px] text-muted-foreground">Label ও Value দিয়ে spec table তৈরি করুন (যেমন Display → 6.7" AMOLED)।</p>}
+                  {form.specs.map((s, i) => (
+                    <div key={i} className="flex gap-2">
+                      <input
+                        value={s.label}
+                        onChange={(e) => {
+                          const next = [...form.specs];
+                          next[i] = { ...next[i], label: e.target.value };
+                          setForm({ ...form, specs: next });
+                        }}
+                        placeholder="Label (Display)"
+                        className="w-1/3 border border-border px-3 py-2 bg-background text-sm"
+                        maxLength={60}
+                      />
+                      <input
+                        value={s.value}
+                        onChange={(e) => {
+                          const next = [...form.specs];
+                          next[i] = { ...next[i], value: e.target.value };
+                          setForm({ ...form, specs: next });
+                        }}
+                        placeholder="Value (6.7 inch AMOLED)"
+                        className="flex-1 border border-border px-3 py-2 bg-background text-sm"
+                        maxLength={160}
+                      />
+                      <button type="button" onClick={() => setForm({ ...form, specs: form.specs.filter((_, x) => x !== i) })} className="px-2 border border-border hover:text-destructive">
+                        <X size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
               <div className="flex gap-6 flex-wrap">
                 <label className="flex items-center gap-2 text-sm">
