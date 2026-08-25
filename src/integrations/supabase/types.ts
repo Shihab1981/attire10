@@ -252,6 +252,7 @@ export type Database = {
       }
       products: {
         Row: {
+          brand: string
           category: string
           color_images: Json
           colors: string[]
@@ -262,17 +263,21 @@ export type Database = {
           image_url: string
           images: string[]
           in_stock: boolean
+          key_features: string[]
           name: string
           new_arrival: boolean
           original_price: number | null
           price: number
           sizes: string[]
+          specs: Json
           stock_quantity: number
           sub_category: string
           trending: boolean
           updated_at: string
+          warranty: string
         }
         Insert: {
+          brand?: string
           category: string
           color_images?: Json
           colors?: string[]
@@ -283,17 +288,21 @@ export type Database = {
           image_url?: string
           images?: string[]
           in_stock?: boolean
+          key_features?: string[]
           name: string
           new_arrival?: boolean
           original_price?: number | null
           price: number
           sizes?: string[]
+          specs?: Json
           stock_quantity?: number
           sub_category?: string
           trending?: boolean
           updated_at?: string
+          warranty?: string
         }
         Update: {
+          brand?: string
           category?: string
           color_images?: Json
           colors?: string[]
@@ -304,15 +313,18 @@ export type Database = {
           image_url?: string
           images?: string[]
           in_stock?: boolean
+          key_features?: string[]
           name?: string
           new_arrival?: boolean
           original_price?: number | null
           price?: number
           sizes?: string[]
+          specs?: Json
           stock_quantity?: number
           sub_category?: string
           trending?: boolean
           updated_at?: string
+          warranty?: string
         }
         Relationships: []
       }
