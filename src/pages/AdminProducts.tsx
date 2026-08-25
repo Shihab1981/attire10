@@ -182,6 +182,9 @@ const AdminProducts = () => {
       colors: (p as any).colors ?? [], images: (p as any).images ?? [],
       color_images: (p as any).color_images ?? {},
       stock_quantity: (p as any).stock_quantity ?? 10,
+      brand: (p as any).brand ?? "", warranty: (p as any).warranty ?? "",
+      key_features: ((p as any).key_features ?? []) as string[],
+      specs: (Array.isArray((p as any).specs) ? (p as any).specs : []) as SpecRow[],
     });
     setDialogOpen(true);
   };
