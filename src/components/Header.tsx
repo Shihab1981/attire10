@@ -9,7 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 
 import SearchOverlay from "./SearchOverlay";
 import InstallPWAButton from "./InstallPWAButton";
-import brandLogo from "@/assets/devicehub-logo.png";
+import brandLogoAsset from "@/assets/devicehub-logo.png.asset.json";
+const brandLogo = brandLogoAsset.url;
 
 
 const Header = () => {
@@ -56,10 +57,10 @@ const Header = () => {
             {mobileOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
           </button>
 
-          <Link to="/" className="flex items-center shrink-0" aria-label="Gadzet Hub home">
+          <Link to="/" className="flex items-center shrink-0" aria-label="Device Hub home">
             <img
               src={brandLogo}
-              alt="Gadzet Hub logo"
+              alt="Device Hub logo"
               width={160}
               height={48}
               className="h-7 md:h-9 w-auto object-contain"
