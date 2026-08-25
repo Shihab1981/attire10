@@ -29,6 +29,8 @@ const presetColors = [
   { name: "Cream", value: "#FFFDD0" },
 ];
 
+type SpecRow = { label: string; value: string };
+
 const emptyForm = {
   name: "", category: "smartphones", sub_category: "", price: 0, original_price: null as number | null,
   image_url: "/placeholder.svg", sizes: ["S", "M", "L", "XL", "XXL"] as string[],
@@ -36,6 +38,9 @@ const emptyForm = {
   colors: [] as string[], images: [] as string[],
   color_images: {} as Record<string, string>,
   stock_quantity: 10,
+  brand: "", warranty: "",
+  key_features: [] as string[],
+  specs: [] as SpecRow[],
 };
 
 const AdminProducts = () => {
