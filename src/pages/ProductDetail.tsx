@@ -351,7 +351,7 @@ const ProductDetail = () => {
               {/* Main Image */}
               <div
                 ref={imgContainerRef}
-                className="relative flex-1 aspect-[3/4] bg-secondary overflow-hidden group md:cursor-crosshair cursor-zoom-in"
+                className="relative flex-1 aspect-square bg-card border border-border/40 overflow-hidden group md:cursor-crosshair cursor-zoom-in"
                 onClick={() => { if (Math.abs(swipeOffset) < 5 && window.innerWidth < 768) { setZoomOpen(true); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); } }}
                 onMouseMove={(e) => {
                   if (!imgContainerRef.current) return;
