@@ -82,7 +82,7 @@ const QuickViewModal = ({
             <img
               src={uniqueImages[imgIdx]}
               alt={product.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain p-4 bg-card"
             />
             {uniqueImages.length > 1 && (
               <>
