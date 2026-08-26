@@ -343,7 +343,7 @@ const ProductDetail = () => {
                           : "border-transparent hover:border-border opacity-60 hover:opacity-100"
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <img src={img} alt="" className="w-full h-full object-contain p-1.5 bg-card" />
                     </button>
                   ))}
                 </div>
@@ -351,7 +351,7 @@ const ProductDetail = () => {
               {/* Main Image */}
               <div
                 ref={imgContainerRef}
-                className="relative flex-1 aspect-[3/4] bg-secondary overflow-hidden group md:cursor-crosshair cursor-zoom-in"
+                className="relative flex-1 aspect-square bg-card border border-border/40 overflow-hidden group md:cursor-crosshair cursor-zoom-in"
                 onClick={() => { if (Math.abs(swipeOffset) < 5 && window.innerWidth < 768) { setZoomOpen(true); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); } }}
                 onMouseMove={(e) => {
                   if (!imgContainerRef.current) return;
@@ -399,7 +399,7 @@ const ProductDetail = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ opacity: { duration: 0.3 } }}
-                    className="w-full h-full object-cover pointer-events-none select-none will-change-transform transition-transform duration-200 ease-out"
+                    className="w-full h-full object-contain p-4 md:p-8 pointer-events-none select-none will-change-transform transition-transform duration-200 ease-out"
                     style={{
                       transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
                       transform: isHovering && window.innerWidth >= 768 ? 'scale(2.2)' : 'scale(1)',
