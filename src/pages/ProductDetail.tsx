@@ -343,7 +343,7 @@ const ProductDetail = () => {
                           : "border-transparent hover:border-border opacity-60 hover:opacity-100"
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <img src={img} alt="" className="w-full h-full object-contain p-1.5 bg-card" />
                     </button>
                   ))}
                 </div>
