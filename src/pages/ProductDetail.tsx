@@ -295,6 +295,12 @@ const ProductDetail = () => {
   const stockQty = (product as any).stock_quantity ?? 10;
   const isOutOfStock = !product.in_stock || stockQty <= 0;
   const isLowStock = stockQty > 0 && stockQty <= 3;
+  const brand: string = ((product as any).brand ?? "").trim();
+  const warranty: string = ((product as any).warranty ?? "").trim();
+  const keyFeatures: string[] = Array.isArray((product as any).key_features) ? (product as any).key_features.filter(Boolean) : [];
+  const specRows: { label: string; value: string }[] = Array.isArray((product as any).specs)
+    ? ((product as any).specs as any[]).filter((s) => s && s.label && s.value)
+    : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
