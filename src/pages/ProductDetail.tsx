@@ -633,6 +633,13 @@ const ProductDetail = () => {
                 {product.category.replace("-", " ")} — {product.sub_category}
               </p>
 
+              {/* Brand */}
+              {brand && (
+                <span className="inline-flex items-center w-fit gap-1.5 border border-border bg-secondary/60 px-3 py-1 text-[10px] font-body font-bold tracking-[0.2em] uppercase text-foreground mb-3">
+                  {brand}
+                </span>
+              )}
+
               {/* Name */}
               <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-extrabold leading-[1.1] tracking-tight mb-3">
                 {product.name}
