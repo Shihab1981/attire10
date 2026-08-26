@@ -271,13 +271,14 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
         className="group"
       >
         <Link to={`/product/${product.id}`} className="block">
-          <div className={`relative aspect-[3/4] overflow-hidden bg-secondary mb-3 ${isOutOfStock ? 'opacity-70' : ''}`}>
+          <div className={`relative aspect-square overflow-hidden bg-card border border-border/40 mb-3 ${isOutOfStock ? 'opacity-70' : ''}`}>
             <img
               src={image}
               alt={product.name}
-              className={`w-full h-full object-cover transition-all duration-700 group-hover:scale-105 ${isOutOfStock ? 'grayscale' : ''}`}
+              className={`w-full h-full object-contain p-4 md:p-6 transition-all duration-700 group-hover:scale-105 ${isOutOfStock ? 'grayscale' : ''}`}
               loading="lazy"
             />
+
             {isOutOfStock && (
               <div className="absolute inset-0 bg-background/60 z-[5] flex items-center justify-center">
                 <div className="text-center">
