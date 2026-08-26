@@ -135,13 +135,36 @@ const QuickViewModal = ({
               {flashSale && <MiniCountdown endsAt={flashSale.ends_at} />}
             </div>
 
+            {(product as any).brand && (
+              <span className="inline-block border border-border bg-secondary/60 px-2 py-0.5 text-[9px] font-body font-bold tracking-[0.18em] uppercase mb-3">
+                {(product as any).brand}
+              </span>
+            )}
+
             <p className="text-sm text-muted-foreground font-body line-clamp-3 mb-4">
-              {product.description || "Premium quality fabric with expert craftsmanship."}
+              {product.description || "Genuine gadget with full after-sales support."}
             </p>
 
+            {Array.isArray((product as any).key_features) && (product as any).key_features.length > 0 && (
+              <ul className="space-y-1 mb-4">
+                {((product as any).key_features as string[]).slice(0, 3).map((f, i) => (
+                  <li key={i} className="flex items-start gap-1.5 text-[11px] font-body text-muted-foreground">
+                    <span className="text-accent mt-[2px]">•</span>
+                    <span className="line-clamp-1">{f}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+
             {product.fabric && (
+              <p className="text-[11px] text-muted-foreground font-body mb-2">
+                <span className="font-semibold text-foreground">Specs:</span> {product.fabric}
+              </p>
+            )}
+
+            {(product as any).warranty && (
               <p className="text-[11px] text-muted-foreground font-body mb-4">
-                <span className="font-semibold text-foreground">Fabric:</span> {product.fabric}
+                <span className="font-semibold text-foreground">Warranty:</span> {(product as any).warranty}
               </p>
             )}
 
