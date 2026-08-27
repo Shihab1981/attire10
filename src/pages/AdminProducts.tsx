@@ -9,10 +9,9 @@ import { toast } from "sonner";
 import { Plus, Pencil, Trash2, Upload, X, ImagePlus } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { useCategories } from "@/hooks/useCategories";
+import { parseColor, buildColor } from "@/lib/colors";
 
 type Product = Tables<"products">;
-
-const sizeOptions = ["S", "M", "L", "XL", "XXL"];
 
 const presetColors = [
   { name: "Black", value: "#000000" },
@@ -33,7 +32,7 @@ type SpecRow = { label: string; value: string };
 
 const emptyForm = {
   name: "", category: "smartphones", sub_category: "", price: 0, original_price: null as number | null,
-  image_url: "/placeholder.svg", sizes: ["S", "M", "L", "XL", "XXL"] as string[],
+  image_url: "/placeholder.svg", sizes: ["Standard"] as string[],
   fabric: "", description: "", trending: false, new_arrival: false, in_stock: true,
   colors: [] as string[], images: [] as string[],
   color_images: {} as Record<string, string>,
@@ -52,6 +51,7 @@ const AdminProducts = () => {
   const [uploading, setUploading] = useState(false);
   const [uploadingColorImage, setUploadingColorImage] = useState<string | null>(null);
   const [customColor, setCustomColor] = useState("#000000");
+  const [customColorName, setCustomColorName] = useState("");
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["admin-products"],
@@ -122,9 +122,28 @@ const AdminProducts = () => {
     });
   };
 
+  const renameColor = (raw: string, newName: string) => {
+    const { hex } = parseColor(raw);
+    const next = buildColor(newName, hex);
+    setForm((f) => {
+      const ci = { ...f.color_images };
+      if (ci[raw] !== undefined) {
+        ci[next] = ci[raw];
+        delete ci[raw];
+      }
+      return { ...f, colors: f.colors.map((c) => (c === raw ? next : c)), color_images: ci };
+    });
+  };
+
   const addCustomColor = () => {
-    if (!form.colors.includes(customColor)) {
-      setForm((f) => ({ ...f, colors: [...f.colors, customColor] }));
+    const raw = buildColor(customColorName, customColor);
+    if (!customColorName.trim()) {
+      toast.error("Please enter a color name");
+      return;
+    }
+    if (!form.colors.includes(raw)) {
+      setForm((f) => ({ ...f, colors: [...f.colors, raw] }));
+      setCustomColorName("");
     }
   };
 
@@ -200,13 +219,6 @@ const AdminProducts = () => {
     setEditingId(null);
     setForm(emptyForm);
     setDialogOpen(true);
-  };
-
-  const toggleSize = (s: string) => {
-    setForm((f) => ({
-      ...f,
-      sizes: f.sizes.includes(s) ? f.sizes.filter((x) => x !== s) : [...f.sizes, s],
-    }));
   };
 
   const allImages = [
@@ -390,14 +402,14 @@ const AdminProducts = () => {
                     <button
                       key={c.value}
                       type="button"
-                      onClick={() => toggleColor(c.value)}
+                      onClick={() => toggleColor(`${c.name}|${c.value}`)}
                       className={`relative w-8 h-8 rounded-full border-2 transition-all ${
-                        form.colors.includes(c.value) ? "border-foreground scale-110" : "border-border hover:border-muted-foreground"
+                        form.colors.includes(`${c.name}|${c.value}`) ? "border-foreground scale-110" : "border-border hover:border-muted-foreground"
                       }`}
                       style={{ backgroundColor: c.value }}
                       title={c.name}
                     >
-                      {form.colors.includes(c.value) && (
+                      {form.colors.includes(`${c.name}|${c.value}`) && (
                         <span className="absolute inset-0 flex items-center justify-center">
                           <span className={`text-[10px] font-bold ${c.value === "#FFFFFF" || c.value === "#FFFDD0" || c.value === "#D4C5A9" || c.value === "#87CEEB" ? "text-foreground" : "text-background"}`}>✓</span>
                         </span>
@@ -411,26 +423,38 @@ const AdminProducts = () => {
                     type="color"
                     value={customColor}
                     onChange={(e) => setCustomColor(e.target.value)}
-                    className="w-8 h-8 border border-border cursor-pointer"
+                    className="w-9 h-9 border border-border cursor-pointer shrink-0"
+                  />
+                  <input
+                    value={customColorName}
+                    onChange={(e) => setCustomColorName(e.target.value)}
+                    placeholder="Color name (e.g. Midnight Blue)"
+                    maxLength={40}
+                    className="flex-1 border border-border px-3 py-2 bg-background text-sm"
                   />
                   <button
                     type="button"
                     onClick={addCustomColor}
-                    className="text-xs text-muted-foreground hover:text-foreground transition-colors font-body"
+                    className="text-xs border border-border px-3 py-2 hover:bg-secondary transition-colors font-body shrink-0"
                   >
-                    + Add custom color
+                    + Add color
                   </button>
                 </div>
                 {/* Selected colors with image upload */}
                 {form.colors.length > 0 && (
                   <div className="space-y-2 mt-3">
                     {form.colors.map((c) => {
-                      const preset = presetColors.find((p) => p.value === c);
+                      const { hex, name } = parseColor(c);
                       const colorImg = form.color_images[c];
                       return (
                         <div key={c} className="flex items-center gap-3 bg-secondary/50 border border-border p-2.5">
-                          <span className="w-6 h-6 rounded-full border border-border shrink-0" style={{ backgroundColor: c }} />
-                          <span className="text-xs font-body font-medium min-w-[60px]">{preset?.name || c}</span>
+                          <span className="w-6 h-6 rounded-full border border-border shrink-0" style={{ backgroundColor: hex }} />
+                          <input
+                            value={name}
+                            onChange={(e) => renameColor(c, e.target.value)}
+                            maxLength={40}
+                            className="text-xs font-body font-medium w-32 border border-border px-2 py-1 bg-background"
+                          />
                           
                           {/* Color image */}
                           {colorImg ? (
@@ -473,14 +497,6 @@ const AdminProducts = () => {
                 )}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Sizes</label>
-                <div className="flex gap-2">
-                  {sizeOptions.map((s) => (
-                    <button key={s} type="button" onClick={() => toggleSize(s)} className={`w-10 h-10 text-xs font-medium border transition-colors ${form.sizes.includes(s) ? "border-foreground bg-foreground text-background" : "border-border"}`}>{s}</button>
-                  ))}
-                </div>
-              </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-medium mb-1">Brand Name</label>
