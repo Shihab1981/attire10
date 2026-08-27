@@ -6,6 +6,7 @@ import { Eye, Heart, Zap, ShoppingBag, X, ChevronLeft, ChevronRight } from "luci
 import { useEffect, useState } from "react";
 import type { FlashSaleData } from "@/hooks/useFlashSales";
 import { useFavoritesStore } from "@/store/favoritesStore";
+import { parseColor } from "@/lib/colors";
 import { useCartStore } from "@/store/cartStore";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
@@ -47,7 +48,6 @@ const QuickViewModal = ({
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const isFav = useFavoritesStore((s) => s.isFavorite)(product.id);
 
-  const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [imgIdx, setImgIdx] = useState(0);
   const [added, setAdded] = useState(false);
@@ -62,12 +62,10 @@ const QuickViewModal = ({
   ];
   const uniqueImages = [...new Set(allImages)];
 
-  const sizes = (product.sizes || []) as Size[];
   const colors = product.colors || [];
 
   const handleAdd = () => {
-    if (!selectedSize) return;
-    addItem(product, selectedSize, selectedColor || undefined);
+    addItem(product, "Standard" as Size, selectedColor || undefined);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
@@ -168,46 +166,28 @@ const QuickViewModal = ({
               </p>
             )}
 
-            {/* Sizes */}
-            {sizes.length > 0 && (
-              <div className="mb-4">
-                <p className="text-[10px] tracking-[0.2em] uppercase font-body font-semibold mb-2">Size</p>
-                <div className="flex flex-wrap gap-2">
-                  {sizes.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setSelectedSize(s)}
-                      className={`min-w-[36px] h-9 px-2.5 border text-xs font-body font-medium transition-all ${
-                        selectedSize === s
-                          ? "bg-foreground text-background border-foreground"
-                          : "border-border hover:border-foreground"
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
             {/* Colors */}
             {colors.length > 0 && (
               <div className="mb-4">
                 <p className="text-[10px] tracking-[0.2em] uppercase font-body font-semibold mb-2">Color</p>
                 <div className="flex flex-wrap gap-2">
-                  {colors.map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => setSelectedColor(c)}
-                      className={`px-3 h-8 border text-[11px] font-body transition-all ${
-                        selectedColor === c
-                          ? "bg-foreground text-background border-foreground"
-                          : "border-border hover:border-foreground"
-                      }`}
-                    >
-                      {c}
-                    </button>
-                  ))}
+                  {colors.map((c) => {
+                    const { hex, name } = parseColor(c);
+                    return (
+                      <button
+                        key={c}
+                        onClick={() => setSelectedColor(c)}
+                        className={`flex items-center gap-1.5 pl-1 pr-2.5 h-8 border text-[11px] font-body transition-all ${
+                          selectedColor === c
+                            ? "border-foreground bg-secondary"
+                            : "border-border hover:border-foreground"
+                        }`}
+                      >
+                        <span className="w-5 h-5 rounded-full border border-border/60" style={{ backgroundColor: hex }} />
+                        {name}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -215,7 +195,7 @@ const QuickViewModal = ({
             <div className="mt-auto flex gap-2 pt-4">
               <button
                 onClick={handleAdd}
-                disabled={!selectedSize || !product.in_stock}
+                disabled={!product.in_stock}
                 className="flex-1 h-11 bg-foreground text-background text-[11px] font-body font-semibold tracking-[0.15em] uppercase flex items-center justify-center gap-2 hover:bg-accent hover:text-accent-foreground transition-all disabled:opacity-40 disabled:cursor-not-allowed"
               >
                 <ShoppingBag size={14} />
