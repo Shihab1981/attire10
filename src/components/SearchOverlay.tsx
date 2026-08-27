@@ -8,14 +8,11 @@ import { categoryImages, type Category, type Size } from "@/data/products";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
-import { allVariants } from "@/data/products";
-const allSizes: Size[] = allVariants;
 
 const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
   const [query, setQuery] = useState("");
-  const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 5000]);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -32,8 +29,7 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
   useEffect(() => {
     if (open) {
       setQuery("");
-      setSelectedSize(null);
-      setPriceRange([0, 5000]);
+        setPriceRange([0, 5000]);
       setShowFilters(false);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
@@ -46,7 +42,7 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
   }, [open, onClose]);
 
   const results = useMemo(() => {
-    if (!query.trim() && !selectedSize && priceRange[0] === 0 && priceRange[1] === 5000) return [];
+    if (!query.trim() && priceRange[0] === 0 && priceRange[1] === 5000) return [];
     let filtered = [...products];
     if (query.trim()) {
       const q = query.toLowerCase();
@@ -58,10 +54,9 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
           p.description?.toLowerCase().includes(q)
       );
     }
-    if (selectedSize) filtered = filtered.filter((p) => p.sizes.includes(selectedSize));
     filtered = filtered.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
     return filtered.slice(0, 8);
-  }, [products, query, selectedSize, priceRange]);
+  }, [products, query, priceRange]);
 
   const trending = useMemo(() => products.filter((p) => p.trending).slice(0, 4), [products]);
 
@@ -77,7 +72,7 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
     navigate(`/products?${params.toString()}`);
   };
 
-  const hasActiveFilters = selectedSize || priceRange[0] > 0 || priceRange[1] < 5000;
+  const hasActiveFilters = priceRange[0] > 0 || priceRange[1] < 5000;
   const showResults = query.trim() || hasActiveFilters;
 
   return (
@@ -125,7 +120,7 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
                     Filter
                     {hasActiveFilters && (
                       <span className="bg-accent text-accent-foreground text-[8px] w-3.5 h-3.5 flex items-center justify-center rounded-full">
-                        {(selectedSize ? 1 : 0) + (priceRange[0] > 0 || priceRange[1] < 5000 ? 1 : 0)}
+                        {priceRange[0] > 0 || priceRange[1] < 5000 ? 1 : 0}
                       </span>
                     )}
                   </button>
@@ -146,28 +141,6 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
                     className="overflow-hidden"
                   >
                     <div className="flex flex-wrap gap-6 py-4 border-t border-b border-border/50 mb-4">
-                      {/* Variant filter */}
-                      <div>
-                        <p className="text-[9px] tracking-[0.2em] uppercase font-body font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
-                          <Ruler size={11} /> Variant
-                        </p>
-                        <div className="flex gap-1.5">
-                          {allSizes.map((s) => (
-                            <button
-                              key={s}
-                              onClick={() => setSelectedSize(selectedSize === s ? null : s)}
-                              className={`w-9 h-9 text-[11px] font-body font-medium border transition-all ${
-                                selectedSize === s
-                                  ? "border-accent bg-accent text-accent-foreground"
-                                  : "border-border hover:border-foreground/40"
-                              }`}
-                            >
-                              {s}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
                       {/* Price filter */}
                       <div>
                         <p className="text-[9px] tracking-[0.2em] uppercase font-body font-semibold text-muted-foreground mb-2 flex items-center gap-1.5">
@@ -197,7 +170,7 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
                       {hasActiveFilters && (
                         <div className="flex items-end">
                           <button
-                            onClick={() => { setSelectedSize(null); setPriceRange([0, 5000]); }}
+                            onClick={() => { setPriceRange([0, 5000]); }}
                             className="text-[10px] font-body text-accent tracking-[0.1em] uppercase hover:underline underline-offset-4"
                           >
                             Clear Filters

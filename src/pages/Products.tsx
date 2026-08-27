@@ -12,8 +12,6 @@ import { SlidersHorizontal, X, ArrowUpDown, Grid3X3, LayoutGrid, ChevronDown, Ta
 import { motion, AnimatePresence } from "framer-motion";
 import { useFlashSales } from "@/hooks/useFlashSales";
 
-import { allVariants } from "@/data/products";
-const allSizes: Size[] = allVariants;
 
 type SortOption = "newest" | "price-low" | "price-high" | "name-az";
 const sortOptions: { value: SortOption; label: string }[] = [
@@ -31,7 +29,6 @@ const Products = () => {
   const { categories } = useCategories();
 
   const [selectedCategory, setSelectedCategory] = useState<string | null>(categoryParam);
-  const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [searchQuery, setSearchQuery] = useState(queryParam || "");
   const [sortBy, setSortBy] = useState<SortOption>("newest");
   const [gridCols, setGridCols] = useState<2 | 3>(3);
@@ -71,7 +68,6 @@ const Products = () => {
       );
     }
     if (selectedCategory) result = result.filter((p) => p.category === selectedCategory);
-    if (selectedSize) result = result.filter((p) => p.sizes.includes(selectedSize));
     if (filterParam === "new") result = result.filter((p) => p.new_arrival);
     result = result.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
 
@@ -99,11 +95,10 @@ const Products = () => {
     });
 
     return result;
-  }, [allProducts, selectedCategory, selectedSize, priceRange, filterParam, sortBy, searchQuery]);
+  }, [allProducts, selectedCategory, priceRange, filterParam, sortBy, searchQuery]);
 
   const clearFilters = () => {
     setSelectedCategory(null);
-    setSelectedSize(null);
     setSearchQuery("");
     setPriceRange([0, 5000]);
     setSearchParams({});
@@ -115,7 +110,7 @@ const Products = () => {
     else setSearchParams({});
   };
 
-  const activeFilterCount = [searchQuery.trim(), selectedCategory, selectedSize, priceRange[0] > 0 || priceRange[1] < 5000].filter(Boolean).length;
+  const activeFilterCount = [searchQuery.trim(), selectedCategory, priceRange[0] > 0 || priceRange[1] < 5000].filter(Boolean).length;
 
   const activeFilters: { label: string; onClear: () => void }[] = [];
   if (searchQuery.trim()) {
@@ -129,9 +124,6 @@ const Products = () => {
       label: categories.find((c) => c.slug === selectedCategory)?.name || selectedCategory,
       onClear: () => handleCategoryClick(null),
     });
-  }
-  if (selectedSize) {
-    activeFilters.push({ label: `Variant: ${selectedSize}`, onClear: () => setSelectedSize(null) });
   }
   if (priceRange[0] > 0 || priceRange[1] < 5000) {
     activeFilters.push({ label: `৳${priceRange[0]}–৳${priceRange[1]}`, onClear: () => setPriceRange([0, 5000]) });
@@ -328,29 +320,6 @@ const Products = () => {
                             }`}
                           >
                             {c.name}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Variant */}
-                    <div className="border border-border/60 p-5">
-                      <h3 className="flex items-center gap-2 text-[10px] font-body font-semibold tracking-[0.25em] uppercase text-muted-foreground mb-4">
-                        <Ruler size={12} strokeWidth={1.5} />
-                        Variant
-                      </h3>
-                      <div className="flex flex-wrap gap-2">
-                        {allSizes.map((s) => (
-                          <button
-                            key={s}
-                            onClick={() => setSelectedSize(selectedSize === s ? null : s)}
-                            className={`w-11 h-11 text-xs font-body font-medium border transition-all duration-200 ${
-                              selectedSize === s
-                                ? "border-accent bg-accent text-accent-foreground shadow-sm"
-                                : "border-border hover:border-foreground/40 hover:bg-secondary/50"
-                            }`}
-                          >
-                            {s}
                           </button>
                         ))}
                       </div>

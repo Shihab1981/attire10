@@ -9,6 +9,7 @@ import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WarrantyInfo from "@/components/WarrantyInfo";
+import { parseColor, colorName } from "@/lib/colors";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
 import RecentlyViewed from "@/components/RecentlyViewed";
@@ -17,18 +18,11 @@ import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, 
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
-const presetColorNames: Record<string, string> = {
-  "#000000": "Black", "#FFFFFF": "White", "#1B2A4A": "Navy", "#6B7280": "Grey",
-  "#556B2F": "Olive", "#800000": "Maroon", "#D4C5A9": "Beige", "#8B4513": "Brown",
-  "#87CEEB": "Sky Blue", "#DC2626": "Red", "#0D9488": "Teal", "#FFFDD0": "Cream",
-};
-
 const ProductDetail = () => {
   const { id } = useParams();
   const addItem = useCartStore((s) => s.addItem);
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const isFavorite = useFavoritesStore((s) => s.isFavorite);
-  const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -280,9 +274,8 @@ const ProductDetail = () => {
     : allImages;
 
   const handleAddToCart = () => {
-    if (!selectedSize) { toast.error("Please select a variant"); return; }
     if (colors.length > 0 && !selectedColor) { toast.error("Please select a color"); return; }
-    for (let i = 0; i < quantity; i++) addItem(product, selectedSize, selectedColor || undefined);
+    for (let i = 0; i < quantity; i++) addItem(product, "Standard" as Size, selectedColor || undefined);
     setAddedToCart(true);
     toast.success(`${product.name} added to cart`);
     setTimeout(() => setAddedToCart(false), 2000);
@@ -766,61 +759,50 @@ const ProductDetail = () => {
               {/* Color Selection */}
               {colors.length > 0 && (
                 <div className="mb-7">
-                  <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground mb-4">
-                    Color {selectedColor && <span className="text-foreground ml-1">— {presetColorNames[selectedColor] || selectedColor}</span>}
-                  </h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">
+                      Color {selectedColor && <span className="text-foreground ml-1">— {colorName(selectedColor)}</span>}
+                    </h3>
+                    <WarrantyInfo />
+                  </div>
                   <div className="flex flex-wrap gap-3">
-                    {colors.map((c) => (
-                      <button
-                        key={c}
-                        onClick={() => { setSelectedColor(selectedColor === c ? null : c); setActiveImageIndex(0); }}
-                        className={`relative w-11 h-11 rounded-full transition-all duration-200 ${
-                          selectedColor === c
-                            ? "ring-2 ring-accent ring-offset-2 ring-offset-background scale-110"
-                            : "border-2 border-border hover:border-muted-foreground hover:scale-105"
-                        }`}
-                        style={{ backgroundColor: c }}
-                        title={presetColorNames[c] || c}
-                      >
-                        {selectedColor === c && (
-                          <Check
-                            size={16}
-                            strokeWidth={2.5}
-                            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
-                              ["#FFFFFF", "#FFFDD0", "#D4C5A9", "#87CEEB"].includes(c) ? "text-foreground" : "text-background"
-                            }`}
-                          />
-                        )}
-                      </button>
-                    ))}
+                    {colors.map((c) => {
+                      const { hex, name } = parseColor(c);
+                      return (
+                        <button
+                          key={c}
+                          onClick={() => { setSelectedColor(selectedColor === c ? null : c); setActiveImageIndex(0); }}
+                          className={`flex items-center gap-2 pl-1.5 pr-3 h-10 border transition-all duration-200 ${
+                            selectedColor === c
+                              ? "border-accent bg-accent/5 shadow-sm"
+                              : "border-border hover:border-foreground"
+                          }`}
+                          title={name}
+                        >
+                          <span
+                            className="relative w-7 h-7 rounded-full border border-border/60 shrink-0"
+                            style={{ backgroundColor: hex }}
+                          >
+                            {selectedColor === c && (
+                              <Check
+                                size={14}
+                                strokeWidth={3}
+                                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
+                                  ["#FFFFFF", "#FFFDD0", "#D4C5A9", "#87CEEB", "#C0C0C0", "#F5F5DC"].includes(hex.toUpperCase())
+                                    ? "text-foreground"
+                                    : "text-background"
+                                }`}
+                              />
+                            )}
+                          </span>
+                          <span className="text-xs font-body font-medium">{name}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
-              {/* Variant Selection */}
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">
-                    Select Variant {selectedSize && <span className="text-accent ml-1">— {selectedSize}</span>}
-                  </h3>
-                  <WarrantyInfo />
-                </div>
-                <div className="flex flex-wrap gap-2.5">
-                  {product.sizes.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setSelectedSize(s as Size)}
-                      className={`relative min-w-[56px] h-14 px-4 text-xs font-body font-semibold border transition-all duration-200 active:scale-95 ${
-                        selectedSize === s
-                          ? "border-accent bg-accent text-accent-foreground shadow-md shadow-accent/20"
-                          : "border-border hover:border-foreground hover:bg-secondary/40"
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* Quantity + Add to Cart */}
               <div className="flex gap-3 mb-4">
@@ -871,7 +853,7 @@ const ProductDetail = () => {
 
               {/* WhatsApp Order */}
               <a
-                href={`https://wa.me/8801833723089?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedSize ? `\n⚙️ Variant: ${selectedSize}` : ""}${selectedColor ? `\n🎨 Color: ${presetColorNames[selectedColor] || selectedColor}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
+                href={`https://wa.me/8801833723089?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedColor ? `\n🎨 Color: ${colorName(selectedColor)}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-3 py-3.5 bg-[#25D366] text-[#fff] text-[11px] font-body font-bold tracking-[0.15em] uppercase hover:bg-[#1DA851] transition-colors active:scale-[0.98] mb-2"

@@ -179,7 +179,7 @@ const TrackOrder = () => {
                     <div key={item.id} className="flex justify-between p-5">
                       <div>
                         <p className="font-display font-medium text-sm">{item.product_name}</p>
-                        <p className="text-[10px] uppercase text-muted-foreground font-body mt-1">Variant: {item.size} · Qty: {item.quantity}</p>
+                        <p className="text-[10px] uppercase text-muted-foreground font-body mt-1">{item.size && item.size !== "Standard" ? `${item.size} · ` : ""}Qty: {item.quantity}</p>
                       </div>
                       <span className="font-display font-semibold text-sm">৳{(item.price * item.quantity).toLocaleString()}</span>
                     </div>

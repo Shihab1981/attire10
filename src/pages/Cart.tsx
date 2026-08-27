@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { parseColor } from "@/lib/colors";
 import { useCartStore } from "@/store/cartStore";
 import { categoryImages, type Category } from "@/data/products";
 import { Minus, Plus, X, ShoppingBag, ArrowRight, Package, Shield, Truck, Tag } from "lucide-react";
@@ -110,13 +111,15 @@ const Cart = () => {
                             {item.product.name}
                           </Link>
                           <div className="flex items-center gap-2 mt-1.5 flex-wrap">
-                            <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground font-body bg-secondary/60 px-2 py-0.5">
-                              Size: {item.size}
-                            </span>
+                            {item.size && item.size !== "Standard" && (
+                              <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground font-body bg-secondary/60 px-2 py-0.5">
+                                {item.size}
+                              </span>
+                            )}
                             {item.color && (
                               <span className="text-[10px] tracking-[0.15em] uppercase text-muted-foreground font-body bg-secondary/60 px-2 py-0.5 flex items-center gap-1">
-                                <span className="w-2.5 h-2.5 rounded-full border border-border inline-block" style={{ backgroundColor: item.color }} />
-                                Color
+                                <span className="w-2.5 h-2.5 rounded-full border border-border inline-block" style={{ backgroundColor: parseColor(item.color).hex }} />
+                                {parseColor(item.color).name}
                               </span>
                             )}
                           </div>
