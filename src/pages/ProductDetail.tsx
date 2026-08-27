@@ -766,61 +766,50 @@ const ProductDetail = () => {
               {/* Color Selection */}
               {colors.length > 0 && (
                 <div className="mb-7">
-                  <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground mb-4">
-                    Color {selectedColor && <span className="text-foreground ml-1">— {presetColorNames[selectedColor] || selectedColor}</span>}
-                  </h3>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">
+                      Color {selectedColor && <span className="text-foreground ml-1">— {colorName(selectedColor)}</span>}
+                    </h3>
+                    <WarrantyInfo />
+                  </div>
                   <div className="flex flex-wrap gap-3">
-                    {colors.map((c) => (
-                      <button
-                        key={c}
-                        onClick={() => { setSelectedColor(selectedColor === c ? null : c); setActiveImageIndex(0); }}
-                        className={`relative w-11 h-11 rounded-full transition-all duration-200 ${
-                          selectedColor === c
-                            ? "ring-2 ring-accent ring-offset-2 ring-offset-background scale-110"
-                            : "border-2 border-border hover:border-muted-foreground hover:scale-105"
-                        }`}
-                        style={{ backgroundColor: c }}
-                        title={presetColorNames[c] || c}
-                      >
-                        {selectedColor === c && (
-                          <Check
-                            size={16}
-                            strokeWidth={2.5}
-                            className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
-                              ["#FFFFFF", "#FFFDD0", "#D4C5A9", "#87CEEB"].includes(c) ? "text-foreground" : "text-background"
-                            }`}
-                          />
-                        )}
-                      </button>
-                    ))}
+                    {colors.map((c) => {
+                      const { hex, name } = parseColor(c);
+                      return (
+                        <button
+                          key={c}
+                          onClick={() => { setSelectedColor(selectedColor === c ? null : c); setActiveImageIndex(0); }}
+                          className={`flex items-center gap-2 pl-1.5 pr-3 h-10 border transition-all duration-200 ${
+                            selectedColor === c
+                              ? "border-accent bg-accent/5 shadow-sm"
+                              : "border-border hover:border-foreground"
+                          }`}
+                          title={name}
+                        >
+                          <span
+                            className="relative w-7 h-7 rounded-full border border-border/60 shrink-0"
+                            style={{ backgroundColor: hex }}
+                          >
+                            {selectedColor === c && (
+                              <Check
+                                size={14}
+                                strokeWidth={3}
+                                className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 ${
+                                  ["#FFFFFF", "#FFFDD0", "#D4C5A9", "#87CEEB", "#C0C0C0", "#F5F5DC"].includes(hex.toUpperCase())
+                                    ? "text-foreground"
+                                    : "text-background"
+                                }`}
+                              />
+                            )}
+                          </span>
+                          <span className="text-xs font-body font-medium">{name}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
-              {/* Variant Selection */}
-              <div className="mb-8">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">
-                    Select Variant {selectedSize && <span className="text-accent ml-1">— {selectedSize}</span>}
-                  </h3>
-                  <WarrantyInfo />
-                </div>
-                <div className="flex flex-wrap gap-2.5">
-                  {product.sizes.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setSelectedSize(s as Size)}
-                      className={`relative min-w-[56px] h-14 px-4 text-xs font-body font-semibold border transition-all duration-200 active:scale-95 ${
-                        selectedSize === s
-                          ? "border-accent bg-accent text-accent-foreground shadow-md shadow-accent/20"
-                          : "border-border hover:border-foreground hover:bg-secondary/40"
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
               {/* Quantity + Add to Cart */}
               <div className="flex gap-3 mb-4">
