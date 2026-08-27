@@ -266,8 +266,9 @@ const AdminProducts = () => {
                     <td className="p-3">
                       <div className="flex gap-1">
                         {((p as any).colors ?? []).slice(0, 4).map((c: string) => (
-                          <div key={c} className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: c }} />
+                          <div key={c} className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: parseColor(c).hex }} title={parseColor(c).name} />
                         ))}
+
                         {((p as any).colors ?? []).length > 4 && (
                           <span className="text-[10px] text-muted-foreground">+{(p as any).colors.length - 4}</span>
                         )}
