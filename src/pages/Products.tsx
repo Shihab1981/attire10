@@ -12,8 +12,6 @@ import { SlidersHorizontal, X, ArrowUpDown, Grid3X3, LayoutGrid, ChevronDown, Ta
 import { motion, AnimatePresence } from "framer-motion";
 import { useFlashSales } from "@/hooks/useFlashSales";
 
-import { allVariants } from "@/data/products";
-const allSizes: Size[] = allVariants;
 
 type SortOption = "newest" | "price-low" | "price-high" | "name-az";
 const sortOptions: { value: SortOption; label: string }[] = [
@@ -101,7 +99,6 @@ const Products = () => {
 
   const clearFilters = () => {
     setSelectedCategory(null);
-    setSelectedSize(null);
     setSearchQuery("");
     setPriceRange([0, 5000]);
     setSearchParams({});

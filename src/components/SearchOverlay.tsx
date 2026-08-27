@@ -8,8 +8,6 @@ import { categoryImages, type Category, type Size } from "@/data/products";
 import type { Tables } from "@/integrations/supabase/types";
 
 type Product = Tables<"products">;
-import { allVariants } from "@/data/products";
-const allSizes: Size[] = allVariants;
 
 const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const navigate = useNavigate();
@@ -31,8 +29,7 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
   useEffect(() => {
     if (open) {
       setQuery("");
-      setSelectedSize(null);
-      setPriceRange([0, 5000]);
+        setPriceRange([0, 5000]);
       setShowFilters(false);
       setTimeout(() => inputRef.current?.focus(), 100);
     }
@@ -173,7 +170,7 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
                       {hasActiveFilters && (
                         <div className="flex items-end">
                           <button
-                            onClick={() => { setSelectedSize(null); setPriceRange([0, 5000]); }}
+                            onClick={() => { setPriceRange([0, 5000]); }}
                             className="text-[10px] font-body text-accent tracking-[0.1em] uppercase hover:underline underline-offset-4"
                           >
                             Clear Filters
