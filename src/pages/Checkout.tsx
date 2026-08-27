@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { parseColor } from "@/lib/colors";
 import { useCartStore } from "@/store/cartStore";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -329,10 +330,10 @@ const Checkout = () => {
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-display font-semibold line-clamp-1">{item.product.name}</p>
                           <p className="text-[10px] text-muted-foreground font-body mt-0.5 tracking-wider uppercase">
-                            Variant: {item.size}
+                            {item.size && item.size !== "Standard" ? item.size : ""}
                             {item.color && (
                               <span className="inline-flex items-center gap-1 ml-2">
-                                <span className="w-2 h-2 rounded-full border border-border inline-block" style={{ backgroundColor: item.color }} />
+                                <span className="w-2 h-2 rounded-full border border-border inline-block" style={{ backgroundColor: parseColor(item.color).hex }} />
                               </span>
                             )}
                           </p>
