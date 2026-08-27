@@ -9,6 +9,7 @@ import { useRecentlyViewedStore } from "@/store/recentlyViewedStore";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import WarrantyInfo from "@/components/WarrantyInfo";
+import { parseColor, colorName } from "@/lib/colors";
 import ProductCard from "@/components/ProductCard";
 import ProductReviews from "@/components/ProductReviews";
 import RecentlyViewed from "@/components/RecentlyViewed";
@@ -17,18 +18,11 @@ import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, 
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
-const presetColorNames: Record<string, string> = {
-  "#000000": "Black", "#FFFFFF": "White", "#1B2A4A": "Navy", "#6B7280": "Grey",
-  "#556B2F": "Olive", "#800000": "Maroon", "#D4C5A9": "Beige", "#8B4513": "Brown",
-  "#87CEEB": "Sky Blue", "#DC2626": "Red", "#0D9488": "Teal", "#FFFDD0": "Cream",
-};
-
 const ProductDetail = () => {
   const { id } = useParams();
   const addItem = useCartStore((s) => s.addItem);
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const isFavorite = useFavoritesStore((s) => s.isFavorite);
-  const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -280,9 +274,8 @@ const ProductDetail = () => {
     : allImages;
 
   const handleAddToCart = () => {
-    if (!selectedSize) { toast.error("Please select a variant"); return; }
     if (colors.length > 0 && !selectedColor) { toast.error("Please select a color"); return; }
-    for (let i = 0; i < quantity; i++) addItem(product, selectedSize, selectedColor || undefined);
+    for (let i = 0; i < quantity; i++) addItem(product, "Standard" as Size, selectedColor || undefined);
     setAddedToCart(true);
     toast.success(`${product.name} added to cart`);
     setTimeout(() => setAddedToCart(false), 2000);
@@ -860,7 +853,7 @@ const ProductDetail = () => {
 
               {/* WhatsApp Order */}
               <a
-                href={`https://wa.me/8801833723089?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedSize ? `\n⚙️ Variant: ${selectedSize}` : ""}${selectedColor ? `\n🎨 Color: ${presetColorNames[selectedColor] || selectedColor}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
+                href={`https://wa.me/8801833723089?text=${encodeURIComponent(`Hi! I want to order:\n\n🛍 *${product.name}*\n💰 Price: ৳${product.price.toLocaleString()}${selectedColor ? `\n🎨 Color: ${colorName(selectedColor)}` : ""}\n🔢 Qty: ${quantity}\n\n🔗 ${window.location.href}`)}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-3 py-3.5 bg-[#25D366] text-[#fff] text-[11px] font-body font-bold tracking-[0.15em] uppercase hover:bg-[#1DA851] transition-colors active:scale-[0.98] mb-2"
