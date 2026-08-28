@@ -344,7 +344,7 @@ const ProductDetail = () => {
               {/* Main Image */}
               <div
                 ref={imgContainerRef}
-                className="relative flex-1 aspect-square bg-card border border-border/40 overflow-hidden group md:cursor-crosshair cursor-zoom-in"
+                className="relative flex-1 aspect-square max-h-[420px] md:max-h-none bg-card border border-border/40 overflow-hidden group md:cursor-crosshair cursor-zoom-in"
                 onClick={() => { if (Math.abs(swipeOffset) < 5 && window.innerWidth < 768) { setZoomOpen(true); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); } }}
                 onMouseMove={(e) => {
                   if (!imgContainerRef.current) return;
@@ -704,15 +704,6 @@ const ProductDetail = () => {
                 </p>
               )}
 
-              {/* Key spec headline */}
-              {product.fabric && (
-                <div className="flex items-center gap-3 mb-6 bg-secondary/50 border border-border/50 px-5 py-3.5">
-                  <span className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Specs</span>
-                  <div className="w-px h-4 bg-border" />
-                  <span className="text-sm font-body font-medium">{product.fabric}</span>
-                </div>
-              )}
-
               {/* Key Features */}
               {keyFeatures.length > 0 && (
                 <div className="mb-6">
@@ -725,34 +716,6 @@ const ProductDetail = () => {
                       </li>
                     ))}
                   </ul>
-                </div>
-              )}
-
-              {/* Specifications table */}
-              {specRows.length > 0 && (
-                <div className="mb-6 border border-border/60">
-                  <div className="bg-secondary/60 px-4 py-2.5 border-b border-border/60">
-                    <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">Specifications</h3>
-                  </div>
-                  <dl className="divide-y divide-border/50">
-                    {specRows.map((s, i) => (
-                      <div key={i} className="grid grid-cols-[40%_60%] text-sm font-body">
-                        <dt className="px-4 py-2.5 text-muted-foreground bg-secondary/20">{s.label}</dt>
-                        <dd className="px-4 py-2.5 text-foreground font-medium">{s.value}</dd>
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              )}
-
-              {/* Warranty */}
-              {warranty && (
-                <div className="flex items-center gap-3 mb-8 border border-accent/25 bg-accent/5 px-5 py-3.5">
-                  <Shield size={16} className="text-accent shrink-0" strokeWidth={1.75} />
-                  <div>
-                    <p className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Warranty</p>
-                    <p className="text-sm font-body font-medium">{warranty}</p>
-                  </div>
                 </div>
               )}
 
@@ -912,6 +875,43 @@ const ProductDetail = () => {
                   )}
                 </AnimatePresence>
               </div>
+
+              {/* Key spec headline */}
+              {product.fabric && (
+                <div className="flex items-center gap-3 mb-4 bg-secondary/50 border border-border/50 px-5 py-3.5">
+                  <span className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Specs</span>
+                  <div className="w-px h-4 bg-border" />
+                  <span className="text-sm font-body font-medium">{product.fabric}</span>
+                </div>
+              )}
+
+              {/* Specifications table */}
+              {specRows.length > 0 && (
+                <div className="mb-6 border border-border/60">
+                  <div className="bg-secondary/60 px-4 py-2.5 border-b border-border/60">
+                    <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">Specifications</h3>
+                  </div>
+                  <dl className="divide-y divide-border/50">
+                    {specRows.map((s, i) => (
+                      <div key={i} className="grid grid-cols-[40%_60%] text-sm font-body">
+                        <dt className="px-4 py-2.5 text-muted-foreground bg-secondary/20">{s.label}</dt>
+                        <dd className="px-4 py-2.5 text-foreground font-medium">{s.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+              )}
+
+              {/* Warranty */}
+              {warranty && (
+                <div className="flex items-center gap-3 mb-8 border border-accent/25 bg-accent/5 px-5 py-3.5">
+                  <Shield size={16} className="text-accent shrink-0" strokeWidth={1.75} />
+                  <div>
+                    <p className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Warranty</p>
+                    <p className="text-sm font-body font-medium">{warranty}</p>
+                  </div>
+                </div>
+              )}
 
               {/* Trust indicators */}
               <div className="grid grid-cols-3 gap-3">
