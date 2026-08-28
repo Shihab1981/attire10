@@ -392,7 +392,7 @@ const ProductDetail = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ opacity: { duration: 0.3 } }}
-                    className="w-full h-full object-contain p-4 md:p-8 pointer-events-none select-none will-change-transform transition-transform duration-200 ease-out"
+                    className="max-w-full max-h-full object-contain p-4 md:p-8 pointer-events-none select-none will-change-transform transition-transform duration-200 ease-out"
                     style={{
                       transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
                       transform: isHovering && window.innerWidth >= 768 ? 'scale(2.2)' : 'scale(1)',
