@@ -325,18 +325,18 @@ const ProductDetail = () => {
             >
               {/* Thumbnails */}
               {displayImages.length > 1 && (
-                <div className="hidden md:flex flex-col gap-2.5 w-[72px] shrink-0">
+                <div className="hidden md:flex flex-col gap-2 w-[68px] shrink-0 self-start">
                   {displayImages.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => { setActiveImageIndex(i); setImageLoaded(false); }}
-                      className={`aspect-square bg-secondary overflow-hidden border-2 transition-all duration-300 ${
+                      className={`w-[68px] h-[68px] bg-white overflow-hidden border-2 transition-all duration-300 ${
                         activeImageIndex === i
                           ? "border-accent shadow-sm"
                           : "border-transparent hover:border-border opacity-60 hover:opacity-100"
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-contain p-1.5 bg-card" />
+                      <img src={img} alt="" className="w-full h-full object-contain p-1.5" />
                     </button>
                   ))}
                 </div>
@@ -344,7 +344,7 @@ const ProductDetail = () => {
               {/* Main Image */}
               <div
                 ref={imgContainerRef}
-                className="relative flex-1 aspect-square max-h-[420px] md:max-h-none bg-card border border-border/40 overflow-hidden group md:cursor-crosshair cursor-zoom-in"
+                className="relative flex-1 h-[420px] md:h-[560px] lg:h-[620px] bg-white border border-border/40 overflow-hidden group md:cursor-crosshair cursor-zoom-in flex items-center justify-center"
                 onClick={() => { if (Math.abs(swipeOffset) < 5 && window.innerWidth < 768) { setZoomOpen(true); setModalZoomLevel(1); setModalPan({ x: 0, y: 0 }); } }}
                 onMouseMove={(e) => {
                   if (!imgContainerRef.current) return;
@@ -392,7 +392,7 @@ const ProductDetail = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ opacity: { duration: 0.3 } }}
-                    className="w-full h-full object-contain p-4 md:p-8 pointer-events-none select-none will-change-transform transition-transform duration-200 ease-out"
+                    className="max-w-full max-h-full object-contain p-4 md:p-8 pointer-events-none select-none will-change-transform transition-transform duration-200 ease-out"
                     style={{
                       transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
                       transform: isHovering && window.innerWidth >= 768 ? 'scale(2.2)' : 'scale(1)',
