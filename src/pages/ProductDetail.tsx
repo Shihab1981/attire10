@@ -325,18 +325,18 @@ const ProductDetail = () => {
             >
               {/* Thumbnails */}
               {displayImages.length > 1 && (
-                <div className="hidden md:flex flex-col gap-2.5 w-[72px] shrink-0">
+                <div className="hidden md:flex flex-col gap-2 w-[68px] shrink-0 self-start">
                   {displayImages.map((img, i) => (
                     <button
                       key={i}
                       onClick={() => { setActiveImageIndex(i); setImageLoaded(false); }}
-                      className={`aspect-square bg-secondary overflow-hidden border-2 transition-all duration-300 ${
+                      className={`w-[68px] h-[68px] bg-white overflow-hidden border-2 transition-all duration-300 ${
                         activeImageIndex === i
                           ? "border-accent shadow-sm"
                           : "border-transparent hover:border-border opacity-60 hover:opacity-100"
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-contain p-1.5 bg-card" />
+                      <img src={img} alt="" className="w-full h-full object-contain p-1.5" />
                     </button>
                   ))}
                 </div>
