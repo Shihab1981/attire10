@@ -625,7 +625,7 @@ const ProductDetail = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.15, duration: 0.6 }}
-              className="flex flex-col"
+              className="flex flex-col h-full"
             >
               {/* Category */}
               <p className="text-[10px] text-muted-foreground tracking-[0.3em] uppercase font-body mb-3">
