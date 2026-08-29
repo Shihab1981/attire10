@@ -886,7 +886,7 @@ const ProductDetail = () => {
                   </div>
                 )}
 
-                <div className={`grid grid-cols-1 ${specRows.length > 0 ? "md:grid-cols-[1fr_220px] lg:grid-cols-[1fr_260px]" : "md:grid-cols-1"} gap-4 md:flex-1 md:min-h-0`}>
+                <div className={`grid grid-cols-1 ${specRows.length > 0 ? "md:grid-cols-[1fr_220px] lg:grid-cols-[1fr_260px]" : "md:grid-cols-1"} md:grid-rows-1 gap-4 md:flex-1 md:min-h-0`}>
                   {specRows.length > 0 && (
                     <div className="flex flex-col h-full border border-border/60">
                       <div className="bg-secondary/60 px-4 py-2.5 border-b border-border/60">
