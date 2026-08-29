@@ -315,7 +315,7 @@ const ProductDetail = () => {
         </div>
 
         <div className="container py-10 md:py-16">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-16 lg:gap-20">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-16 lg:gap-20 md:items-stretch">
             {/* Image Gallery */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
