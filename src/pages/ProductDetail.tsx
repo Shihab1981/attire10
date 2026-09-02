@@ -697,16 +697,16 @@ const ProductDetail = () => {
               )}
 
               {/* Description */}
-              <div className="section-divider mb-6" />
+              <div className="section-divider mb-6 md:mb-4" />
               {product.description && (
-                <p className="text-muted-foreground text-sm font-body font-light leading-[1.8] mb-6">
+                <p className="text-muted-foreground text-sm font-body font-light leading-[1.8] mb-6 md:mb-4 md:line-clamp-4">
                   {product.description}
                 </p>
               )}
 
               {/* Key Features */}
               {keyFeatures.length > 0 && (
-                <div className="mb-6">
+                <div className="mb-6 md:mb-4">
                   <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground mb-3">Key Features</h3>
                   <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2">
                     {keyFeatures.map((f, i) => (
@@ -721,7 +721,7 @@ const ProductDetail = () => {
 
               {/* Color Selection */}
               {colors.length > 0 && (
-                <div className="mb-7">
+                <div className="mb-7 md:mb-4">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">
                       Color {selectedColor && <span className="text-foreground ml-1">— {colorName(selectedColor)}</span>}
@@ -768,7 +768,7 @@ const ProductDetail = () => {
 
 
               {/* Quantity + Add to Cart */}
-              <div className="flex gap-3 mb-4">
+              <div className="flex gap-3 mb-4 md:mb-3">
                 {/* Quantity */}
                 <div className="flex items-center border border-border shrink-0">
                   <button
@@ -826,7 +826,7 @@ const ProductDetail = () => {
               </a>
 
               {/* Share */}
-              <div className="relative mb-6">
+              <div className="relative mb-6 md:mb-4">
                 <button
                   onClick={() => setShareOpen(!shareOpen)}
                   className="flex items-center gap-2 text-[10px] font-body font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors py-2"
@@ -876,18 +876,18 @@ const ProductDetail = () => {
                 </AnimatePresence>
               </div>
 
-              {/* Info block — fills remaining height on desktop */}
-              <div className="md:flex-1 md:flex md:flex-col md:min-h-0 gap-4">
+              {/* Info block — compact on desktop */}
+              <div className="flex flex-col gap-4">
                 {product.fabric && (
-                  <div className="flex items-center gap-3 bg-secondary/50 border border-border/50 px-5 py-3.5">
+                  <div className="flex items-center gap-3 bg-secondary/50 border border-border/50 px-5 py-3">
                     <span className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Specs</span>
                     <div className="w-px h-4 bg-border" />
                     <span className="text-sm font-body font-medium">{product.fabric}</span>
                   </div>
                 )}
 
-                <div className={`grid grid-cols-1 ${specRows.length > 0 ? "md:grid-cols-[1fr_220px] lg:grid-cols-[1fr_260px]" : "md:grid-cols-1"} md:grid-rows-1 gap-4 md:flex-1 md:min-h-0`}>
-                  {specRows.length > 0 && (
+                {specRows.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] lg:grid-cols-[1fr_260px] gap-4">
                     <div className="flex flex-col h-full border border-border/60">
                       <div className="bg-secondary/60 px-4 py-2.5 border-b border-border/60">
                         <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">Specifications</h3>
@@ -901,11 +901,39 @@ const ProductDetail = () => {
                         ))}
                       </dl>
                     </div>
-                  )}
 
-                  <div className="flex flex-col gap-4 md:h-full">
+                    <div className="flex flex-col gap-4 md:h-full">
+                      {warranty && (
+                        <div className="flex items-center gap-3 border border-accent/25 bg-accent/5 px-5 py-3">
+                          <Shield size={16} className="text-accent shrink-0" strokeWidth={1.75} />
+                          <div>
+                            <p className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Warranty</p>
+                            <p className="text-sm font-body font-medium">{warranty}</p>
+                          </div>
+                        </div>
+                      )}
+
+                      <div className="grid grid-cols-3 md:grid-cols-1 md:grid-rows-3 gap-3 md:flex-1">
+                        {[
+                          { icon: Truck, label: "Free Shipping", sub: "Over ৳2,000" },
+                          { icon: RefreshCw, label: "7-Day Returns", sub: "Easy process" },
+                          { icon: Shield, label: "100% Authentic", sub: "Guaranteed" },
+                        ].map((t) => (
+                          <div key={t.label} className="flex flex-col md:flex-row items-center md:items-center gap-2 md:gap-3 text-center md:text-left py-3 px-3 md:px-4 border border-border/50 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 md:flex-1">
+                            <t.icon size={18} strokeWidth={1.5} className="text-accent shrink-0" />
+                            <div>
+                              <p className="text-[10px] font-body font-bold tracking-wider uppercase leading-none">{t.label}</p>
+                              <p className="text-[9px] text-muted-foreground font-body mt-0.5">{t.sub}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     {warranty && (
-                      <div className="flex items-center gap-3 border border-accent/25 bg-accent/5 px-5 py-3.5">
+                      <div className="flex items-center gap-3 border border-accent/25 bg-accent/5 px-4 py-3">
                         <Shield size={16} className="text-accent shrink-0" strokeWidth={1.75} />
                         <div>
                           <p className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Warranty</p>
@@ -914,23 +942,21 @@ const ProductDetail = () => {
                       </div>
                     )}
 
-                    <div className="grid grid-cols-3 md:grid-cols-1 md:grid-rows-3 gap-3 md:flex-1">
-                      {[
-                        { icon: Truck, label: "Free Shipping", sub: "Over ৳2,000" },
-                        { icon: RefreshCw, label: "7-Day Returns", sub: "Easy process" },
-                        { icon: Shield, label: "100% Authentic", sub: "Guaranteed" },
-                      ].map((t) => (
-                        <div key={t.label} className="flex flex-col md:flex-row items-center md:items-center gap-2 md:gap-3 text-center md:text-left py-4 md:py-3 px-3 md:px-4 border border-border/50 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 md:flex-1">
-                          <t.icon size={18} strokeWidth={1.5} className="text-accent shrink-0" />
-                          <div>
-                            <p className="text-[10px] font-body font-bold tracking-wider uppercase leading-none">{t.label}</p>
-                            <p className="text-[9px] text-muted-foreground font-body mt-0.5">{t.sub}</p>
-                          </div>
+                    {[
+                      { icon: Truck, label: "Free Shipping", sub: "Over ৳2,000" },
+                      { icon: RefreshCw, label: "7-Day Returns", sub: "Easy process" },
+                      { icon: Shield, label: "100% Authentic", sub: "Guaranteed" },
+                    ].map((t) => (
+                      <div key={t.label} className="flex items-center gap-3 px-4 py-3 border border-border/50 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300">
+                        <t.icon size={18} strokeWidth={1.5} className="text-accent shrink-0" />
+                        <div>
+                          <p className="text-[10px] font-body font-bold tracking-wider uppercase leading-none">{t.label}</p>
+                          <p className="text-[9px] text-muted-foreground font-body mt-0.5">{t.sub}</p>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                </div>
+                )}
               </div>
             </motion.div>
           </div>
