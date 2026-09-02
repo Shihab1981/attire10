@@ -697,16 +697,16 @@ const ProductDetail = () => {
               )}
 
               {/* Description */}
-              <div className="section-divider mb-6" />
+              <div className="section-divider mb-6 md:mb-4" />
               {product.description && (
-                <p className="text-muted-foreground text-sm font-body font-light leading-[1.8] mb-6">
+                <p className="text-muted-foreground text-sm font-body font-light leading-[1.8] mb-6 md:mb-4 md:line-clamp-4">
                   {product.description}
                 </p>
               )}
 
               {/* Key Features */}
               {keyFeatures.length > 0 && (
-                <div className="mb-6">
+                <div className="mb-6 md:mb-4">
                   <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground mb-3">Key Features</h3>
                   <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2">
                     {keyFeatures.map((f, i) => (
@@ -721,7 +721,7 @@ const ProductDetail = () => {
 
               {/* Color Selection */}
               {colors.length > 0 && (
-                <div className="mb-7">
+                <div className="mb-7 md:mb-4">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">
                       Color {selectedColor && <span className="text-foreground ml-1">— {colorName(selectedColor)}</span>}
@@ -768,7 +768,7 @@ const ProductDetail = () => {
 
 
               {/* Quantity + Add to Cart */}
-              <div className="flex gap-3 mb-4">
+              <div className="flex gap-3 mb-4 md:mb-3">
                 {/* Quantity */}
                 <div className="flex items-center border border-border shrink-0">
                   <button
@@ -826,7 +826,7 @@ const ProductDetail = () => {
               </a>
 
               {/* Share */}
-              <div className="relative mb-6">
+              <div className="relative mb-6 md:mb-4">
                 <button
                   onClick={() => setShareOpen(!shareOpen)}
                   className="flex items-center gap-2 text-[10px] font-body font-medium tracking-[0.15em] uppercase text-muted-foreground hover:text-foreground transition-colors py-2"
