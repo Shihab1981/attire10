@@ -879,6 +879,62 @@ const ProductDetail = () => {
             </motion.div>
           </div>
 
+          {/* Product Info — full width below hero */}
+          <section className="mt-10 md:mt-16">
+            {product.fabric && (
+              <div className="flex items-center gap-3 bg-secondary/50 border border-border/50 px-5 py-3 mb-6">
+                <span className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Specs</span>
+                <div className="w-px h-4 bg-border" />
+                <span className="text-sm font-body font-medium">{product.fabric}</span>
+              </div>
+            )}
+
+            {/* Specifications */}
+            {specRows.length > 0 && (
+              <div className="border border-border/60 mb-6">
+                <div className="bg-secondary/60 px-4 py-2.5 border-b border-border/60">
+                  <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">Specifications</h3>
+                </div>
+                <dl className="divide-y divide-border/50">
+                  {specRows.map((s, i) => (
+                    <div key={i} className="grid grid-cols-[35%_65%] md:grid-cols-[25%_75%] text-sm font-body">
+                      <dt className="px-4 py-2.5 text-muted-foreground bg-secondary/20">{s.label}</dt>
+                      <dd className="px-4 py-2.5 text-foreground font-medium">{s.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
+
+            {/* Warranty */}
+            {warranty && (
+              <div className="flex items-center gap-3 border border-accent/25 bg-accent/5 px-5 py-4 mb-6">
+                <Shield size={18} className="text-accent shrink-0" strokeWidth={1.75} />
+                <div>
+                  <p className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Warranty</p>
+                  <p className="text-sm font-body font-medium">{warranty}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Other — trust badges */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { icon: Truck, label: "Free Shipping", sub: "Over ৳2,000" },
+                { icon: RefreshCw, label: "7-Day Returns", sub: "Easy process" },
+                { icon: Shield, label: "100% Authentic", sub: "Guaranteed" },
+              ].map((t) => (
+                <div key={t.label} className="flex items-center gap-3 px-4 py-3 border border-border/50 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300">
+                  <t.icon size={18} strokeWidth={1.5} className="text-accent shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-body font-bold tracking-wider uppercase leading-none">{t.label}</p>
+                    <p className="text-[9px] text-muted-foreground font-body mt-0.5">{t.sub}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
           {/* Reviews */}
           <ProductReviews productId={product.id} />
 
