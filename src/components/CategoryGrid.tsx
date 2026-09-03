@@ -28,14 +28,14 @@ const CategoryGrid = () => {
   if (categories.length === 0) return <CategorySkeleton />;
 
   return (
-    <section className="py-10 md:py-16">
+    <section className="py-8 md:py-12">
       <div className="container">
-        <div className="flex items-end justify-between mb-6 md:mb-8">
+        <div className="flex items-end justify-between mb-5 md:mb-7">
           <div>
             <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground font-body mb-1">
               Curated Selection
             </p>
-            <h2 className="font-display text-2xl md:text-3xl font-extrabold tracking-tight">
+            <h2 className="font-display text-xl md:text-2xl font-extrabold tracking-tight">
               Shop by Category
             </h2>
           </div>
@@ -44,7 +44,7 @@ const CategoryGrid = () => {
           </Link>
         </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-5 gap-2 md:gap-3">
+        <div className="grid grid-cols-3 md:grid-cols-6 gap-2 md:gap-3">
           {categories.map((cat, i) => (
             <motion.div
               key={cat.slug}
@@ -55,7 +55,7 @@ const CategoryGrid = () => {
             >
               <Link
                 to={`/products?category=${cat.slug}`}
-                className="group block relative aspect-[3/4] overflow-hidden"
+                className="group block relative aspect-square overflow-hidden rounded-sm"
               >
                 <img
                   src={cat.image}
@@ -65,18 +65,18 @@ const CategoryGrid = () => {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-transparent to-transparent" />
                 <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-accent transition-all duration-500 group-hover:w-full" />
-                <div className="absolute bottom-0 left-0 right-0 p-3 flex items-end justify-between">
+                <div className="absolute bottom-0 left-0 right-0 p-2 md:p-2.5 flex items-end justify-between">
                   <div>
-                    <h3 className="font-display text-sm md:text-base font-bold text-primary-foreground">
+                    <h3 className="font-display text-xs md:text-sm font-bold text-primary-foreground leading-tight">
                       {cat.name}
                     </h3>
                     {cat.description && (
-                      <p className="text-[9px] md:text-[10px] text-primary-foreground/70 font-body">
+                      <p className="text-[9px] text-primary-foreground/70 font-body hidden md:block">
                         {cat.description}
                       </p>
                     )}
                   </div>
-                  <ArrowUpRight size={12} className="text-primary-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowUpRight size={11} className="text-primary-foreground/50 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </div>
               </Link>
             </motion.div>
