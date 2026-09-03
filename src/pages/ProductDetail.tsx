@@ -315,7 +315,7 @@ const ProductDetail = () => {
         </div>
 
         <div className="container py-10 md:py-16">
-          <div className="grid md:grid-cols-2 gap-8 md:gap-16 lg:gap-20 md:items-stretch">
+          <div className="grid md:grid-cols-2 gap-8 md:gap-16 lg:gap-20">
             {/* Image Gallery */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
@@ -625,7 +625,7 @@ const ProductDetail = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.15, duration: 0.6 }}
-              className="flex flex-col h-full"
+              className="flex flex-col"
             >
               {/* Category */}
               <p className="text-[10px] text-muted-foreground tracking-[0.3em] uppercase font-body mb-3">
@@ -876,90 +876,64 @@ const ProductDetail = () => {
                 </AnimatePresence>
               </div>
 
-              {/* Info block — compact on desktop */}
-              <div className="flex flex-col gap-4">
-                {product.fabric && (
-                  <div className="flex items-center gap-3 bg-secondary/50 border border-border/50 px-5 py-3">
-                    <span className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Specs</span>
-                    <div className="w-px h-4 bg-border" />
-                    <span className="text-sm font-body font-medium">{product.fabric}</span>
-                  </div>
-                )}
-
-                {specRows.length > 0 ? (
-                  <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] lg:grid-cols-[1fr_260px] gap-4">
-                    <div className="flex flex-col h-full border border-border/60">
-                      <div className="bg-secondary/60 px-4 py-2.5 border-b border-border/60">
-                        <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">Specifications</h3>
-                      </div>
-                      <dl className="flex-1 min-h-0 divide-y divide-border/50 overflow-y-auto">
-                        {specRows.map((s, i) => (
-                          <div key={i} className="grid grid-cols-[40%_60%] text-sm font-body">
-                            <dt className="px-4 py-2.5 text-muted-foreground bg-secondary/20">{s.label}</dt>
-                            <dd className="px-4 py-2.5 text-foreground font-medium">{s.value}</dd>
-                          </div>
-                        ))}
-                      </dl>
-                    </div>
-
-                    <div className="flex flex-col gap-4 md:h-full">
-                      {warranty && (
-                        <div className="flex items-center gap-3 border border-accent/25 bg-accent/5 px-5 py-3">
-                          <Shield size={16} className="text-accent shrink-0" strokeWidth={1.75} />
-                          <div>
-                            <p className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Warranty</p>
-                            <p className="text-sm font-body font-medium">{warranty}</p>
-                          </div>
-                        </div>
-                      )}
-
-                      <div className="grid grid-cols-3 md:grid-cols-1 md:grid-rows-3 gap-3 md:flex-1">
-                        {[
-                          { icon: Truck, label: "Free Shipping", sub: "Over ৳2,000" },
-                          { icon: RefreshCw, label: "7-Day Returns", sub: "Easy process" },
-                          { icon: Shield, label: "100% Authentic", sub: "Guaranteed" },
-                        ].map((t) => (
-                          <div key={t.label} className="flex flex-col md:flex-row items-center md:items-center gap-2 md:gap-3 text-center md:text-left py-3 px-3 md:px-4 border border-border/50 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300 md:flex-1">
-                            <t.icon size={18} strokeWidth={1.5} className="text-accent shrink-0" />
-                            <div>
-                              <p className="text-[10px] font-body font-bold tracking-wider uppercase leading-none">{t.label}</p>
-                              <p className="text-[9px] text-muted-foreground font-body mt-0.5">{t.sub}</p>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    {warranty && (
-                      <div className="flex items-center gap-3 border border-accent/25 bg-accent/5 px-4 py-3">
-                        <Shield size={16} className="text-accent shrink-0" strokeWidth={1.75} />
-                        <div>
-                          <p className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Warranty</p>
-                          <p className="text-sm font-body font-medium">{warranty}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {[
-                      { icon: Truck, label: "Free Shipping", sub: "Over ৳2,000" },
-                      { icon: RefreshCw, label: "7-Day Returns", sub: "Easy process" },
-                      { icon: Shield, label: "100% Authentic", sub: "Guaranteed" },
-                    ].map((t) => (
-                      <div key={t.label} className="flex items-center gap-3 px-4 py-3 border border-border/50 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300">
-                        <t.icon size={18} strokeWidth={1.5} className="text-accent shrink-0" />
-                        <div>
-                          <p className="text-[10px] font-body font-bold tracking-wider uppercase leading-none">{t.label}</p>
-                          <p className="text-[9px] text-muted-foreground font-body mt-0.5">{t.sub}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
             </motion.div>
           </div>
+
+          {/* Product Info — full width below hero */}
+          <section className="mt-10 md:mt-16">
+            {product.fabric && (
+              <div className="flex items-center gap-3 bg-secondary/50 border border-border/50 px-5 py-3 mb-6">
+                <span className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Specs</span>
+                <div className="w-px h-4 bg-border" />
+                <span className="text-sm font-body font-medium">{product.fabric}</span>
+              </div>
+            )}
+
+            {/* Specifications */}
+            {specRows.length > 0 && (
+              <div className="border border-border/60 mb-6">
+                <div className="bg-secondary/60 px-4 py-2.5 border-b border-border/60">
+                  <h3 className="text-[10px] font-body font-bold tracking-[0.25em] uppercase text-muted-foreground">Specifications</h3>
+                </div>
+                <dl className="divide-y divide-border/50">
+                  {specRows.map((s, i) => (
+                    <div key={i} className="grid grid-cols-[35%_65%] md:grid-cols-[25%_75%] text-sm font-body">
+                      <dt className="px-4 py-2.5 text-muted-foreground bg-secondary/20">{s.label}</dt>
+                      <dd className="px-4 py-2.5 text-foreground font-medium">{s.value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+            )}
+
+            {/* Warranty */}
+            {warranty && (
+              <div className="flex items-center gap-3 border border-accent/25 bg-accent/5 px-5 py-4 mb-6">
+                <Shield size={18} className="text-accent shrink-0" strokeWidth={1.75} />
+                <div>
+                  <p className="text-[10px] font-body font-bold tracking-[0.2em] uppercase text-muted-foreground">Warranty</p>
+                  <p className="text-sm font-body font-medium">{warranty}</p>
+                </div>
+              </div>
+            )}
+
+            {/* Other — trust badges */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              {[
+                { icon: Truck, label: "Free Shipping", sub: "Over ৳2,000" },
+                { icon: RefreshCw, label: "7-Day Returns", sub: "Easy process" },
+                { icon: Shield, label: "100% Authentic", sub: "Guaranteed" },
+              ].map((t) => (
+                <div key={t.label} className="flex items-center gap-3 px-4 py-3 border border-border/50 hover:border-accent/30 hover:bg-accent/5 transition-all duration-300">
+                  <t.icon size={18} strokeWidth={1.5} className="text-accent shrink-0" />
+                  <div>
+                    <p className="text-[10px] font-body font-bold tracking-wider uppercase leading-none">{t.label}</p>
+                    <p className="text-[9px] text-muted-foreground font-body mt-0.5">{t.sub}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
 
           {/* Reviews */}
           <ProductReviews productId={product.id} />
