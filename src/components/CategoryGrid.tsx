@@ -51,7 +51,7 @@ const CategoryGrid = () => {
         </div>
 
         <div className="relative overflow-hidden">
-          <div className="flex gap-3 md:gap-4 w-max animate-marquee hover:[animation-play-state:paused]">
+          <div className="flex gap-3 md:gap-4 w-max animate-marquee-categories hover:[animation-play-state:paused]">
             {duplicated.map((cat, i) => (
               <Link
                 key={`${cat.slug}-${i}`}
