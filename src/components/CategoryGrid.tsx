@@ -12,14 +12,16 @@ const CategorySkeleton = () => (
         </div>
         <div className="h-3 w-16 bg-muted-foreground/10 rounded animate-pulse" />
       </div>
-      {/* Mobile: 2 lines (3 columns x 2 rows) */}
-      <div className="grid grid-cols-3 gap-2 md:hidden">
-        {[...Array(6)].map((_, i) => (
-          <div
-            key={i}
-            className="aspect-square bg-secondary animate-pulse rounded-xl"
-          />
-        ))}
+      {/* Mobile: 2-line scrolling skeleton */}
+      <div className="md:hidden overflow-hidden">
+        <div className="grid grid-rows-2 grid-flow-col gap-2 auto-cols-[100px] w-max">
+          {[...Array(6)].map((_, i) => (
+            <div
+              key={i}
+              className="w-[100px] aspect-square bg-secondary animate-pulse rounded-xl"
+            />
+          ))}
+        </div>
       </div>
       {/* Desktop: horizontal marquee */}
       <div className="hidden md:block overflow-hidden">
@@ -47,7 +49,7 @@ const CategoryCard = ({
     to={`/products?category=${cat.slug}`}
     className={`group relative block overflow-hidden rounded-xl ${
       mobile
-        ? "aspect-square"
+        ? "w-[100px] aspect-square"
         : "w-36 sm:w-40 md:w-52 lg:w-56 aspect-[3/4] flex-shrink-0"
     }`}
   >
@@ -115,11 +117,13 @@ const CategoryGrid = () => {
           </Link>
         </div>
 
-        {/* Mobile: smaller cards in 2 lines */}
-        <div className="grid grid-cols-3 gap-2 md:hidden">
-          {categories.map((cat) => (
-            <CategoryCard key={cat.slug} cat={cat} mobile />
-          ))}
+        {/* Mobile: 2-line horizontal marquee */}
+        <div className="md:hidden relative overflow-hidden">
+          <div className="grid grid-rows-2 grid-flow-col gap-2 auto-cols-[100px] w-max animate-marquee-categories hover:[animation-play-state:paused]">
+            {duplicated.map((cat, i) => (
+              <CategoryCard key={`mobile-${cat.slug}-${i}`} cat={cat} mobile />
+            ))}
+          </div>
         </div>
 
         {/* Desktop: single-line marquee */}
