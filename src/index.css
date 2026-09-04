@@ -110,6 +110,10 @@
   animation: marquee 30s linear infinite;
 }
 
+.animate-marquee-categories {
+  animation: marquee 6s linear infinite;
+}
+
 /* Pulse glow for active install button */
 @keyframes pulse-glow {
   0%, 100% {
