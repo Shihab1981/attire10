@@ -259,15 +259,21 @@ export type Database = {
           created_at: string
           description: string
           fabric: string
+          focus_keyword: string
           id: string
+          image_alt_text: string
           image_url: string
           images: string[]
           in_stock: boolean
           key_features: string[]
+          meta_description: string
           name: string
           new_arrival: boolean
           original_price: number | null
           price: number
+          seo_keywords: string[]
+          seo_slug: string | null
+          seo_title: string
           sizes: string[]
           specs: Json
           stock_quantity: number
@@ -284,15 +290,21 @@ export type Database = {
           created_at?: string
           description?: string
           fabric?: string
+          focus_keyword?: string
           id?: string
+          image_alt_text?: string
           image_url?: string
           images?: string[]
           in_stock?: boolean
           key_features?: string[]
+          meta_description?: string
           name: string
           new_arrival?: boolean
           original_price?: number | null
           price: number
+          seo_keywords?: string[]
+          seo_slug?: string | null
+          seo_title?: string
           sizes?: string[]
           specs?: Json
           stock_quantity?: number
@@ -309,15 +321,21 @@ export type Database = {
           created_at?: string
           description?: string
           fabric?: string
+          focus_keyword?: string
           id?: string
+          image_alt_text?: string
           image_url?: string
           images?: string[]
           in_stock?: boolean
           key_features?: string[]
+          meta_description?: string
           name?: string
           new_arrival?: boolean
           original_price?: number | null
           price?: number
+          seo_keywords?: string[]
+          seo_slug?: string | null
+          seo_title?: string
           sizes?: string[]
           specs?: Json
           stock_quantity?: number

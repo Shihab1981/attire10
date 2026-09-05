@@ -10,6 +10,8 @@ import { Plus, Pencil, Trash2, Upload, X, ImagePlus } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { useCategories } from "@/hooks/useCategories";
 import { parseColor, buildColor } from "@/lib/colors";
+import { slugify, resolveSeo, scoreSeo, SITE_URL } from "@/lib/seo";
+import { ChevronDown } from "lucide-react";
 
 type Product = Tables<"products">;
 
@@ -40,6 +42,8 @@ const emptyForm = {
   brand: "", warranty: "",
   key_features: [] as string[],
   specs: [] as SpecRow[],
+  seo_title: "", meta_description: "", focus_keyword: "",
+  seo_keywords: [] as string[], seo_slug: "", image_alt_text: "",
 };
 
 const AdminProducts = () => {
@@ -52,6 +56,9 @@ const AdminProducts = () => {
   const [uploadingColorImage, setUploadingColorImage] = useState<string | null>(null);
   const [customColor, setCustomColor] = useState("#000000");
   const [customColorName, setCustomColorName] = useState("");
+  const [seoOpen, setSeoOpen] = useState(false);
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [keywordInput, setKeywordInput] = useState("");
 
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["admin-products"],
@@ -165,8 +172,25 @@ const AdminProducts = () => {
 
   const saveMutation = useMutation({
     mutationFn: async (raw: typeof form) => {
+      const baseSlug = (raw.seo_slug || "").trim() || slugify(raw.name);
+      const taken = new Set(
+        products
+          .filter((p) => p.id !== editingId)
+          .map((p) => ((p as any).seo_slug || "").trim())
+          .filter(Boolean),
+      );
+      let uniqueSlug = baseSlug;
+      let n = 2;
+      while (uniqueSlug && taken.has(uniqueSlug)) uniqueSlug = `${baseSlug}-${n++}`;
+
       const data = {
         ...raw,
+        seo_title: raw.seo_title.trim(),
+        meta_description: raw.meta_description.trim(),
+        focus_keyword: raw.focus_keyword.trim(),
+        seo_keywords: raw.seo_keywords.map((k) => k.trim()).filter(Boolean),
+        seo_slug: uniqueSlug || null,
+        image_alt_text: raw.image_alt_text.trim(),
         key_features: raw.key_features.map((f) => f.trim()).filter(Boolean),
         specs: raw.specs
           .map((s) => ({ label: s.label.trim(), value: s.value.trim() }))
@@ -183,6 +207,7 @@ const AdminProducts = () => {
       setDialogOpen(false);
       setEditingId(null);
       setForm(emptyForm);
+      setSlugTouched(false);
       toast.success(editingId ? "Product updated" : "Product created");
     },
     onError: () => toast.error("Failed to save product"),
@@ -211,15 +236,35 @@ const AdminProducts = () => {
       brand: (p as any).brand ?? "", warranty: (p as any).warranty ?? "",
       key_features: ((p as any).key_features ?? []) as string[],
       specs: (Array.isArray((p as any).specs) ? (p as any).specs : []) as SpecRow[],
+      seo_title: (p as any).seo_title ?? "",
+      meta_description: (p as any).meta_description ?? "",
+      focus_keyword: (p as any).focus_keyword ?? "",
+      seo_keywords: ((p as any).seo_keywords ?? []) as string[],
+      seo_slug: (p as any).seo_slug ?? "",
+      image_alt_text: (p as any).image_alt_text ?? "",
     });
+    setSlugTouched(true);
+    setKeywordInput("");
     setDialogOpen(true);
   };
 
   const openNew = () => {
     setEditingId(null);
     setForm(emptyForm);
+    setSlugTouched(false);
+    setKeywordInput("");
     setDialogOpen(true);
   };
+
+  const addKeyword = () => {
+    const k = keywordInput.trim().replace(/,+$/, "");
+    if (!k) return;
+    if (!form.seo_keywords.includes(k)) setForm((f) => ({ ...f, seo_keywords: [...f.seo_keywords, k] }));
+    setKeywordInput("");
+  };
+
+  const seoResolved = resolveSeo(form);
+  const { score: seoScore, checks: seoChecks } = scoreSeo(form);
 
   const allImages = [
     ...(form.image_url && form.image_url !== "/placeholder.svg" ? [form.image_url] : []),
@@ -302,7 +347,7 @@ const AdminProducts = () => {
             <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium mb-1">Name *</label>
-                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm" required maxLength={200} />
+                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, seo_slug: slugTouched ? form.seo_slug : slugify(e.target.value) })} className="w-full border border-border px-3 py-2 bg-background text-sm" required maxLength={200} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -612,6 +657,187 @@ const AdminProducts = () => {
                   0 = Out of Stock badge দেখাবে। 1-3 = "Only X left" badge।
                 </p>
               </div>
+
+              {/* ── SEO Settings ───────────────────────────── */}
+              <div className="border border-border bg-secondary/20">
+                <button
+                  type="button"
+                  onClick={() => setSeoOpen((o) => !o)}
+                  className="w-full flex items-center justify-between px-3 py-3 text-sm font-display font-semibold"
+                >
+                  <span className="flex items-center gap-2">
+                    SEO Settings
+                    <span className={`text-[10px] font-body px-2 py-0.5 rounded-full ${seoScore >= 80 ? "bg-green-100 text-green-700" : seoScore >= 50 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>
+                      {seoScore}/100
+                    </span>
+                  </span>
+                  <ChevronDown size={16} className={`transition-transform ${seoOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {seoOpen && (
+                  <div className="px-3 pb-4 space-y-4 border-t border-border pt-4">
+                    {/* SEO Title */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-sm font-medium">SEO Title</label>
+                        <span className={`text-[11px] ${form.seo_title.length > 60 ? "text-destructive" : "text-muted-foreground"}`}>
+                          {form.seo_title.length}/60
+                        </span>
+                      </div>
+                      <input
+                        value={form.seo_title}
+                        onChange={(e) => setForm({ ...form, seo_title: e.target.value })}
+                        placeholder="T-Wolf T20 RGB Gaming Keyboard | Device Hub"
+                        className="w-full border border-border px-3 py-2 bg-background text-sm"
+                        maxLength={120}
+                      />
+                      {form.seo_title.length > 60 && (
+                        <p className="text-[11px] text-destructive mt-1">Too long — Google usually cuts off after 60 characters.</p>
+                      )}
+                      {!form.seo_title && (
+                        <p className="text-[11px] text-muted-foreground mt-1">Empty — the product name will be used automatically.</p>
+                      )}
+                    </div>
+
+                    {/* Meta Description */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-sm font-medium">Meta Description</label>
+                        <span className={`text-[11px] ${form.meta_description.length > 160 ? "text-destructive" : "text-muted-foreground"}`}>
+                          {form.meta_description.length}/160
+                        </span>
+                      </div>
+                      <textarea
+                        value={form.meta_description}
+                        onChange={(e) => setForm({ ...form, meta_description: e.target.value })}
+                        placeholder="Buy T-Wolf T20 RGB Gaming Keyboard in Bangladesh. Responsive performance, RGB lighting and a 104-key layout from Device Hub."
+                        className="w-full border border-border px-3 py-2 bg-background text-sm min-h-[70px] resize-none"
+                        maxLength={320}
+                      />
+                      {form.meta_description.length > 0 && form.meta_description.length < 150 && (
+                        <p className="text-[11px] text-amber-600 mt-1">A bit short — 150-160 characters works best.</p>
+                      )}
+                      {form.meta_description.length > 160 && (
+                        <p className="text-[11px] text-destructive mt-1">Too long — keep it within 160 characters.</p>
+                      )}
+                      {!form.meta_description && (
+                        <p className="text-[11px] text-muted-foreground mt-1">Empty — a summary of the product description will be used.</p>
+                      )}
+                    </div>
+
+                    {/* Focus keyword */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Focus Keyword</label>
+                      <input
+                        value={form.focus_keyword}
+                        onChange={(e) => setForm({ ...form, focus_keyword: e.target.value })}
+                        placeholder="gaming keyboard Bangladesh"
+                        className="w-full border border-border px-3 py-2 bg-background text-sm"
+                        maxLength={100}
+                      />
+                    </div>
+
+                    {/* Keywords chips */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">SEO Keywords</label>
+                      <div className="flex flex-wrap gap-1.5 mb-2">
+                        {form.seo_keywords.map((k) => (
+                          <span key={k} className="flex items-center gap-1 bg-secondary border border-border text-xs px-2 py-1">
+                            {k}
+                            <button type="button" onClick={() => setForm({ ...form, seo_keywords: form.seo_keywords.filter((x) => x !== k) })} className="hover:text-destructive">
+                              <X size={11} />
+                            </button>
+                          </span>
+                        ))}
+                        {form.seo_keywords.length === 0 && (
+                          <span className="text-[11px] text-muted-foreground">e.g. "RGB keyboard", "gaming keyboard", "T-Wolf T20"</span>
+                        )}
+                      </div>
+                      <div className="flex gap-2">
+                        <input
+                          value={keywordInput}
+                          onChange={(e) => setKeywordInput(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === ",") {
+                              e.preventDefault();
+                              addKeyword();
+                            }
+                          }}
+                          placeholder="Type a keyword and press Enter"
+                          className="flex-1 border border-border px-3 py-2 bg-background text-sm"
+                          maxLength={80}
+                        />
+                        <button type="button" onClick={addKeyword} className="text-xs border border-border px-3 py-2 hover:bg-secondary">+ Add</button>
+                      </div>
+                    </div>
+
+                    {/* Slug */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">SEO Slug</label>
+                      <div className="flex gap-2">
+                        <input
+                          value={form.seo_slug}
+                          onChange={(e) => { setSlugTouched(true); setForm({ ...form, seo_slug: slugify(e.target.value) }); }}
+                          placeholder="t-wolf-t20-rgb-gaming-keyboard"
+                          className="flex-1 border border-border px-3 py-2 bg-background text-sm"
+                          maxLength={90}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => { setSlugTouched(false); setForm({ ...form, seo_slug: slugify(form.name) }); }}
+                          className="text-xs border border-border px-3 py-2 hover:bg-secondary whitespace-nowrap"
+                        >
+                          Regenerate
+                        </button>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-1">Old product links keep working — the slug is an extra address.</p>
+                    </div>
+
+                    {/* Alt text */}
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Image Alt Text</label>
+                      <input
+                        value={form.image_alt_text}
+                        onChange={(e) => setForm({ ...form, image_alt_text: e.target.value })}
+                        placeholder="T-Wolf T20 RGB gaming keyboard with backlit keys"
+                        className="w-full border border-border px-3 py-2 bg-background text-sm"
+                        maxLength={160}
+                      />
+                      {!form.image_alt_text && (
+                        <p className="text-[11px] text-muted-foreground mt-1">Empty — the product name will be used.</p>
+                      )}
+                    </div>
+
+                    {/* Google preview */}
+                    <div className="border border-border bg-background p-3">
+                      <p className="text-[11px] font-body uppercase tracking-wide text-muted-foreground mb-2">Search preview</p>
+                      <p className="text-[13px] text-muted-foreground truncate">{SITE_URL.replace("https://", "")}/product/{seoResolved.slug || "product-slug"}</p>
+                      <p className="text-[18px] leading-snug text-[#1a0dab] truncate">{seoResolved.title}</p>
+                      <p className="text-[13px] text-muted-foreground line-clamp-2">{seoResolved.description}</p>
+                    </div>
+
+                    {/* Score + checklist */}
+                    <div className="border border-border bg-background p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-display font-semibold">SEO Score</span>
+                        <span className="text-sm font-semibold">{seoScore}/100</span>
+                      </div>
+                      <div className="h-1.5 w-full bg-secondary mb-3">
+                        <div className={`h-full ${seoScore >= 80 ? "bg-green-600" : seoScore >= 50 ? "bg-amber-500" : "bg-destructive"}`} style={{ width: `${seoScore}%` }} />
+                      </div>
+                      <ul className="space-y-1">
+                        {seoChecks.map((c, i) => (
+                          <li key={i} className={`text-[12px] flex gap-2 ${c.ok ? "text-green-700" : "text-amber-600"}`}>
+                            <span>{c.ok ? "✓" : "⚠"}</span>
+                            <span>{c.label}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               <button type="submit" disabled={saveMutation.isPending} className="w-full bg-foreground text-background py-3 font-display font-semibold text-sm tracking-wide hover:bg-accent hover:text-accent-foreground transition-colors disabled:opacity-50">
                 {saveMutation.isPending ? "Saving..." : editingId ? "Update Product" : "Create Product"}
               </button>
