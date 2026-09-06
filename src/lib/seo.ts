@@ -115,3 +115,7 @@ export const scoreSeo = (p: SeoInput) => {
 
   return { score: Math.max(0, Math.min(100, score)), checks };
 };
+
+/** Public URL path for a product: prefers the SEO slug, falls back to the id. */
+export const productPath = (p: { id: string; seo_slug?: string | null }) =>
+  `/product/${(p.seo_slug || "").trim() || p.id}`;

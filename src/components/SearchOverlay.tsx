@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { categoryImages, type Category, type Size } from "@/data/products";
 import type { Tables } from "@/integrations/supabase/types";
+import { productPath } from "@/lib/seo";
 
 type Product = Tables<"products">;
 
@@ -62,7 +63,7 @@ const SearchOverlay = ({ open, onClose }: { open: boolean; onClose: () => void }
 
   const handleSelect = (product: Product) => {
     onClose();
-    navigate(`/product/${product.id}`);
+    navigate(productPath(product as any));
   };
 
   const handleSearchAll = () => {

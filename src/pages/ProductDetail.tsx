@@ -17,6 +17,8 @@ import BackToTop from "@/components/BackToTop";
 import { ShoppingBag, ArrowLeft, Check, Truck, Shield, RefreshCw, ChevronRight, ChevronLeft, Minus, Plus, Heart, ZoomIn, X, Share2, MessageCircle, Facebook, Link as LinkIcon, Copy, Star } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
+import ProductSeo from "@/components/ProductSeo";
+import { resolveSeo } from "@/lib/seo";
 
 const ProductDetail = () => {
   const { id } = useParams();
@@ -47,9 +49,6 @@ const ProductDetail = () => {
   const addRecentlyViewed = useRecentlyViewedStore((s) => s.addProduct);
 
   // Track recently viewed
-  useEffect(() => {
-    if (id) addRecentlyViewed(id);
-  }, [id]);
 
   // Native pinch-to-zoom + pan for mobile (passive:false so preventDefault works)
   useEffect(() => {
@@ -131,24 +130,33 @@ const ProductDetail = () => {
   const { data: product, isLoading } = useQuery({
     queryKey: ["product", id],
     queryFn: async () => {
-      const { data, error } = await supabase.from("products").select("*").eq("id", id!).single();
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id!);
+      const { data, error } = await supabase
+        .from("products")
+        .select("*")
+        .eq(isUuid ? "id" : "seo_slug", id!)
+        .maybeSingle();
       if (error) throw error;
       return data;
     },
     enabled: !!id,
   });
 
+  useEffect(() => {
+    if (product?.id) addRecentlyViewed(product.id);
+  }, [product?.id]);
+
   const { data: reviews = [] } = useQuery({
-    queryKey: ["reviews", id],
+    queryKey: ["reviews", product?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("reviews")
         .select("rating")
-        .eq("product_id", id!);
+        .eq("product_id", product!.id);
       if (error) throw error;
       return data;
     },
-    enabled: !!id,
+    enabled: !!product,
   });
 
   const avgRating = reviews.length > 0
@@ -291,12 +299,14 @@ const ProductDetail = () => {
   const brand: string = ((product as any).brand ?? "").trim();
   const warranty: string = ((product as any).warranty ?? "").trim();
   const keyFeatures: string[] = Array.isArray((product as any).key_features) ? (product as any).key_features.filter(Boolean) : [];
+  const imageAlt = resolveSeo(product as any).alt;
   const specRows: { label: string; value: string }[] = Array.isArray((product as any).specs)
     ? ((product as any).specs as any[]).filter((s) => s && s.label && s.value)
     : [];
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
+      <ProductSeo product={product as any} image={mainImage} />
       <Header />
       <main className="flex-1">
         {/* Breadcrumb */}
@@ -336,7 +346,7 @@ const ProductDetail = () => {
                           : "border-transparent hover:border-border opacity-60 hover:opacity-100"
                       }`}
                     >
-                      <img src={img} alt="" className="w-full h-full object-contain p-1.5" />
+                      <img src={img} alt={`${imageAlt} - view ${i + 1}`} className="w-full h-full object-contain p-1.5" />
                     </button>
                   ))}
                 </div>
@@ -387,7 +397,7 @@ const ProductDetail = () => {
                   <motion.img
                     key={activeImageIndex}
                     src={displayImages[activeImageIndex] || mainImage}
-                    alt={product.name}
+                    alt={imageAlt}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -571,7 +581,7 @@ const ProductDetail = () => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
                       src={displayImages[activeImageIndex] || mainImage}
-                      alt={product.name}
+                      alt={imageAlt}
                       className="max-w-[90vw] max-h-[85vh] object-contain select-none touch-none"
                       style={{
                         transform: `translate(${modalPan.x}px, ${modalPan.y}px) scale(${modalZoomLevel})`,
