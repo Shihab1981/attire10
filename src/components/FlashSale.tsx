@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Zap, ArrowRight } from "lucide-react";
+import { productPath } from "@/lib/seo";
 
 const FlashSale = () => {
   const { data: sales = [] } = useQuery({
@@ -58,7 +59,7 @@ const FlashSale = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
               >
-                <Link to={`/product/${product.id}`} className="group block">
+                <Link to={productPath(product as any)} className="group block">
                   <div className="relative aspect-[3/4] bg-primary-foreground/5 overflow-hidden mb-3">
                     <img
                       src={product.image_url || "/placeholder.svg"}

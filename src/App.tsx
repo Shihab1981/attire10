@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
 import ProductDetail from "./pages/ProductDetail";
@@ -32,6 +33,22 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <Helmet defaultTitle="Device Hub — Gadgets, Phones & Accessories in BD">
+        <meta
+          name="description"
+          content="Device Hub — buy phones, earbuds, smartwatches, laptops and gadget accessories in Bangladesh with warranty and fast delivery."
+        />
+        <meta property="og:title" content="Device Hub — Gadgets, Phones & Accessories in BD" />
+        <meta
+          property="og:description"
+          content="Device Hub — buy phones, earbuds, smartwatches, laptops and gadget accessories in Bangladesh with warranty and fast delivery."
+        />
+        <meta name="twitter:title" content="Device Hub — Gadgets, Phones & Accessories in BD" />
+        <meta
+          name="twitter:description"
+          content="Device Hub — buy phones, earbuds, smartwatches, laptops and gadget accessories in Bangladesh with warranty and fast delivery."
+        />
+      </Helmet>
       <BrowserRouter>
         <OfflineIndicator />
         <InstallBanner />

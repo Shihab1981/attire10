@@ -10,6 +10,7 @@ import { parseColor } from "@/lib/colors";
 import { useCartStore } from "@/store/cartStore";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { productPath, resolveSeo } from "@/lib/seo";
 
 type Product = Tables<"products">;
 
@@ -79,7 +80,7 @@ const QuickViewModal = ({
           <div className="relative aspect-square bg-secondary overflow-hidden">
             <img
               src={uniqueImages[imgIdx]}
-              alt={product.name}
+              alt={resolveSeo(product as any).alt}
               className="w-full h-full object-contain p-4 bg-card"
             />
             {uniqueImages.length > 1 && (
@@ -212,7 +213,7 @@ const QuickViewModal = ({
             </div>
 
             <button
-              onClick={() => { onClose(); navigate(`/product/${product.id}`); }}
+              onClick={() => { onClose(); navigate(productPath(product as any)); }}
               className="mt-3 text-[10px] tracking-[0.15em] uppercase font-body font-medium text-muted-foreground hover:text-accent transition-colors text-center"
             >
               View Full Details →
@@ -250,11 +251,11 @@ const ProductCard = ({ product, flashSale }: { product: Product; flashSale?: Fla
         viewport={{ once: true }}
         className="group"
       >
-        <Link to={`/product/${product.id}`} className="block">
+        <Link to={productPath(product as any)} className="block">
           <div className={`relative aspect-square overflow-hidden bg-card border border-border/40 mb-3 ${isOutOfStock ? 'opacity-70' : ''}`}>
             <img
               src={image}
-              alt={product.name}
+              alt={resolveSeo(product as any).alt}
               className={`w-full h-full object-contain p-4 md:p-6 transition-all duration-700 group-hover:scale-105 ${isOutOfStock ? 'grayscale' : ''}`}
               loading="lazy"
             />
