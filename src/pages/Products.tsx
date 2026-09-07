@@ -10,7 +10,10 @@ import { type Size } from "@/data/products";
 import { useCategories } from "@/hooks/useCategories";
 import { SlidersHorizontal, X, ArrowUpDown, Grid3X3, LayoutGrid, ChevronDown, Tag, Ruler, Banknote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import PageSeo from "@/components/PageSeo";
+import { SITE_NAME, SITE_URL, productPath } from "@/lib/seo";
 import { useFlashSales } from "@/hooks/useFlashSales";
+
 
 
 type SortOption = "newest" | "price-low" | "price-high" | "name-az";
