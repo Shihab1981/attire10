@@ -10,7 +10,10 @@ import { type Size } from "@/data/products";
 import { useCategories } from "@/hooks/useCategories";
 import { SlidersHorizontal, X, ArrowUpDown, Grid3X3, LayoutGrid, ChevronDown, Tag, Ruler, Banknote } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import PageSeo from "@/components/PageSeo";
+import { SITE_NAME, SITE_URL, productPath } from "@/lib/seo";
 import { useFlashSales } from "@/hooks/useFlashSales";
+
 
 
 type SortOption = "newest" | "price-low" | "price-high" | "name-az";
@@ -129,10 +132,47 @@ const Products = () => {
     activeFilters.push({ label: `৳${priceRange[0]}–৳${priceRange[1]}`, onClear: () => setPriceRange([0, 5000]) });
   }
 
+  const activeCategory = categories.find((c) => c.slug === selectedCategory);
+  const seoTitle = searchQuery.trim()
+    ? `Search: ${searchQuery.trim()} | ${SITE_NAME}`
+    : activeCategory
+      ? `${activeCategory.name} in Bangladesh | ${SITE_NAME}`
+      : filterParam === "new"
+        ? `New Arrivals | ${SITE_NAME}`
+        : `All Products — Gadgets & Electronics | ${SITE_NAME}`;
+  const seoDesc = activeCategory
+    ? `Buy ${activeCategory.name.toLowerCase()} in Bangladesh from ${SITE_NAME}. ${activeCategory.description || "Genuine products with warranty and fast delivery."}`.slice(0, 158)
+    : `Browse all gadgets at ${SITE_NAME} — phones, audio, smartwatches, laptops, gaming and accessories in Bangladesh with warranty and fast delivery.`;
+  const seoPath = selectedCategory
+    ? `/products?category=${selectedCategory}`
+    : filterParam === "new"
+      ? "/products?filter=new"
+      : "/products";
+  const listJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: seoTitle,
+    numberOfItems: filtered.length,
+    itemListElement: filtered.slice(0, 30).map((p, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: `${SITE_URL}${productPath(p)}`,
+      name: p.name,
+    })),
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
+      <PageSeo
+        title={seoTitle}
+        description={seoDesc}
+        path={seoPath}
+        jsonLd={listJsonLd}
+        noindex={!!searchQuery.trim()}
+      />
       <Header />
       <main className="flex-1">
+
         {/* Page Header */}
         <div className="border-b border-border/60 bg-secondary/30 relative overflow-hidden">
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
