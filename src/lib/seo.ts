@@ -119,3 +119,29 @@ export const scoreSeo = (p: SeoInput) => {
 /** Public URL path for a product: prefers the SEO slug, falls back to the id. */
 export const productPath = (p: { id: string; seo_slug?: string | null }) =>
   `/product/${(p.seo_slug || "").trim() || p.id}`;
+
+/** Auto-generated SEO title from a product name (kept within ~60 chars). */
+export const autoSeoTitle = (name: string): string => {
+  const clean = (name || "").trim();
+  if (!clean) return "";
+  const full = `${clean} | ${SITE_NAME}`;
+  return full.length <= 60 ? full : clean.slice(0, 60);
+};
+
+/** Auto-generated meta description from name/description/brand/category. */
+export const autoMetaDescription = (
+  name: string,
+  description?: string,
+  brand?: string,
+  category?: string,
+): string => {
+  const clean = (name || "").trim();
+  if (!clean) return "";
+  const body = (description || "").replace(/\s+/g, " ").trim();
+  const brandPart = (brand || "").trim() ? `${(brand || "").trim()} ` : "";
+  const catPart = (category || "").trim() ? ` ${(category || "").trim().replace(/-/g, " ")}` : "";
+  const base = `Buy ${brandPart}${clean} in Bangladesh at ${SITE_NAME}.`;
+  const extra = body || `Genuine${catPart} with warranty, fast delivery and cash on delivery.`;
+  const out = `${base} ${extra}`.replace(/\s+/g, " ").trim();
+  return out.length > 160 ? out.slice(0, 157).trimEnd() + "…" : out;
+};
