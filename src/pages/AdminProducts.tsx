@@ -10,7 +10,7 @@ import { Plus, Pencil, Trash2, Upload, X, ImagePlus } from "lucide-react";
 import type { Tables } from "@/integrations/supabase/types";
 import { useCategories } from "@/hooks/useCategories";
 import { parseColor, buildColor } from "@/lib/colors";
-import { slugify, resolveSeo, scoreSeo, SITE_URL } from "@/lib/seo";
+import { slugify, resolveSeo, scoreSeo, SITE_URL, autoSeoTitle, autoMetaDescription } from "@/lib/seo";
 import { ChevronDown } from "lucide-react";
 
 type Product = Tables<"products">;
@@ -58,6 +58,7 @@ const AdminProducts = () => {
   const [customColorName, setCustomColorName] = useState("");
   const [seoOpen, setSeoOpen] = useState(false);
   const [slugTouched, setSlugTouched] = useState(false);
+  const [seoTouched, setSeoTouched] = useState({ title: false, meta: false, alt: false });
   const [keywordInput, setKeywordInput] = useState("");
 
   const { data: products = [], isLoading } = useQuery({
@@ -185,12 +186,13 @@ const AdminProducts = () => {
 
       const data = {
         ...raw,
-        seo_title: raw.seo_title.trim(),
-        meta_description: raw.meta_description.trim(),
+        seo_title: raw.seo_title.trim() || autoSeoTitle(raw.name),
+        meta_description:
+          raw.meta_description.trim() || autoMetaDescription(raw.name, raw.description, raw.brand, raw.category),
         focus_keyword: raw.focus_keyword.trim(),
         seo_keywords: raw.seo_keywords.map((k) => k.trim()).filter(Boolean),
         seo_slug: uniqueSlug || null,
-        image_alt_text: raw.image_alt_text.trim(),
+        image_alt_text: raw.image_alt_text.trim() || raw.name.trim(),
         key_features: raw.key_features.map((f) => f.trim()).filter(Boolean),
         specs: raw.specs
           .map((s) => ({ label: s.label.trim(), value: s.value.trim() }))
@@ -244,6 +246,7 @@ const AdminProducts = () => {
       image_alt_text: (p as any).image_alt_text ?? "",
     });
     setSlugTouched(true);
+    setSeoTouched({ title: true, meta: true, alt: true });
     setKeywordInput("");
     setDialogOpen(true);
   };
@@ -252,6 +255,7 @@ const AdminProducts = () => {
     setEditingId(null);
     setForm(emptyForm);
     setSlugTouched(false);
+    setSeoTouched({ title: false, meta: false, alt: false });
     setKeywordInput("");
     setDialogOpen(true);
   };
@@ -347,7 +351,7 @@ const AdminProducts = () => {
             <form onSubmit={(e) => { e.preventDefault(); saveMutation.mutate(form); }} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium mb-1">Name *</label>
-                <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, seo_slug: slugTouched ? form.seo_slug : slugify(e.target.value) })} className="w-full border border-border px-3 py-2 bg-background text-sm" required maxLength={200} />
+                <input value={form.name} onChange={(e) => { const n = e.target.value; setForm((f) => ({ ...f, name: n, seo_slug: slugTouched ? f.seo_slug : slugify(n), seo_title: seoTouched.title ? f.seo_title : (n ? autoSeoTitle(n) : ""), image_alt_text: seoTouched.alt ? f.image_alt_text : n, meta_description: seoTouched.meta ? f.meta_description : autoMetaDescription(n, f.description, f.brand, f.category) })); }} className="w-full border border-border px-3 py-2 bg-background text-sm" required maxLength={200} />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -559,7 +563,7 @@ const AdminProducts = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Description</label>
-                <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="w-full border border-border px-3 py-2 bg-background text-sm min-h-[80px] resize-none" maxLength={2000} />
+                <textarea value={form.description} onChange={(e) => { const d = e.target.value; setForm((f) => ({ ...f, description: d, meta_description: seoTouched.meta ? f.meta_description : autoMetaDescription(f.name, d, f.brand, f.category) })); }} className="w-full border border-border px-3 py-2 bg-background text-sm min-h-[80px] resize-none" maxLength={2000} />
               </div>
 
               {/* Key Features */}
@@ -686,7 +690,7 @@ const AdminProducts = () => {
                       </div>
                       <input
                         value={form.seo_title}
-                        onChange={(e) => setForm({ ...form, seo_title: e.target.value })}
+                        onChange={(e) => { setSeoTouched((t) => ({ ...t, title: true })); setForm({ ...form, seo_title: e.target.value }); }}
                         placeholder="T-Wolf T20 RGB Gaming Keyboard | Device Hub"
                         className="w-full border border-border px-3 py-2 bg-background text-sm"
                         maxLength={120}
@@ -709,7 +713,7 @@ const AdminProducts = () => {
                       </div>
                       <textarea
                         value={form.meta_description}
-                        onChange={(e) => setForm({ ...form, meta_description: e.target.value })}
+                        onChange={(e) => { setSeoTouched((t) => ({ ...t, meta: true })); setForm({ ...form, meta_description: e.target.value }); }}
                         placeholder="Buy T-Wolf T20 RGB Gaming Keyboard in Bangladesh. Responsive performance, RGB lighting and a 104-key layout from Device Hub."
                         className="w-full border border-border px-3 py-2 bg-background text-sm min-h-[70px] resize-none"
                         maxLength={320}
@@ -798,7 +802,7 @@ const AdminProducts = () => {
                       <label className="block text-sm font-medium mb-1">Image Alt Text</label>
                       <input
                         value={form.image_alt_text}
-                        onChange={(e) => setForm({ ...form, image_alt_text: e.target.value })}
+                        onChange={(e) => { setSeoTouched((t) => ({ ...t, alt: true })); setForm({ ...form, image_alt_text: e.target.value }); }}
                         placeholder="T-Wolf T20 RGB gaming keyboard with backlit keys"
                         className="w-full border border-border px-3 py-2 bg-background text-sm"
                         maxLength={160}
